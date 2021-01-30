@@ -1,0 +1,118 @@
+* Next.js とはなにか
+
+色々便利な React のフレームワーク。
+静的なページも、動的なページも作ることができる。
+
+* アプリケーションの新規作成
+
+Next.js でアプリケーション作成を始めるときは [[https://nextjs.org/docs/api-reference/create-next-app][create-next-app]] コマンドを使うことが推奨されている。このコマンドはデフォルトテンプレートの利用できる他、[[https://github.com/vercel/next.js/tree/canary/examples][サンプル]]にあるものならどれでもテンプレートとして利用できる。今回はシンプルな構成で練習したいのでデフォルトテンプレートを使う。
+
+#+begin_src sh
+yarn create next-app
+#+end_src
+
+新規作成が終わったら下記のコマンドで Next.js を development モードでサーバーを起動する。ブラウザで localhost:3000/ を開けば Next.js が応答してそれらしいページを返すことを確認する。
+
+#+begin_src sh
+yarn dev
+#+end_src
+
+ファイル /pages/index.js を開くとそこに書かれた React Component が描画されていることがわかる。見えないところで webpack と babel が内部的に動いて、React Component を解釈して、その結果を書き出しているがそれを意識しなくてよい。ホットリロードの機能があるので、ファイルを編集すればすぐに再ビルドが実行され、ブラウザに反映される。
+
+* デプロイ
+
+Vercel を使うのが一番簡単。Next.js の開発者が Vercel を作っているので親和性がすごいらしい。Github と連携させてデプロイボタンを押すだけで、ビルドして配布まで、すべて自動的に行われる。ドメインも自動で割り当てられる。
+
+Vercel では DPS(Develop,Preview,Ship)というワークフローがある。
+
+- Development はコードを書いている状態。
+- Preview はプルリクエストを出した状態。 vercel は Github にブランチが push されたとき自動で適当にデプロイして、テストできる環境を用意してくれるらしい。
+- Ship はリリースできる状態。vercel は main ブランチが更新されたら自動的に本番環境にリリースするらしい。
+
+Vercel を使わない場合は Node.js をインストールした上で next build を実行した後 next start を実行すれば Next.js の production mode になる。これは開発環境でも試せる。
+
+完全に静的なページを作った場合は Node.js すら必要なくなる。next build を実行した後 next export を実行すると out ディレクトリに静的ファイルを出力する。
+
+* SG を使ってみる
+
+SG は Static Generation というやつ。create next-app を実行した時点で index が SG になっているが、ここで開発環境に置かれた日記ファイルを読み取って HTML を生成するようにしてみよう。
+
+静的ファイルを読み取るには fs という nodejs のビルトインモジュールを使う。試しに index.js の先頭で import fs を書くとエラーになる。これはなぜかというと、最終的に生成するファイルに import fs が残って webpack がそれを解釈できないため。
+
+この import fs を getStaticProps 関数の中でだけ利用するようにすれば、エラーはでなくなる。なぜかというと、最終的に出力された js に fs が含まれなくなるため。下のサイトで実験する事ができる。
+
+https://next-code-elimination.vercel.app/
+
+これは nextjs のプリレンダリングがうまく働いていることの証拠でもあるけれど、外見からは全くわからないので不親切なポイントでもある。
+
+* basic features
+** Pages
+
+Next.js でのページはディレクトリ pages 配下に置かれた React コンポーネントのことを指す。どのページも、ファイル名をベースにしたルートと関連付けられる。たとえば pages/about.js ページを作ると、アプリケーションの /about ルートと関連付けられる。
+
+ブラケットで囲まれたファイル名を与えた場合、それは動的ルートと関連付けられる。たとえば pages/posts/[id].js ページを作ると /posts/1 や /posts/2 のいずれのルートもそのページに紐付けられる。
+
+Next.js は、デフォルトではいずれのページもプリレンダリングする。言い換えると、予め HTML を作成する。ユーザリクエストに従って javascript を返し、その結果をブラウザに実行させるということをしないので、表示が速かったり SEO で有利になる。
+
+各 HTML には、そのページが必要とする最小化された javascript が関連付けられる。おそらく事前にレンダリングできないコードを実行するということ。このプロセスをハイドレーションと呼ぶ。
+
+プリレンダリングには2つの形式がある。
+
+- Static Generation: HTML はビルド時に生成する
+- Server-side Rendering: HTML はユーザリクエスト時に生成する
+
+Next.js はページ毎に任意の方法を選択できる。基本的なページは SG でプリレンダリングして、それでは対応できないページを SSR でプリレンダリングするのがよい。そして、プリレンダリングを一切しない（Client-side Rendering）を使うという選択肢もある。
+
+** Static Generation
+
+SG を使うときの最も簡単なケースは、データをソースコードにそのまま埋め込む場合。その場合は非常に単純で、なんの引数も取らないような React Component を作るだけでよい。そうすればビルド時にHTMLが生成される。
+
+もう少し複雑なケースとして、データをソースコードに埋め込まない場合を考える。その場合は2つの関数 getStaticProps, getStaticPaths を使う。
+
+たとえば Next.js でブログを作る場合を考える。各記事の内容を別ファイルに書き出していて、それらをページに読み込ませたい。[[https://nextjs.org/docs/basic-features/pages#scenario-1-your-page-content-depends-on-external-data][ここ]]にソースコード付きの具体例がある。
+
+ページのプリレンダリングにはなるべくSGを使うのが望ましい。ただし、頻繁に更新されるページ、リクエスト毎に内容が変化するページ等に対しては SG を使うべきでない。
+
+** Server-side Rendering
+
+SSR を使うには getServerSideProps 関数を使う。SG よりも遅いので積極的に利用するものではない。
+
+** Data Fetching
+
+略
+
+** Built-in CSS Support
+グローバルな css を追加したいなら pages/_app.js で読み込めばいい。普通はこんなことはできないが Next.js の世界では ~import '../styles.css'~ のような書き方ができる。
+
+外部ライブラリの css も同じ。たとえば node_modules に bootstrap をインストールしているなら、pages/_app.js で読み込めばいい。 ~import 'bootstrap/dist/css/bootstrap.css'~
+
+コンポーネント限定した css を追加したいなら [[https://github.com/css-modules/css-modules][CSS Module]] を使う。Next.js ではファイル名を *.module.css にすれば自動的に CSS Module のファイルと解釈され、それをインポートすると使えるようになる。
+
+sass, scss にも対応している。事前に npm install sass を実行しておくだけで良い。
+
+** Image Component and Image Optimization
+
+~<img>~ タグを拡張した ~<Image>~ コンポーネントが搭載されている。
+
+リサイズと最適化が可能。*.webp にも対応している。ビューポートのサイズによって送信する画像サイズを変えたりできる。画像ファイルが異なるホストにある場合にも対応している。Next.jsは画像最適化をユーザリクエストの度に行う。デフォルトで遅延読み込みを行う。レイアウトシフトが起こらないなどUXを重視したレンダリングを行う。
+
+** Static File Serving
+
+Next.js は静的ファイルのサーバーとなることもできる。ディレクトリ public に置いたファイルはパス / の配下にあるものとして紐付けられる。robots.txt や favicon.ico などの置き場所として使える。
+
+** Fast Refresh
+
+コンポーネントファイルを更新したときに再起動不要。かつ、ブラウザ側でオートリロードさせるというしくみがある。
+
+** TypeScript
+
+空の tsconfig.json をつくれば自動的にデフォルト設定になる。あとは 。yarn dev を実行すれば typescript のコンパイルを行うようになる。ただし、そのとき依存パッケージが足りなければ yarn add を促すようなメッセージが出る。
+
+getStaticProps のような Next.js が提供している関数は TypeScript の型定義は大文字から始まる形で同梱しているので、それを利用するとよい。
+
+** Environment Variables
+
+.env.local ファイルに書き込んだ環境変数は process.env から参照する事ができる。
+** Supported Browsers and Features
+
+IE11 互換のための polyfill が有効。

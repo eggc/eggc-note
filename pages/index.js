@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Posts from '../components/posts'
+import getPosts from '../lib/getPosts'
 
 export default function Index({posts}) {
   return (
@@ -19,10 +20,9 @@ export default function Index({posts}) {
 }
 
 export async function getStaticProps() {
-
   return {
     props: {
-      posts: [{title: "nextjs", body: "hogehoge"}]
+      posts: getPosts()
     }
   }
 }
