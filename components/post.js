@@ -1,8 +1,10 @@
 export default function Post({post}) {
   return (
-    <div>
-      <p>{post.title || "no title"}</p>
-      <div dangerouslySetInnerHTML={{ __html: post.body || "no body" }} />
-    </div>
+    <section class="section">
+      <div class="container">
+        <h1 class="title">{post.title || "no title"}</h1>
+        <div dangerouslySetInnerHTML={{ __html: post.body || "no body" }} />
+      </div>
+    </section>
   )
 }
