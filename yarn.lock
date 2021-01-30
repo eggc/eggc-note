@@ -1383,6 +1383,11 @@ once@^1.3.1, once@^1.4.0:
   dependencies:
     wrappy "1"
 
+org@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/org/-/org-0.2.0.tgz#d76378387dc506fb8e3ccff73a0ad04e3afc6391"
+  integrity sha1-12N4OH3FBvuOPM/3OgrQTjr8Y5E=
+
 os-browserify@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/os-browserify/-/os-browserify-0.3.0.tgz#854373c7f5c2315914fc9bfc6bd8238fdda1ec27"
