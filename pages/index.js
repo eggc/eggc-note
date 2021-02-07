@@ -1,16 +1,18 @@
 import Posts from '../components/posts'
-import getPosts from '../lib/getPosts'
+import getPostNames from '../lib/getPostNames'
 
-export default function Index({posts}) {
+export default function Index({postNames}) {
   return (
-    <Posts posts={posts} />
+    <ul>
+      {postNames.map((name, i) => { return <li key={i}>{name}</li> })}
+    </ul>
   )
 }
 
 export async function getStaticProps() {
   return {
     props: {
-      posts: getPosts()
+      postNames: getPostNames()
     }
   }
 }
