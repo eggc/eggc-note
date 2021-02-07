@@ -1,15 +1,15 @@
 export default function Navbar() {
   return (
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="/">EGGC</a>
+    <nav className="navbar" role="navigation" aria-label="main navigation">
+      <div className="navbar-brand">
+        <a className="navbar-item" href="/">EGGC</a>
       </div>
 
-      <div class="navbar-menu">
-        <div class="navbar-start">
-          <a class="navbar-item">Home</a>
-          <a class="navbar-item">Profile</a>
-          <a class="navbar-item">Memorandum</a>
+      <div className="navbar-menu">
+        <div className="navbar-start">
+          <a className="navbar-item">Home</a>
+          <a className="navbar-item">Profile</a>
+          <a className="navbar-item">Memorandum</a>
         </div>
       </div>
     </nav>
