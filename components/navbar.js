@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function Navbar() {
   return (
     <nav className="navbar" role="navigation" aria-label="main navigation">
@@ -7,8 +9,8 @@ export default function Navbar() {
 
       <div className="navbar-menu">
         <div className="navbar-start">
-          <a className="navbar-item">Home</a>
-          <a className="navbar-item">Profile</a>
+          <Link href="/"><a className="navbar-item">Home</a></Link>
+          <Link href="/profile"><a className="navbar-item">Profile</a></Link>
           <a className="navbar-item">Memorandum</a>
         </div>
       </div>
