@@ -10,7 +10,7 @@ export default function Index({posts}) {
 export async function getStaticProps() {
   return {
     props: {
-      posts: getPosts()
+      posts: await getPosts()
     }
   }
 }
