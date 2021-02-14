@@ -1,0 +1,26 @@
+* LSP とは
+
+LSP とは Language Server Protocol の略で Language Server がどうあるべきかを定めたプロトコル。 2016年にマイクロソフトが開発した。
+
+Language Server とはプログラムの関数定義や型情報といった解析結果を蓄えたサーバーのこと。このサーバとエディタを通信させることで、補完、定義ジャンプ、ドキュメント参照といった機能を提供できる。C, Java, Ruby, Javascript, Typescript など、主要な言語の Language Server はオープンソースで提供されている。
+
+* Emacs で LSP を使ってみる(Ruby の場合)
+まず Language Server の1つである solargraph をインストールする。
+
+#+begin_src sh
+gem install solargraph
+#+end_src
+
+その後エディタ側で Language Server と通信するためのパッケージを追加する。今回は lsp-mode を使うことにした。
+
+その後 ruby のファイルを開く。すると自動で lsp モードが起動する。list-processes コマンドを使うと、プロセス名 ruby-ls(language server)が起動しているのが見える。この状態では、クラスやメソッドにカーソルを当てるだけで定義箇所のコメントが表示できる。LSP 用の定義ジャンプコマンドとかもあるけど、それほど変化は感じない。定義ジャンプは dumb-jump よりも高速だが、失敗してしまうこともあるようだ。dumb-jump と共存できればよいのだが、いまのところそれらしい設定をみつけられていない。
+
+* 参考サイト
+
+- 日本語で LSP の概要説明して Emacs の LSP 対応させる方法を説明している記事
+  - https://qiita.com/Ladicle/items/e666e3fb9fae9d807969
+- Emacs の lsp-mode のドキュメント
+  - https://emacs-lsp.github.io/lsp-mode/page/installation/
+  - https://emacs-lsp.github.io/lsp-mode/page/lsp-solargraph/
+- LSP のオフィシャルサイト
+  - https://microsoft.github.io/language-server-protocol/

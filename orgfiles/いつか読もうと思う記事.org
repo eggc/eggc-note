@@ -1,0 +1,4 @@
+- https://bliki-ja.github.io/
+- https://engineering.mercari.com/ladder/
+- https://shuuji3.xyz/eng-practices/
+- https://github.com/hatena/Hatena-Textbook
