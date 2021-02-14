@@ -1,0 +1,25 @@
+* ローカルキーバインド
+カスタムキーバインドを定義しているが、それが他のモードで再定義されてしまっている場合がある。
+自分の場合、行の折り返しを行なうキーバインド下のように定めている。
+
+(global-set-key (kbd "C-c C-l") 'toggle-truncate-lines)
+
+しかしこれがうまく動作しないモードもある。
+バッファで describe-bindings を実行すると、キーバインドを奪われていることがわかる。
+
+`inf-ruby-minor-mode' Minor Mode Bindings:
+
+key             binding
+---             -------
+C-c C-l         ruby-load-file
+
+
+これを剥がすにはカスタムフックで local-unset-key を実行すればいい。
+
+#+begin_src lisp
+  (defun inf-ruby-minor-mode-eggc-hook ()
+    (local-unset-key (kbd "C-c C-l")))
+  (add-hook 'inf-ruby-minor-mode-hook 'inf-ruby-minor-mode-eggc-hook)
+#+end_src
+
+と思ったがうまくいかなかった。上記関数を実行したあとに inf-ruby-minor-mode を on/off してみたがキーバインドは奪われたままだ。
