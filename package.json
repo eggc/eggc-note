@@ -11,7 +11,12 @@
     "bulma": "^0.9.2",
     "next": "10.0.6",
     "org": "^0.2.0",
+    "orga": "^2.3.15",
+    "orga-unified": "^2.3.15",
     "react": "17.0.1",
-    "react-dom": "17.0.1"
+    "react-dom": "17.0.1",
+    "rehype": "^11.0.0",
+    "reorg-rehype": "^2.3.15",
+    "unified": "^9.2.0"
   }
 }
