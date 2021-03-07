@@ -9,8 +9,8 @@ export default function Index({postNames}) {
 
   return (
     <section>
-      <div class="container">
-        <h1 class="title">Posts</h1>
+      <div className="container">
+        <h1 className="title">Posts</h1>
         <ul>
           {postNames.map(renderPostLinks)}
         </ul>
