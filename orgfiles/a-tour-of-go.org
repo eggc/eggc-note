@@ -1,8 +1,10 @@
-https://go-tour-jp.appspot.com/list これをなんとなく見て、演習問題やっていく。
+[[https://go-tour-jp.appspot.com/list][A Tour of Go]] を見て、演習問題やっていく。
 
 * Hello World
 
-先頭に package main と書いてあるように、プログラムは main パッケージから開始される。
+Go のプログラムは *パッケージ(package)* で構成される。プログラムは ~main~ パッケージから開始される。
+
+パッケージは、他のパッケージを *インポート(import)* することもできる。下記のプログラムは ~fmt~ をインポートしている。 ~fmt~ は標準入出力に対する操作を提供する。これを使って文字列 Hello World を出力している。
 
 #+begin_src go
 package main
@@ -14,17 +16,199 @@ func main() {
 }
 #+end_src
 
-* Package
+1行目にあるパッケージの宣言を ~package hogehoge~ と書き換えて ~hogehoge~ パッケージに変えることもできる。ただし ~hogehoge~ は実行できないパッケージとなる。それでも実行しようとすると ~cannot run non-main package~ のようなエラーを出して停止する。
+
+* Packages
+
+次は ~math/rand~ パッケージを使ってみる。これはランダム値を取り扱うパッケージである。
+
+パッケージをインポートしたあとの参照方法は最後の ~/~ よりあとの名前を使う。たとえば、 ~math/rand~ パッケージをインポートしたあとこれを参照するには ~rand~ という名前を使う。実際、下のプログラムでは ~rand.Intn(10)~ のように呼び出している。
+
+#+begin_src go
+package main
+
+import "fmt"
+import "math/rand"
+
+func main() {
+	fmt.Println("My favorite number is", rand.Intn(10))
+}
+#+end_src
+
+関数 ~Intn(n)~ は引数 n に対して 0-n の範囲にあるランダムな数値を返す。ただし、このランダム値は擬似乱数で seed 値を必要とする。seed 値が与えられない場合は seed = 1 として疑似乱数を作る。
+
+* Imports
+
+複数のモジュールをインポートする場合は *factored import statement* を使うこともできる。下記のプログラムは factored import statement を使って ~fmt~ と ~math~ パッケージの二つをインポートしている。
 
 #+begin_src go
 package main
 
 import (
 	"fmt"
-	"math/rand"
+	"math"
 )
 
 func main() {
-	fmt.Println("My favorite number is", rand.Intn(10))
+	fmt.Printf("Now you have %g problems.\n", math.Sqrt(7))
 }
 #+end_src
+
+関数 ~math.Sqrt(n)~ は引数 n の平方根を返す。
+
+* Exported names
+
+モジュールの中で関数や定数を定義する時、大文字で始めると、外部から利用することができる。たとえば、これまでのプログラムで利用した関数 ~fmt.Printf()~ や ~math.Sqrt()~ はどちらも大文字で始まるため、そのルールを満たしていることがわかる。大文字で始まる名前を *exported name* とよぶ。
+
+関数ではない例としては円周率を表す定数 ~math.Pi~ がある。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+func main() {
+	fmt.Println(math.Pi)
+}
+#+end_src
+
+exported name ではない関数や定数は外部から利用できない。
+
+* Functions
+
+これまでは既存のモジュールの関数を利用してきた。次は独自の関数を定義して利用するサンプルを与える。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func add(x int, y int) int {
+	return x + y
+}
+
+func main() {
+	fmt.Println(add(42, 13))
+}
+#+end_src
+
+関数を定義するには ~func~ を使うは仮引数の後ろに型を書く。戻り値がある場合はカッコの仮引数を閉じるカッコの後ろに戻り値の型を書く。引数の型が同じである場合には、最後の型以外を省略しても良い。つまり上の例は次のように書きかえることができる。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func add(x, y int) int {
+	return x + y
+}
+
+func main() {
+	fmt.Println(add(42, 13))
+}
+#+end_src
+
+* Multiple results
+
+関数は複数の戻り値を持つことができる。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func swap(x, y string) (string, string) {
+	return y, x
+}
+
+func main() {
+	a, b := swap("hello", "world")
+	fmt.Println(a, b)
+}
+#+end_src
+
+ここで、 ~:=~ は変数に対する宣言と代入を同時に行う演算子。この記法を *short variable declaration* と呼ぶ。 ~:=~ は型宣言を省略することができる。あとで詳しい話がでてくるだろう。
+
+* Named return values
+
+戻り値には、名前を与えることもできる。 *named return value* を使うときは関数の引数の宣言より前に、戻り値の名前と型を宣言する。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func split(sum int) (x, y int) {
+	x = sum * 4 / 9
+	y = sum - x
+	return
+}
+
+func main() {
+	fmt.Println(split(17))
+}
+#+end_src
+
+関数の意味をわかりやすくするうえで named return value は役立つ。関数の最後では ~return~ だけが書かれているが、これは冒頭で宣言した戻り値 ~sum~ を返す。これを *naked return* と呼ぶ。
+
+関数がよほど簡単でないかぎり named return value を使うのが良さそう。
+
+* Variables
+
+変数を宣言するには var 文を使う。変数は一つずつ定義することもできるし、複数個定義することもできる。var 文はパッケージの内部か、関数の内部で使うことができる。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+var c, python, java bool
+
+func main() {
+	var i int
+	fmt.Println(i, c, python, java)
+}
+#+end_src
+
+変数は、数値なら ~0~ 、真偽値なら ~false~ 、文字列なら空文字列で初期化される。
+
+* Variables with initializers
+
+変数に初期値を与えることもできる。初期値を与えている場合は、その型を省略することができる。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+var i, j int = 1, 2
+
+func main() {
+	var c, python, java = true, false, "no!"
+	fmt.Println(i, j, c, python, java)
+}
+#+end_src
+
+初期値が与えられているとき、変数は初期値の型と同じ型になる。たとえば上のプログラムでは ~i, j~ は整数型で、 ~c, python~ は真偽値型、 ~java~ は文字列型である。
+
+* Short variable declarations
+
+関数の中では、var 文の代わりに ~:=~ 代入文を使って暗黙的な型宣言を行うことができる。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	i, j, k := 1, 2, 3
+	c, python, java := true, false, "no!"
+
+	fmt.Println(i, j, k, c, python, java)
+}
+#+end_src
+
+~:=~ は宣言したあとの再代入には使うことはできない。ただし、例外的に新しい変数を初期化しながら、既存の変数を再代入するときには利用することができる。あまり重要ではないと思うが、具体例は [[https://golang.org/doc/effective_go#redeclaration][effective_go#redeclaration]] にある。
