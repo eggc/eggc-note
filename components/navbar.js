@@ -10,8 +10,6 @@ export default function Navbar() {
       <div className="navbar-menu">
         <div className="navbar-start">
           <Link href="/"><a className="navbar-item">Home</a></Link>
-          <Link href="/profile"><a className="navbar-item">Profile</a></Link>
-          <a className="navbar-item">Memorandum</a>
         </div>
       </div>
     </nav>
