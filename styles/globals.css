@@ -1,0 +1,4 @@
+/* コードブロックの中で bulma のスタイルは効かせない */
+code > span.number {
+    all: unset;
+}
