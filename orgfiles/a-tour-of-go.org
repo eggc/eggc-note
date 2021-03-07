@@ -1,0 +1,30 @@
+https://go-tour-jp.appspot.com/list これをなんとなく見て、演習問題やっていく。
+
+* Hello World
+
+先頭に package main と書いてあるように、プログラムは main パッケージから開始される。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello, World")
+}
+#+end_src
+
+* Package
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math/rand"
+)
+
+func main() {
+	fmt.Println("My favorite number is", rand.Intn(10))
+}
+#+end_src
