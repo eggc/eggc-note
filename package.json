@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "bulma": "^0.9.2",
+    "highlight.js": "^10.6.0",
     "next": "10.0.6",
     "orga": "^2.3.15",
     "orga-unified": "^2.3.15",
