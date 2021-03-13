@@ -1,5 +1,4 @@
-import '../styles/globals.css'
-import 'bulma/css/bulma.css'
+import '../styles/globals.scss'
 import 'prismjs/themes/prism.css';
 
 import { useEffect, Fragment } from 'react'
