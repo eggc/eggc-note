@@ -2,22 +2,24 @@ import '../styles/globals.css'
 import 'bulma/css/bulma.css'
 import 'prismjs/themes/prism.css';
 
-import { useEffect } from 'react'
+import { useEffect, Fragment } from 'react'
 import Head from 'next/head'
 import Navbar from '../components/navbar'
+import Footer from '../components/footer'
 
 function MyApp({ Component, pageProps }) {
   return (
-    <div>
+    <Fragment>
       <Head>
         <title>Eggc.diary</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <Navbar />
-      <div className="content">
+      <main className="content">
         <Component {...pageProps} />
-      </div>
-    </div>
+      </main>
+      <Footer />
+    </Fragment>
   )
 }
 
