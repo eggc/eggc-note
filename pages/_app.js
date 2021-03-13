@@ -1,6 +1,6 @@
 import '../styles/globals.css'
 import 'bulma/css/bulma.css'
-import 'highlight.js/styles/github.css';
+import 'prismjs/themes/prism.css';
 
 import { useEffect } from 'react'
 import Head from 'next/head'
