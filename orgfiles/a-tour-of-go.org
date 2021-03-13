@@ -212,3 +212,165 @@ func main() {
 #+end_src
 
 ~:=~ は宣言したあとの再代入には使うことはできない。ただし、例外的に新しい変数を初期化しながら、既存の変数を再代入するときには利用することができる。あまり重要ではないと思うが、具体例は [[https://golang.org/doc/effective_go#redeclaration][effective_go#redeclaration]] にある。
+
+* Basic types
+
+インポート無しで利用できる基本の型は下記の通り。
+
+| bool                          | 真偽値                                        |
+| string                        | 文字列                                        |
+| int                           | 32bit または 64bit 整数(OSによって定まる)     |
+| int8, int16, int32, int64     | それぞれ 8bit, 16bit, 32bit, 64bit 整数       |
+| uint                          | 32bit または 64bit 非負整数(OSによって定まる) |
+| uint8, uint16, uint32, uint64 | それぞれ 8bit, 16bit, 32bit, 64bit 非負整数   |
+| byte                          | uint8 の別名                                  |
+| rune                          | int32 の別名で Unicode コードポイントを指す   |
+| float32 float64               | 32bit, 64bit 浮動小数点数                     |
+| complex64 complex128          | 64bit, 128bit 複素数                          |
+
+fmt.Printf で %T を使うと型を出力できる。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math/cmplx"
+)
+
+var (
+	ToBe   bool       = false
+	MaxInt uint64     = 1<<64 - 1
+	z      complex128 = cmplx.Sqrt(-5 + 12i)
+)
+
+func main() {
+	fmt.Printf("Type: %T Value: %v\n", ToBe, ToBe)
+	fmt.Printf("Type: %T Value: %v\n", MaxInt, MaxInt)
+	fmt.Printf("Type: %T Value: %v\n", z, z)
+}
+#+end_src
+
+* Zero values
+
+初期値が与えられない変数は 0 や false, 空文字列で初期化される。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	var i int
+	var f float64
+	var b bool
+	var s string
+	fmt.Printf("%v %v %v %q\n", i, f, b, s)
+}
+#+end_src
+
+* Type conversions
+
+変数を型変換をするには下記のようにする。
+
+下の例は x の2乗と y の2乗の和を 64bit 浮動小数点数に変換する。math.Sqrt は float64 しか引数に取ることができないのでこの型変換が必要。型変換をしなかった場合はエラーになる。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+func main() {
+	var x, y int = 3, 4
+	var f float64 = math.Sqrt(float64(x*x + y*y))
+	var z uint = uint(f)
+	fmt.Println(x, y, z)
+}
+#+end_src
+
+* Type inference
+
+明示的な型を指定せずに変数を宣言する場合( := や var = のいずれか)、変数の型は右側の変数から型推論される。
+
+#+begin_src go
+var x = "hogehoge" // string
+var y = x          // string
+i := 42            // int
+f := 3.142         // float64
+g := 0.867 + 0.5i  // complex128
+#+end_src
+
+とても良い機能だと思うが変数どうしの代入の場合はわかりにくくなるかもしれない。
+
+* Constants
+
+定数は const キーワードを使って変数と同じように宣言する。型推論も働く。定数は基本の型しか代入できない。また、:= を使うこともできない。
+
+下の例は関数の外で定数 Pi を宣言している。これは型を明言してないが float64 になる。関数の中で二つの定数を宣言している。これらに対しても型推論が働く。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+const Pi = 3.14
+
+func main() {
+	const World = "世界"
+	fmt.Println("Hello", World)
+	fmt.Println("Happy", Pi, "Day")
+
+	const Truth = true
+	fmt.Println("Go rules?", Truth)
+}
+#+end_src
+
+* Numeric Constants
+
+数値の定数は型推論されるが、値そのものとして扱われる。（おそらく、変数のようにメモリを確保しない）そのために変数とは違う振る舞いをすることもある。
+
+下の例は、非常に巨大な定数 Big が正常に利用できることを表している。また定数 Small が整数としても浮動小数点数としても利用できることを表している。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+const (
+	// Create a huge number by shifting a 1 bit left 100 places.
+	// In other words, the binary number that is 1 followed by 100 zeroes.
+	Big = 1 << 100
+	// Shift it right again 99 places, so we end up with 1<<1, or 2.
+	Small = Big >> 99
+)
+
+func needInt(x int) int { return x*10 + 1 }
+func needFloat(x float64) float64 {
+	return x * 0.1
+}
+
+func main() {
+	fmt.Println(needInt(Small))
+	fmt.Println(needFloat(Small))
+	fmt.Println(needFloat(Big))
+}
+#+end_src
+
+ここで const を var に書き換えると三つのエラーが発生する。
+
+#+begin_quote
+./prog.go:8:2: constant 1267650600228229401496703205376 overflows int
+./prog.go:20:23: cannot use Small (type int) as type float64 in argument to needFloat
+./prog.go:21:23: cannot use Big (type int) as type float64 in argument to needFloat
+#+end_quote
+
+1つ目のエラーは Big が型推論により int として計算されたがビット数が足りないことを表している。int は最大で 64 bit だから 100 ビットシフトした値は格納できない。
+
+2つ目、3つ目のエラーは関数で宣言した引数の型が不一致であるために発生している。Small は型推論により int と判断されたため needFloat の引数にはできない。同様に Big も needFloat の引数にはできない。
+
+おそらく、定数の場合はコンパイルされた時点でただの値と置き換えられるので needInt や needFloat の呼び出しのときに適切に変換されるのだと思う。
+
+たとえ定数であってもプログラムを書き換えて ~const Small float64 = 2~ のように型を明示すると needInt を呼び出すことができなくなる。
