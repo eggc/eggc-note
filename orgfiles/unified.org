@@ -1,0 +1,85 @@
+* 概要
+
+[[https://github.com/unifiedjs/unified][unified]] は構文木とテキストの相互変換のためのインターフェース。
+unified は下記のクラスがあるものと定める。
+そして、これらが提供するべき関数を定める。
+
+1. parser ... テキストを受け取り解析し、構文木を作るプログラム
+2. plugin ... 構文木を検査・加工するプログラム
+3. compiler ... 構文木をテキストファイルにするプログラム
+4. processor ... 上記をまとめて実行するプログラム
+
+このルールに従って作られたプログラムのうち代表的な processor が [[https://github.com/rehypejs/rehype][rehype]] である。rehype は HTML で書かれたファイルを解析し、加工した上で、テキストファイルとして出力することができる。加工するためのプラグインは、たとえば下記のようなものがある。
+
+- rehype-toc: 目次をつける
+- rehype-highlight: インラインコードに色を付ける
+- rehype-truncate: 長文を ... で省略する
+
+各プラグインは unified の規定に従って構文木を加工するだけにとどまる。そのため、他のプラグインの存在を気にすることなく、組み合わせることができる。取り外しも容易い。またテキスト解析や出力する操作が必ず一括して行われるので、オブジェクトの重複が減り、プログラムがわかりやすくなる。
+
+* 使用例
+
+unified のルールに従った [[https://github.com/orgapp/orgajs][orga]] というライブラリを使った。これは、Emacs でよく使われる org 形式のファイルを解析し構文木を作るというもの。さらに html 構文木に変換する機能を持っており、これを使うことで rehype のプラグインを利用できるようになる。
+
+下の関数は org で書かれた文字列を html 文字列に変換できる。
+
+#+begin_src js
+import unified from 'unified'
+import parse from 'reorg-parse'
+import mutate from 'reorg-rehype'
+import slug from './rehype-slug-patch'
+import html from 'rehype-stringify'
+
+async function orgToHTMLText(orgString) {
+
+  // parser を使って org 構文木を生成する
+  const tree = await unified()
+    .data('settings', {fragment: true})
+    .use(parse)
+    .parse(orgString)
+
+  // plugin で org 構文木を html 構文木に変換
+  // さらに slug プラグインで加工する
+  const tree2 = await unified()
+    .use(mutate)
+    .use(slug)
+    .run(tree)
+
+  // compiler で html 構文木を html 文字列にする
+  const body = await unified()
+    .use(html)
+    .stringify(tree2)
+
+  return body.toString()
+}
+#+end_src
+
+デバッグのためにここまで分解したが本来はこれはもっとかんたんに書くことができる。
+
+#+begin_src js
+async function orgToHTMLText(orgString) {
+  // processor で全てをまとめて実行する
+  const body = await unified()
+    .data('settings', {fragment: true})
+    .use(parse)
+    .use(mutate)
+    .use(slug)
+    .use(html)
+    .process(orgString)
+
+  return body.toString()
+}
+#+end_src
+
+javascript の世界では html の dom オブジェクトを作り、それを加工するというのはよく行われることだが、事前に済ませられるものは unified で済ませてしまえばブラウザでそれを実行する必要がなくなるし、プログラムもわかりやすくなる。
+
+プラグインが正常に作られていればシンプルでわかりやすい実装になるが、プラグインに問題がある場合、デバッグするのがとても難しい。
+
+
+* メモ
+
+unist(universal syntax tree) は unified で取り扱う構文木の仕様を指す。unist のノードは単純な type 属性を持つ javascript object である。
+
+utilities は unist のノードに対する操作を提供する関数のこと。たとえば [[https://github.com/blahah/unist-util-find][unist-util-find]] は与えられたノードを根とする構文木から特定の属性を持つノードを見つけて、それを返す関数。
+
+[[https://github.com/syntax-tree/hast][hast]](Hypertext Abstract Syntax Tree format) は HTML を unist の仕様に従って定義した構文木のこと。hast のライブラリには hast ノードに対する utilities が定義されている。
