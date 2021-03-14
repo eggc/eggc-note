@@ -4,18 +4,23 @@ import Link from 'next/link'
 
 export default function Index({posts}) {
   const renderPostLinks = (post, i) => {
-    const name = post.name
-    const tags = post.tags
-    return <li key={i}><Link href={`/posts/${name}`}>{name}</Link></li>
+    return (
+      <div className="columns" key={i}>
+        <div className="column is-two-fifths">
+          <Link href={`/posts/${post.name}`}>{post.name}</Link>
+        </div>
+        <div className="column">
+          {post.tags.map((tag, j) => <span key={j} className="tag is-light">{tag}</span>)}
+        </div>
+      </div>
+    )
   }
 
   return (
     <section>
       <div className="container">
         <h1 className="title">Posts</h1>
-        <ul>
-          {posts.map(renderPostLinks)}
-        </ul>
+        {posts.map(renderPostLinks)}
       </div>
     </section>
   )
