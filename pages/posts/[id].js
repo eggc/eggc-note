@@ -1,6 +1,6 @@
 import Post from '../../components/post'
 import getPost from '../../lib/getPost'
-import getPostNames from '../../lib/getPostNames'
+import getPosts from '../../lib/getPosts'
 
 export default function Index({post}) {
   return (
@@ -17,7 +17,7 @@ export async function getStaticProps({params}) {
 }
 
 export async function getStaticPaths() {
-  const postNames = getPostNames()
+  const postNames = getPosts().map((post) => post.name)
   // const paths = [{ params: { id: "Emacs" }}]
   const paths = postNames.map((postName) => {
     return { params: {id: postName} }

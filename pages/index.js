@@ -1,9 +1,11 @@
 import Posts from '../components/posts'
-import getPostNames from '../lib/getPostNames'
+import getPosts from '../lib/getPosts'
 import Link from 'next/link'
 
-export default function Index({postNames}) {
-  const renderPostLinks = (name, i) => {
+export default function Index({posts}) {
+  const renderPostLinks = (post, i) => {
+    const name = post.name
+    const tags = post.tags
     return <li key={i}><Link href={`/posts/${name}`}>{name}</Link></li>
   }
 
@@ -12,7 +14,7 @@ export default function Index({postNames}) {
       <div className="container">
         <h1 className="title">Posts</h1>
         <ul>
-          {postNames.map(renderPostLinks)}
+          {posts.map(renderPostLinks)}
         </ul>
       </div>
     </section>
@@ -22,7 +24,7 @@ export default function Index({postNames}) {
 export async function getStaticProps() {
   return {
     props: {
-      postNames: getPostNames()
+      posts: getPosts()
     }
   }
 }
