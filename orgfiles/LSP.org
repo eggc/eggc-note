@@ -1,3 +1,5 @@
+#+TAGS: tech
+
 * LSP とは
 
 LSP とは Language Server Protocol の略で Language Server がどうあるべきかを定めたプロトコル。 2016年にマイクロソフトが開発した。

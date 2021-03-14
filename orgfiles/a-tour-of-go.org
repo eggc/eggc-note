@@ -1,3 +1,5 @@
+#+TAGS: tech
+
 [[https://go-tour-jp.appspot.com/list][A Tour of Go]] を見て、演習問題やっていく。
 
 * Hello World

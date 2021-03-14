@@ -1,3 +1,5 @@
+#+TAGS: tech
+
 Lisp のメモ
 
 ** 変数宣言

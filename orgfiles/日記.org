@@ -1,3 +1,19 @@
+
+* 2021/03/13 (土)
+
+#+begin_src scss
+@import "~bulma/bulma";
+#+end_src
+
+これの ~~bulma~ ってなんだ？ [[https://stackoverflow.com/a/39535907]] これか。
+[[https://webpack.js.org/loaders/css-loader/#url][webpack css-loader]] の機能らしい。
+
+#+begin_quote
+To import assets from a node_modules path (include resolve.modules) and for alias, prefix it with a ~
+#+end_quote
+* 2021/03/12 (金)
+あんまり仕事してないかも。
+
 * 2021/03/11 (木)
 みずみずしい体験に彩られた自己紹介を聞いて、華やかさに圧倒される。自分が小さくなったみたいな気持ち。これまでの自分の人生にこれほどのドラマがあっただろうか。いやない。
 
