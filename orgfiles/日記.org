@@ -1,5 +1,9 @@
 * 2021/03/28 (日)
-rehype-mathjax 入れたいと思ったけどそもそも reorg-rehype が latex ブロックを解釈できてないから、どうしようもなかった。頑張ればできるかもしれないが、自分でプラグイン作る感じになりそう。辛い。
+orga は ~#+begin_export latex~ のコードブロックは解釈できない。ソースコード見た感じ [[https://github.com/orgapp/orgajs/blob/78231fb20b3bcba42663c21da11cb06f01cab711/packages/oast-to-hast/src/handlers/block.ts#L34][oast-to-hast/src/handlers/block.ts]] であれこれできたらうまくいきそうな気がする。しかしもとが typescript なので、簡単にパッチでどうにかするのは無理そう。小細工をして mathjax をねじ込み、数式対応できた。下のような感じ。
+
+\[ y = f'(x) \]
+
+インライン対応は無理。
 
 * 2021/03/27 (土)
 大刀洗のため池で桜を見た。
