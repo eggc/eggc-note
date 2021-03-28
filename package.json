@@ -18,6 +18,7 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "rehype-autolink-headings": "^5.0.1",
+    "rehype-mathjax": "^3.1.0",
     "rehype-slug": "^4.0.1",
     "rehype-stringify": "^8.0.0",
     "reorg-rehype": "^2.3.15",
