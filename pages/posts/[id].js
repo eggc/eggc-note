@@ -18,7 +18,6 @@ export async function getStaticProps({params}) {
 
 export async function getStaticPaths() {
   const postNames = getPosts().map((post) => post.name)
-  // const paths = [{ params: { id: "Emacs" }}]
   const paths = postNames.map((postName) => {
     return { params: {id: postName} }
   })
