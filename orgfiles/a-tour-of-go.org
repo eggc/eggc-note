@@ -640,3 +640,1820 @@ func main() {
 #+end_src
 
 初期値を変えてもそれほど大きな変化はないが、2 にたどりつかず、微妙な誤差が修正できないケースも有るようだ。
+* Switch
+
+go の switch は純粋な if ... else if ... の省略形としてはたらく。
+他の言語と違って、ケースに含まれたプログラムを実行し終わったあと、次のケースを実行するということはない。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"runtime"
+)
+
+func main() {
+	fmt.Print("Go runs on ")
+	switch os := runtime.GOOS; os {
+	case "darwin":
+		fmt.Println("OS X.")
+	case "linux":
+		fmt.Println("Linux.")
+	default:
+		// freebsd, openbsd,
+		// plan9, windows...
+		fmt.Printf("%s.\n", os)
+	}
+}
+#+end_src
+
+ここで初めて登場した runtime パッケージはシステム情報を得る機能を持っている。 GOOS は、GO を実行している OS 名を表す文字列定数である。
+* Switch evaluation order
+
+switch の実行順はやはり if ... else if ... と同じく、上から下に評価する。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	fmt.Println("When's Saturday?")
+	today := time.Now().Weekday()
+	switch time.Saturday {
+	case today + 0:
+		fmt.Println("Today.")
+	case today + 1:
+		fmt.Println("Tomorrow.")
+	case today + 2:
+		fmt.Println("In two days.")
+	default:
+		fmt.Println("Too far away.")
+	}
+}
+#+end_src
+
+time パッケージは時間に関する操作を行う。
+time.Now() は現在時刻を time.Time 型の値として返す。
+Weekday() は time.Weekday 型の値で、曜日を表す。
+数値としては日曜日を0とする列挙型となっている。
+上のプログラムでは土曜日が、今日の曜日なら Today. と出力する。
+そうでない場合は1を足して比較する。以下省略。
+* Switch with no condition
+
+switch に条件式を与えない場合は true が入ったのと同じように動く。
+この暗黙的な動作を利用すると、if ... else if ... をより短い形で書くことができる。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	t := time.Now()
+	switch {
+	case t.Hour() < 12:
+		fmt.Println("Good morning!")
+	case t.Hour() < 17:
+		fmt.Println("Good afternoon.")
+	default:
+		fmt.Println("Good evening.")
+	}
+}
+#+end_src
+
+上のプログラムは再び time パッケージを利用している。
+午前中、夕方、それ以外の条件分岐を短く表現している。
+* Defer
+
+defer 文は後ろに続く関数の実行を遅らせる機能を持っている。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	defer fmt.Println("world")
+
+	fmt.Println("hello")
+}
+#+end_src
+
+上のプログラムはまず defer 文により "world" の出力は保留する。そのあと "hello" を出力する。プログラムの制御が main 関数の末尾まで来たとき、保留していた関数を実行する。つまり "world" を出力する。
+
+* Stacking defers
+
+defer 文が複数回使われた時、それはスタックで処理される。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("counting")
+
+	for i := 0; i < 10; i++ {
+		defer fmt.Println(i)
+	}
+
+	fmt.Println("done")
+}
+#+end_src
+
+上のプログラムは 0 の出力を保留、1 の出力を保留…と動く。ループを抜け出して "done" を実行した後はスタックされた関数を取り出していく。つまり、 9, 8, 7,... の順で出力し、0 を出力した時プログラムは終了する。
+
+もっと現実的な defer の使用例は [[https://blog.golang.org/defer-panic-and-recover][ここ]] で紹介されている。そこでは、defer を使って、ファイルを扱っているときストリームを開く関数と、ストリームを閉じる関数を近くに宣言している。
+
+* Pointers
+
+ポインタは値のメモリアドレスを指す。
+変数 ~x~ のポインタを取り出すには ~&x~ と書く。
+ポインタ ~p~ から変数を取り出すには ~*p~ と書く。この操作を dereference と呼ぶ。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	i, j := 42, 2701
+
+	p := &i         // point to i
+	fmt.Println(*p) // read i through the pointer
+	*p = 21         // set i through the pointer
+	fmt.Println(i)  // see the new value of i
+
+	p = &j         // point to j
+	*p = *p / 37   // divide j through the pointer
+	fmt.Println(j) // see the new value of j
+}
+#+end_src
+
+上のプログラムは適当な数値 42 のポインタを p に代入する。その後 p の値を読み出しているので 42 を出力する。次の行で 21 をポインタ p の値としてセットしている。セクションの最後で変数 i の中身を出力しているが、途中計算でポインタの向いている先の値を変更したので 21 を出力する。…以下省略。
+
+* Struct
+
+struct で構造体を宣言することができる。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+type Vertex struct {
+	X int
+	Y int
+}
+
+func main() {
+	fmt.Println(Vertex{1, 2})
+}
+#+end_src
+
+上のプログラムはフィールド X,Y を持つ点を表す構造体を宣言する。
+型名の後ろに {} で囲んだ値を書いているのは、構造体リテラルで、その場で構造体を作ることができる。あとでもう一度説明する。
+
+Println は構造体をそれらしい形式で出力できる。
+
+* Struct Fields
+
+構造体のフィールドには ~.~ を使ってアクセスする。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+type Vertex struct {
+	X int
+	Y int
+}
+
+func main() {
+	v := Vertex{1, 2}
+	v.X = 4
+	fmt.Println(v.X)
+}
+#+end_src
+
+上のプログラムは点 1,2 を変数 v に代入する。そしてフィールド X を書き換えた上で、取り出している。
+
+* Pointers to structs
+
+構造体に対するポインタも、これまでと同様 ~&~ や ~*~ を使って操作することができる。
+構造体のポインタ ~p~ からフィールド ~X~ を読み出すときには ~(*p).X~ と正確に書くこともできるが、短く ~p.X~ と書いてもよい。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+type Vertex struct {
+	X int
+	Y int
+}
+
+func main() {
+	v := Vertex{1, 2}
+	p := &v
+	p.X = 1e9
+	fmt.Println(v)
+}
+#+end_src
+
+上のプログラムは構造体のポインタを取り出した後、そのフィールド X を大きな値で更新している。 ~1e9~ は指数表記のリテラルで、 $1*{10}^9$ した値を表す。
+
+* Struct Literals
+
+構造体リテラルは、フィールドの値を列挙することで初期値を示している。
+JSON と似たスタイルで、フィールド名を明示的に与えることもできる。
+宣言されなかったフィールドは変数の初期化ルールと同じように 0 や空文字列で初期化される。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+type Vertex struct {
+	X, Y int
+}
+
+var (
+	v1 = Vertex{1, 2}  // has type Vertex
+	v2 = Vertex{X: 1}  // Y:0 is implicit
+	v3 = Vertex{}      // X:0 and Y:0
+	p  = &Vertex{1, 2} // has type *Vertex
+)
+
+func main() {
+	fmt.Println(v1, p, v2, v3)
+}
+#+end_src
+
+上のプログラムは構造体リテラルを使って、X, Y を初期化している。値を与えなかった場合は 0 がセットされていることがわかる。ポインタを使う場合でも Println は自動的に & 記号とともに、その値を出力する。この例では ~&{1 2}~ を出力する。
+
+* Arrays
+
+配列の宣言はブラケットを使って ~[配列の長さ]配列の型名~ の形式で宣言する。
+配列の長さは変更できない。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	var a [2]string
+	a[0] = "Hello"
+	a[1] = "World"
+	fmt.Println(a[0], a[1])
+	fmt.Println(a)
+
+	primes := [6]int{2, 3, 5, 7, 11, 13}
+	fmt.Println(primes)
+}
+#+end_src
+
+上のプログラムは長さ2の文字列の配列を定義して "Hello" "World" を代入している。Println は配列もブラケットで囲んだ形で ~[Hello World]~ のように出力する。そのあとに宣言している primes は長さ6の整数配列である。ここでは初期化に配列リテラルを使っている。
+
+* Slices
+
+配列に対して、ブラケットとコロンを使った演算で一部を取り出す事ができる。これをスライスと呼ぶ。スライスの長さは不定なので ~[]int~ のように型表記する。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	primes := [6]int{2, 3, 5, 7, 11, 13}
+
+	var s []int = primes[1:4]
+	fmt.Println(s)
+}
+#+end_src
+
+上のプログラムは、まず固定長配列を定義した後、ブラケットの演算 ~[1:4]~ によりスライスを取り出している。コロンの前の数は始点インデックスで、コロンの後ろの数は終点のインデックスである。ただし、このスライスには終点自体は含まれない（半開区間）。よって出力されるのは ~[3 5 7]~ である。
+
+* Slices are like references to arrays
+
+スライスは配列の部分列を指している参照であり、それ自体が値を保持しているわけではない。
+よってスライスの値を変更すると、その参照先の配列の値も変化する。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	names := [4]string{
+		"John",
+		"Paul",
+		"George",
+		"Ringo",
+	}
+	fmt.Println(names)
+
+	a := names[0:2]
+	b := names[1:3]
+	fmt.Println(a, b)
+
+	b[0] = "XXX"
+	fmt.Println(a, b)
+	fmt.Println(names)
+}
+#+end_src
+
+上のプログラムは長さ4の人名配列を用意する。そして、先頭2人の名前を持つスライス ~a~ と、先頭と末尾以外の名前を持つスライス ~b~ を宣言する。そして、 ~b~ の先頭要素を XXX に変更している。この変更は ~b~ のみならず ~a~ にも影響し、もとの配列にも影響する。Paul という名前が XXX に塗りつぶされている。
+
+* Slice literals
+
+配列リテラルと似た宣言方法にスライスリテラルがある。
+スライスリテラルは配列リテラルの長さを消したものと同じである。
+このリテラルは暗黙的に配列を初期化し、そのすべての要素を取り出したスライスを作る。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	q := []int{2, 3, 5, 7, 11, 13}
+	fmt.Println(q)
+
+	r := []bool{true, false, true, true, false, true}
+	fmt.Println(r)
+
+	s := []struct {
+		i int
+		b bool
+	}{
+		{2, true},
+		{3, false},
+		{5, true},
+		{7, true},
+		{11, false},
+		{13, true},
+	}
+	fmt.Println(s)
+}
+#+end_src
+
+上のプログラムは、スライスリテラルを使って、色々な型を持つ配列を作り、そのスライスを作っている。
+最後のリテラルでは名前のない即席の構造体を宣言しつつ、そのスライスを作成している。
+
+* Slice defaults
+
+ブラケットとコロンの演算子によりスライスするとき、始点や終点を省略できる。
+始点を省略した場合は先頭がスライスの始点となり、終点を省略した場合は末尾がスライスの終点となる。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	s := []int{2, 3, 5, 7, 11, 13}
+
+	s = s[1:4]
+	fmt.Println(s)
+
+	s = s[:2]
+	fmt.Println(s)
+
+	s = s[1:]
+	fmt.Println(s)
+}
+#+end_src
+
+上のプログラムは、スライスリテラルにより s を初期化している。
+その後、始点終点を変えながらスライスしている。最初のスライスで 3,5,7 が取り出される。
+次のスライスで 3,5 が取り出される。最後のスライスで 5 が取り出される。
+
+* Slice length and capacity
+
+スライスには長さ(length)と容量(capacity)がある。
+それぞれ関数 ~len()~ と ~cap()~ で取得することができる。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	s := []int{2, 3, 5, 7, 11, 13}
+	printSlice(s)
+
+	// Slice the slice to give it zero length.
+	s = s[:0]
+	printSlice(s)
+
+	// Extend its length.
+	s = s[:4]
+	printSlice(s)
+
+	// Drop its first two values.
+	s = s[2:]
+	printSlice(s)
+}
+
+func printSlice(s []int) {
+	fmt.Printf("len=%d cap=%d %v\n", len(s), cap(s), s)
+}
+#+end_src
+
+最初のスライスでは終端に 0 を選ぶことで長さ 0 のスライスを生成している。
+しかしスライスの始点は、参照先の配列の先頭を指しているので容量は 6 である。
+次のスライスでは終点に 4 を選ぶことで長さ 4 のスライスを生成している。
+スライスの始点は変化していないので容量は 6 のままである。
+最後のスライスでは始点に 2 を選んでいる。
+もとの配列の3番目の要素が始点になっているので容量は 4 に減少する。
+
+* Nil slices
+
+スライスを初期化しなかった場合の値は ~nil~ となる。
+このスライスは長さも容量も 0 で参照先の配列も存在しない。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	var s []int
+	fmt.Println(s, len(s), cap(s))
+	if s == nil {
+		fmt.Println("nil!")
+	}
+}
+#+end_src
+
+* Creating a slice with make
+
+ビルドイン関数 ~make()~ を使ってスライスを作ることもできる。
+make は第一引数に型、第二引数に長さ、第三引数に容量をとる。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	a := make([]int, 5)
+	printSlice("a", a)
+
+	b := make([]int, 0, 5)
+	printSlice("b", b)
+
+	c := b[:2]
+	printSlice("c", c)
+
+	d := c[2:5]
+	printSlice("d", d)
+}
+
+func printSlice(s string, x []int) {
+	fmt.Printf("%s len=%d cap=%d %v\n",
+		s, len(x), cap(x), x)
+}
+#+end_src
+
+プログラムはあまり意味のあるものではないが
+
+- ~a~ に長さ5の整数スライスをセットする。
+- ~b~ に長さ0、容量5のスライスをセットする。
+- ~c~ は ~b~ の長さを二つ拡張したスライスをセットする。
+- ~d~ は ~c~ の3, 4, 5番目の要素を持つスライスをセットする。
+
+* Slices of slices
+
+スライスからなるスライスを作ることもできる。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	// Create a tic-tac-toe board.
+	board := [][]string{
+		[]string{"_", "_", "_"},
+		[]string{"_", "_", "_"},
+		[]string{"_", "_", "_"},
+	}
+
+	// The players take turns.
+	board[0][0] = "X"
+	board[2][2] = "O"
+	board[1][2] = "X"
+	board[1][0] = "O"
+	board[0][2] = "X"
+
+	for i := 0; i < len(board); i++ {
+		fmt.Printf("%s\n", strings.Join(board[i], " "))
+	}
+}
+#+end_src
+
+strings パッケージは、文字列操作の機能を提供するパッケージ。
+Join 関数は第一引数でスライスを受け取り、第二引数にセパレータを受け取る。
+戻り値は、セパレータに結合した文字列となる。
+
+* Appending to a slice
+
+スライスに要素を追加するにはビルドイン関数の ~append~ を使う。
+append は第一引数にスライスをとり、残りの引数は追加したい要素をとる。
+可変長引数なので、複数の要素をまとめて追加することもできる。
+
+スライスの容量が足りない場合は、暗黙的により大きいサイズの配列を生成する。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	var s []int
+	printSlice(s)
+
+	// append works on nil slices.
+	s = append(s, 0)
+	printSlice(s)
+
+	// The slice grows as needed.
+	s = append(s, 1)
+	printSlice(s)
+
+	// We can add more than one element at a time.
+	s = append(s, 2, 3, 4)
+	printSlice(s)
+}
+
+func printSlice(s []int) {
+	fmt.Printf("len=%d cap=%d %v\n", len(s), cap(s), s)
+}
+#+end_src
+
+上のプログラムでは、まず空のスライスを作成している。この容量は0である。そのスライスに対して1要素を追加する append を実行すると、新たな長さ1の配列をつくりそのスライスを返す。append は副作用のない関数なので戻り値を代入しないと効果がないことに注意。その後は、もう一度同じことが繰り返される。複数まとめて追加した場合も、問題なく動作する。
+
+容量がどれくらい拡張されるかは明示されていない。上のプログラムを実行すると、最後は追加した要素よりも大きい容量に拡張されている。なぜぴったりの容量ではないのかはわからない。effective go を読めば詳しいことがわかるかもしれない。
+
+関数 append は容量が不足しているときは、暗黙的にコピーをしているということに注意。大きなスライスであればあるほど、コピーのコストは大きくなる。ただ、普段遣いには便利なので、性能面の問題が現れるまでは、積極的に使って良いと思う。
+
+append は引数の渡し方によってはスライスの結合にも使うことができる。
+
+#+begin_src go
+a := []string{"John", "Paul"}
+b := []string{"George", "Ringo", "Pete"}
+a = append(a, b...)
+// => []string{"John", "Paul", "George", "Ringo", "Pete"}
+#+end_src
+
+* Range
+
+range はイテレーションのためのキーワードで for 文と同時に利用する。
+range の後ろにはイテレーションする対象の配列やスライスをとる。
+range の評価値はインデックス、イテレーション要素の二つである。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+var pow = []int{1, 2, 4, 8, 16, 32, 64, 128}
+
+func main() {
+	for i, v := range pow {
+		fmt.Printf("2**%d = %d\n", i, v)
+	}
+}
+#+end_src
+
+pow は 2^n の値を持っているスライス。
+このスライスに対して range をとり、各要素を出力している。
+
+* Range continued
+
+不要なインデックスや値は ~_~ に代入することで捨てることができる。
+range でインデックスだけが必要なときは第二引数を省略してもよい。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	pow := make([]int, 10)
+	for i := range pow {
+		pow[i] = 1 << uint(i) // == 2**i
+	}
+	for _, value := range pow {
+		fmt.Printf("%d\n", value)
+	}
+}
+
+#+end_src
+
+pow は長さ10のスライスとして初期化する。
+ビットシフト演算子を使って 1 を n 乗し、その値を pow に代入する。
+最後にそのスライスの値だけを取り出して出力する。
+
+* Exercise: Slices
+
+画像を生成するパッケージを使って、適当な二次元配列（スライス）を描画してみよう。
+
+#+begin_src go
+package main
+
+import "golang.org/x/tour/pic"
+
+func Pic(dx, dy int) [][]uint8 {
+	result := make([][]uint8, dy)
+	for i := range result {
+		result[i] = make([]uint8, dx)
+		for j := range result[i] {
+			result[i][j] = uint8(i*j)
+		}
+	}
+	return result
+}
+
+func main() {
+	pic.Show(Pic)
+}
+#+end_src
+
+二重ループの中でセットしている値を変えると、不思議な模様がでてくる。
+
+* Maps
+
+マップはキーとバリューのペアからなる。
+マップを初期化するには make 関数を使う。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+type Vertex struct {
+	Lat, Long float64
+}
+
+var m map[string]Vertex
+
+func main() {
+	m = make(map[string]Vertex)
+	m["Bell Labs"] = Vertex{
+		40.68433, -74.39967,
+	}
+	fmt.Println(m["Bell Labs"])
+}
+#+end_src
+
+このプログラムは文字列をキーとし、値を緯度経度の点とするようなマップを定義する。そしてベル研究所の座標をセットして、その後取り出せることを確認している。
+
+* Map literals
+
+マップを直ちに生成するにはマップリテラルを使う。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+type Vertex struct {
+	Lat, Long float64
+}
+
+var m = map[string]Vertex{
+	"Bell Labs": Vertex{
+		40.68433, -74.39967,
+	},
+	"Google": Vertex{
+		37.42202, -122.08408,
+	},
+}
+
+func main() {
+	fmt.Println(m)
+}
+#+end_src
+
+プログラムは、前の例と同じ型を持つマップを取り扱う。ただしマップリテラルによりベル研究所と、グーグルの座標を持つようなマップを初期化している。Println はマップを出力することもできる。マップリテラルは json と少し似ているかもしれない。
+
+* Map literals continued
+
+マップリテラルでは、型を省略することもできる。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+type Vertex struct {
+	Lat, Long float64
+}
+
+var m = map[string]Vertex{
+	"Bell Labs": {40.68433, -74.39967},
+	"Google":    {37.42202, -122.08408},
+}
+
+func main() {
+	fmt.Println(m)
+}
+#+end_src
+
+ただし、マップが複雑な構造を持つ型の場合は省略できないことがあるようだ。
+
+* Mutating Maps
+
+マップは代入文を使って要素を追加する。参照するときは、配列アクセスのように行う。
+要素を削除したいときはビルドイン関数の ~delete~ を使う。参照したが要素が見つからなかった場合には、その値の型の初期値を返す。たとえば int なら 0 を返す。0 が代入されたものか、それとも代入されていない初期値かどうかを判断するには、参照したときにふたつ目の戻り値を利用する。そこには代入された値のとき true そうでないとき false を返すようになっている。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	m := make(map[string]int)
+
+	m["Answer"] = 42
+	fmt.Println("The value:", m["Answer"])
+
+	m["Answer"] = 48
+	fmt.Println("The value:", m["Answer"])
+
+	delete(m, "Answer")
+	fmt.Println("The value:", m["Answer"])
+
+	v, ok := m["Answer"]
+	fmt.Println("The value:", v, "Present?", ok)
+}
+#+end_src
+
+* Exercise: Maps
+
+与えられた文字列の、各単語の出現回数を計算してみよう。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func WordCount(s string) map[string]int {
+	result := make(map[string]int)
+	words := strings.Fields(s)
+
+	for _, word := range words {
+		result[word] += 1
+	}
+	return result
+}
+
+func main() {
+	fmt.Println(WordCount("this is a pen. this is an apple."))
+}
+#+end_src
+
+* Function values
+
+関数も変数として渡すことができる。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+func compute(fn func(float64, float64) float64) float64 {
+	return fn(3, 4)
+}
+
+func main() {
+	hypot := func(x, y float64) float64 {
+		return math.Sqrt(x*x + y*y)
+	}
+	fmt.Println(hypot(5, 12))
+
+	fmt.Println(compute(hypot))
+	fmt.Println(compute(math.Pow))
+}
+#+end_src
+
+プログラムは、関数 compute を定義している。compute は、2引数関数を受け取り、その関数に引数3, 4を与えた結果を返す。メイン関数では hypot という関数を定義して三角形の底辺と高さを与えると斜辺の長さを返す関数を定義している。そして compute で呼び出せることを確かめている。math.Pow もまた同じ型の引数を取るので、同じように compute を呼び出すことができる。
+このような関数の取り扱いは javascript と少し似ているかもしれない。
+
+* Function closures
+
+go の関数はクロージャ(closure)である。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func adder() func(int) int {
+	sum := 0
+	return func(x int) int {
+		sum += x
+		return sum
+	}
+}
+
+func main() {
+	pos, neg := adder(), adder()
+	for i := 0; i < 10; i++ {
+		fmt.Println(
+			pos(i),
+			neg(-2*i),
+		)
+	}
+}
+#+end_src
+
+このプログラムは adder 関数は関数を返している。そして、関数を返す前に変数 sum を定義して、返却する関数の中で sum を利用している。これによって adder を呼び出したときカウントを初期化し、戻り値の関数を呼び出したときに加算されていくカウンタを実現している。
+
+メイン関数では二つのカウント pos, neg を用意し pos は 0,...,9 の和を計算している。neg には 0,-2,-4,...-18 の和を計算している。このとき、メイン関数の内部では += のような加算演算子を一切利用していないことに注目する。メイン関数では状態を保持しておらず、関数自体が状態を持っている。
+
+* Exercise: Fibonacci closure
+
+連続するフィボナッチ数(0,1,1,2,3,5,8,13,...)を計算する。
+
+#+begin_src go
+// i 番目のフィボナッチ数を見つける
+func fibonacci_r(i int) int {
+	switch {
+	case i == 0: return 0
+	case i == 1: return 1
+	default: return fibonacci_r(i-2) + fibonacci_r(i-1)
+	}
+}
+#+end_src
+
+このように再帰的に定義することもできるが、クロージャを使って、繰り返し呼び出すごとに次のフィボナッチ数を見つけるような実装をしてみよう。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func fibonacci() func() int {
+	a := -1
+	b := -1
+
+	return func() int {
+		switch {
+		case a == -1:
+			a = 0
+			return 0
+		case b == -1:
+			b = 1
+			return 1
+		default:
+			c := a + b
+			a = b
+			b = c
+			return c
+		}
+	}
+}
+
+func main() {
+	f := fibonacci()
+	for i := 0; i < 10; i++ {
+		fmt.Println(f())
+	}
+}
+#+end_src
+
+一つ前の数と、二つ前の数という２つの状態を覚える必要があるので、このような実装にした。クロージャを使う方法では、再帰的バージョンと比べて、計算に無駄がない。ときには、クロージャが有益に働くことを示している。
+* Methods
+
+Go にはクラスがない。その代わりに型にメソッドを定義できる。
+メソッドの定義は関数の定義とよく似ているが、関数名の前にレシーバー（レシーバー型）を書く。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Vertex struct {
+	X, Y float64
+}
+
+func (v Vertex) Abs() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func main() {
+	v := Vertex{3, 4}
+	fmt.Println(v.Abs())
+}
+#+end_src
+
+このプログラムは、Vertex 型に対して、メソッド Abs を定義している。
+
+* Methods are functions
+
+メソッドと関数は違うので注意。下記のプログラムは、メソッドを関数で書き直したもの。レシーバー型が無いことに注目する。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Vertex struct {
+	X, Y float64
+}
+
+func Abs(v Vertex) float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func main() {
+	v := Vertex{3, 4}
+	fmt.Println(Abs(v))
+}
+#+end_src
+
+* Methods continued
+
+これまでは struct に対してメソッドを定義してきたが、それ以外の任意型にメソッドを定義できる。メソッドの宣言をするときのレシーバー型は、同じパッケージでなければならない。つまり、プリミティブ型（int, stringなど）に対してはメソッドを定義することはできない。その代わりに別の型として宣言すればメソッドを定義できる。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type MyFloat float64
+
+func (f MyFloat) Abs() float64 {
+	if f < 0 {
+		return float64(-f)
+	}
+	return float64(f)
+}
+
+func main() {
+	f := MyFloat(-math.Sqrt2)
+	fmt.Println(f.Abs())
+}
+#+end_src
+
+上の例では MyFloat に対してメソッドを定義している。たとえば float64 に対して同じことを試みると、下記のエラーが出力される。
+
+> cannot define new methods on non-local type float64
+
+* Pointer receivers
+
+レシーバー型にポインタ型をとることもできる。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Vertex struct {
+	X, Y float64
+}
+
+func (v Vertex) Abs() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func (v *Vertex) Scale(f float64) {
+	v.X = v.X * f
+	v.Y = v.Y * f
+}
+
+func main() {
+	v := Vertex{3, 4}
+	v.Scale(10)
+	fmt.Println(v.Abs())
+}
+#+end_src
+
+呼び出し方はまったく同じなのでわかりにくい。
+Abs メソッドは構造体を引数にとっているので、値渡しとなる。
+Scale メソッドはポインタを引数にとっているので、参照渡しとなる。
+引数で受け取った構造体自身を加工した場合には、呼び出しもとに副作用がある。
+
+* Pointers and functions
+
+メソッドの実装を関数で書き直してみよう。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Vertex struct {
+	X, Y float64
+}
+
+func Abs(v Vertex) float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func Scale(v *Vertex, f float64) {
+	v.X = v.X * f
+	v.Y = v.Y * f
+}
+
+func main() {
+	v := Vertex{3, 4}
+	Scale(&v, 10)
+	fmt.Println(Abs(v))
+}
+#+end_src
+
+* Methods and pointer indirection
+
+#+begin_src go
+package main
+
+import "fmt"
+
+type Vertex struct {
+	X, Y float64
+}
+
+func (v *Vertex) Scale(f float64) {
+	v.X = v.X * f
+	v.Y = v.Y * f
+}
+
+func ScaleFunc(v *Vertex, f float64) {
+	v.X = v.X * f
+	v.Y = v.Y * f
+}
+
+func main() {
+	v := Vertex{3, 4}
+	v.Scale(2)
+	ScaleFunc(&v, 10)
+
+	p := &Vertex{4, 3}
+	p.Scale(3)
+	ScaleFunc(p, 8)
+
+	fmt.Println(v, p)
+}
+#+end_src
+
+プログラムは座標に対するメソッド scale と、座標に対する関数 ScaleFunc の二つを定義している。
+メソッドの場合は、構造体でも、構造体ポインタでも同じように呼び出せる。
+関数の場合は、構造体と、構造体ポインタではほんの少しだけ呼び出し方が違っている。
+
+* Methods and pointer indirection (2)
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Vertex struct {
+	X, Y float64
+}
+
+func (v Vertex) Abs() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func AbsFunc(v Vertex) float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func main() {
+	v := Vertex{3, 4}
+	fmt.Println(v.Abs())
+	fmt.Println(AbsFunc(v))
+
+	p := &Vertex{4, 3}
+	fmt.Println(p.Abs())
+	fmt.Println(AbsFunc(*p))
+}
+#+end_src
+
+上のプログラムはやはりこれまでと似ていてメソッドとして Abs を定義し、関数として AbsFunc を定義する。
+これらの振る舞いは同じように見えるが、関数は構造体を引数に取ることにしているので、構造体ポインタを受け取ることはできない。
+
+* Choosing a value or pointer receiver
+
+ポインタレシーバを使うべき場面は、二つある。副作用を与えたい場合と、値渡しによるコピーをしたくない場合。
+一般的に、値渡しと参照渡しを混在させるべきではない。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Vertex struct {
+	X, Y float64
+}
+
+func (v *Vertex) Scale(f float64) {
+	v.X = v.X * f
+	v.Y = v.Y * f
+}
+
+func (v *Vertex) Abs() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func main() {
+	v := &Vertex{3, 4}
+	fmt.Printf("Before scaling: %+v, Abs: %v\n", v, v.Abs())
+	v.Scale(5)
+	fmt.Printf("After scaling: %+v, Abs: %v\n", v, v.Abs())
+}
+#+end_src
+
+この例では、Scale, Abs メソッドはともにポインタレシーバを使っている。
+Printf で %+v は構造体の属性名を出力するためのオプション。
+%v の場合は構造体の値だけを出力する。
+
+* Interfaces
+
+インターフェース(interface)型は、メソッドのシグニチャ（型情報）の集まり。
+インタフェース型を定義した上で、その型の変数を宣言すると、そのシグニチャに一致する構造体なら何でも格納することができる。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type Abser interface {
+	Abs() float64
+}
+
+func main() {
+	var a Abser
+	f := MyFloat(-math.Sqrt2)
+	v := Vertex{3, 4}
+
+	a = f  // a MyFloat implements Abser
+	a = &v // a *Vertex implements Abser
+
+	// In the following line, v is a Vertex (not *Vertex)
+	// and does NOT implement Abser.
+	a = v
+
+	fmt.Println(a.Abs())
+}
+
+type MyFloat float64
+
+func (f MyFloat) Abs() float64 {
+	if f < 0 {
+		return float64(-f)
+	}
+	return float64(f)
+}
+
+type Vertex struct {
+	X, Y float64
+}
+
+func (v *Vertex) Abs() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+#+end_src
+
+このプログラムは Abser というインターフェースを定義している。これは Abs メソッドを持っていることを定めている。そして、メイン関数では Abser 型の変数 a を宣言している。a はカスタムな型 Myfloat をセットすることもできるし、Vertex 型のポインタをセットする事もできる。Vertex 型のポインタである理由は Abs の引数がポインタレシーバであるため。そして a にポインタではなく構造体そのものを代入しようとするとエラーが発生する。
+
+> cannot use v (type Vertex) as type Abser in assignment: Vertex does not implement Abser (Abs method has pointer receiver)
+
+なぜなら、Abs メソッドはポインタレシーバのみに定義されているため。
+
+* Interfaces are implemented implicitly
+
+go におけるインターフェースは、暗黙的に実装するものであって、明示的に実装するようなキーワードは準備されていない。
+逆に言うと、ある型が、あるインターフェース型を満たしているかどうかは、明示されない。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+type I interface {
+	M()
+}
+
+type T struct {
+	S string
+}
+
+// This method means type T implements the interface I,
+// but we don't need to explicitly declare that it does so.
+func (t T) M() {
+	fmt.Println(t.S)
+}
+
+func main() {
+	var i I = T{"hello"}
+	i.M()
+}
+#+end_src
+
+上のプログラムでは、構造体 T はインターフェース I を満たしているので、I 型の変数に代入可能である。
+ここで I になにかのメソッドを追加すると、T はそのインターフェースを満たせなくなるので、エラーが発生する。
+
+* Interface values
+
+インターフェース型を宣言した変数がどのように扱われるかを見る。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+type I interface {
+	M()
+}
+
+type T struct {
+	S string
+}
+
+func (t *T) M() {
+	fmt.Println(t.S)
+}
+
+type F float64
+
+func (f F) M() {
+	fmt.Println(f)
+}
+
+func main() {
+	var i I
+
+	i = &T{"Hello"}
+	describe(i)
+	i.M()
+
+	i = F(math.Pi)
+	describe(i)
+	i.M()
+}
+
+func describe(i I) {
+	fmt.Printf("(%v, %T)\n", i, i)
+}
+#+end_src
+
+上のプログラムではインターフェース型 I の変数 i を宣言している。
+そして、そこに格納されている値を観察するための関数 describe を定義している。
+構造体 T のポインタを代入している時 i は
+
+- 値は 構造体のポインタアドレス
+- 型は 構造体Tのポインタ である
+
+という二つの情報を持っている。float64 の拡張型 F を代入しているときも同様に
+
+- 値は math.Pi
+- 型は F
+
+という二つの情報を持っている。このように考えるとインターフェース型の変数に格納するのは (値, 型) のタプルであるとも言える。
+
+* Interface values with nil underlying values
+
+インターフェース型の中にセットされている値が nil のとき、メソッドは nil をレシーバーとして呼び出す。多くの言語では nil をレシーバーとするメソッドはエラーを発生させるが、go では nil レシーバーを許容するような実装をする事が一般的らしい。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+type I interface {
+	M()
+}
+
+type T struct {
+	S string
+}
+
+func (t *T) M() {
+	if t == nil {
+		fmt.Println("<nil>")
+		return
+	}
+	fmt.Println(t.S)
+}
+
+func main() {
+	var i I
+
+	var t *T
+	i = t
+	describe(i)
+	i.M()
+
+	i = &T{"hello"}
+	describe(i)
+	i.M()
+}
+
+func describe(i I) {
+	fmt.Printf("(%v, %T)\n", i, i)
+}
+#+end_src
+
+上のプログラムでは T のポインタをレシーバーとするメソッド M は nil を受け取ったときはエラーを出さず "<nil>" を出力するように実装されている。
+
+メイン関数を見る。変数 t は初期値を与えられないので nil で初期化される。それを i にセットすると、やはり値は nil となる。このときに型情報は正しくセットされているので i はメソッド M を正しく呼び出すことができる。
+
+* Nil interface values
+
+インターフェース型の変数を初期化したときは、nil がセットされる。この状態では実装を呼び出すための型情報が一切与えられないので、エラーとなる。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+type I interface {
+	M()
+}
+
+func main() {
+	var i I
+	describe(i)
+	i.M()
+}
+
+func describe(i I) {
+	fmt.Printf("(%v, %T)\n", i, i)
+}
+#+end_src
+
+* The empty interface
+
+空のインターフェースを定義することもできる。
+空のインターフェースは、どのようなメソッドの実装も求めない。
+空のインターフェース型を宣言した変数には、あらゆる値を代入することができる。
+これを使うことで、任意の型を引数に取るような関数を実装できる。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	var i interface{}
+	describe(i)
+
+	i = 42
+	describe(i)
+
+	i = "hello"
+	describe(i)
+}
+
+func describe(i interface{}) {
+	fmt.Printf("(%v, %T)\n", i, i)
+}
+#+end_src
+
+上のプログラムでは describe 関数はどのような値でも受け取ることができることを表している。Printf も同様である。
+
+* Type assertions
+
+type assertion はインターフェースを宣言した変数から、値を取り出すための演算で t, ok = i.(T) の形で記述する。
+type assertion は値と、その値の取り出しに成功したかどうか、の二つの値を返す。2つ目の戻り値は省略できる。
+
+省略した場合は成功したときのみ正しく動作し、失敗した場合にはエラーを発生させてプログラムは停止する。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	var i interface{} = "hello"
+
+	s := i.(string)
+	fmt.Println(s)
+
+	s, ok := i.(string)
+	fmt.Println(s, ok)
+
+	f, ok := i.(float64)
+	fmt.Println(f, ok)
+
+	f = i.(float64) // panic
+	fmt.Println(f)
+}
+#+end_src
+
+上のプログラムは、インターフェースを宣言した変数 i に文字列を代入している。
+そして、i から文字列型を取り出している。これは成功する。
+次に、i から浮動小数点数を取り出そうとしている。これは失敗する。
+最後は戻り値を省略している場合で、これはエラーが発生してプログラムは停止する。
+
+> panic: interface conversion: interface {} is string, not float64
+
+* Type switches
+
+type switch は switch 文を型により分岐させるパターン。
+type assertion の構文と似ているが特別のキーワード type を使う。
+この type は type switch 以外に使うことはできない。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func do(i interface{}) {
+	switch v := i.(type) {
+	case int:
+		fmt.Printf("Twice %v is %v\n", v, v*2)
+	case string:
+		fmt.Printf("%q is %v bytes long\n", v, len(v))
+	default:
+		fmt.Printf("I don't know about type %T!\n", v)
+	}
+}
+
+func main() {
+	do(21)
+	do("hello")
+	do(true)
+}
+#+end_src
+
+上のプログラムは関数 do で type switch を行う。
+
+* Stringers
+
+
+もっともよく使われている interface の一つに fmt パッケージ に定義されている Stringer がある。
+Stringer インタフェースは文字列を返す String() メソッドの実装を求める。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+type Person struct {
+	Name string
+	Age  int
+}
+
+func (p Person) String() string {
+	return fmt.Sprintf("%v (%v years)", p.Name, p.Age)
+}
+
+func main() {
+	a := Person{"Arthur Dent", 42}
+	z := Person{"Zaphod Beeblebrox", 9001}
+	fmt.Println(a, z)
+}
+#+end_src
+
+上のプログラムでは Stringer インターフェースを満たす構造体 Person を作成している。
+そのおかげで fmt.Println の引数に Person 型の変数を与えると String() メソッドの結果が出力される。
+
+* Exercise: Stringers
+
+IPAddr 型を実装してみよう。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+type IPAddr [4]byte
+
+func (ipAddrs IPAddr) String() string {
+	var ipAddrStrings [4]string
+
+	for i, ip := range ipAddrs {
+		ipAddrStrings[i] = fmt.Sprintf("%d", ip)
+	}
+
+	return strings.Join(ipAddrStrings[:], ".")
+}
+
+func main() {
+	hosts := map[string]IPAddr{
+		"loopback":  {127, 0, 0, 1},
+		"googleDNS": {8, 8, 8, 8},
+	}
+	for name, ip := range hosts {
+		fmt.Printf("%v: %v\n", name, ip)
+	}
+
+}
+#+end_src
+* Errors
+
+error 型はインターフェースの一つで Error() メソッドの実装を要求する。
+これは string を返さなければならない。ある種の関数は、第二の戻り値に error 型を返す。
+エラーが起きていれば何らかのエラー値が格納されていて、エラーが無いときは nil を返す。
+たとえば、引数の文字列を整数に変換して返す関数 strconv.Atoi() は、上に書いた通りの振る舞いをする。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+type MyError struct {
+	When time.Time
+	What string
+}
+
+func (e *MyError) Error() string {
+	return fmt.Sprintf("at %v, %s",
+		e.When, e.What)
+}
+
+func run() error {
+	return &MyError{
+		time.Now(),
+		"it didn't work",
+	}
+}
+
+func main() {
+	if err := run(); err != nil {
+		fmt.Println(err)
+	}
+}
+#+end_src
+
+上のプログラムは型 MyError を宣言している。そして、MyError は error インターフェースを満たしている。関数 run はその場で MyError 構造体を初期化して返す。メイン関数では、この run 関数を呼び出した後、エラーが存在するならその内容を出力するというものになっている。
+
+* Exercise: Errors
+
+以前 Sqrt 関数を実装した。これを改良して、実行に失敗したときはエラーを返すようにしてみよう。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+)
+
+type ErrNegativeSqrt float64
+
+func (self ErrNegativeSqrt) Error() string {
+	return fmt.Sprintf("cannot Sqrt negative number: %f", self)
+}
+
+func fx(x, z float64) float64 {
+	return z * z - x
+}
+
+func fdashx(x, z float64) float64 {
+	return x * z
+}
+
+func Sqrt(x float64) (float64, error) {
+	if x > 0 {
+		result := 1.0
+
+		for i := 0; i<10; i++ {
+			fmt.Println(result)
+			result = result - fx(x, result) / fdashx(x, result)
+		}
+		return result, nil
+	} else {
+		return 0, ErrNegativeSqrt(x)
+	}
+
+}
+
+func main() {
+	fmt.Println(Sqrt(2))
+	fmt.Println(Sqrt(-2))
+}
+#+end_src
+
+* Readers
+
+io パッケージには Reader というインターフェースが定義されている。
+Reader が要求するのは Read() というメソッドで、バイトのスライスを受け取り、
+戻り値として読み込んだバイト数と、エラーが有る場合はエラーの二つを返す。
+読み込みがストリームの終端に来たときは、定数 ~io.EOF~ を返す。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"io"
+	"strings"
+)
+
+func main() {
+	r := strings.NewReader("Hello, Reader!")
+
+	b := make([]byte, 8)
+	for {
+		n, err := r.Read(b)
+		fmt.Printf("n = %v err = %v b = %v\n", n, err, b)
+		fmt.Printf("b[:n] = %q\n", b[:n])
+		if err == io.EOF {
+			break
+		}
+	}
+}
+#+end_src
+
+上のプログラムは strings のメソッド [[https://golang.org/pkg/strings/#NewReader][NewReader]] を呼び出している。
+このメソッドは与えられた文字列の Reader を返す。
+そして、容量8のバイトスライスに、Reader から読み取った値をセットしている。
+
+- 一回目のループで "Hello, R" の8バイトが読み込まれて n にセットされる。
+- 二回目のループで "eader!" が読み込まれて n にセットされる。
+- 三回目のループでは n はセットされず err に io.EOF がセットされる。
+
+そして、プログラムは終了する。
+
+* Exercise: Readers
+
+ASCII 文字の "A" を無限に出力する Reader を作ってみよう。
+
+#+begin_src go
+package main
+
+import "golang.org/x/tour/reader"
+
+const a_char byte = 65
+
+type MyReader struct{}
+
+func (m MyReader) Read(b []byte) (int, error) {
+	for i := range b {
+		b[i] = a_char
+	}
+
+	return len(b), nil
+}
+
+func main() {
+	reader.Validate(MyReader{})
+}
+#+end_src
+
+* Exercise: rot13Reader
+
+ROT13 換字式暗号をすべてのアルファベットの文字に適用して読み出す rot13Reader を実装してみよう。
+
+#+begin_src go
+package main
+
+import (
+	"io"
+	"os"
+	"strings"
+)
+
+type rot13Reader struct {
+	r io.Reader
+}
+
+func (reader rot13Reader) Read(bytes []byte) (int, error) {
+	n, err := reader.r.Read(bytes)
+
+	for i := 0; i<n; i++ {
+	    b := bytes[i]
+		switch {
+		case b > 'a' && b < 'z':
+			bytes[i] = ((bytes[i] - 'a' + 13) % 26) + 'a'
+		case b > 'A' && b < 'Z':
+			bytes[i] = ((bytes[i] - 'A' + 13) % 26) + 'A'
+		default:
+		}
+	}
+
+	return n, err
+}
+
+func main() {
+	s := strings.NewReader("Lbh penpxrq gur pbqr!")
+	r := rot13Reader{s}
+	io.Copy(os.Stdout, &r)
+}
+#+end_src
+
+* Images
+
+image パッケージは下記の Image インターフェースを定義している。
+
+#+begin_src go
+type Image interface {
+    ColorModel() color.Model
+    Bounds() Rectangle
+    At(x, y int) color.Color
+}
+#+end_src
+
+Rectangle は image で定義された型で、color.Model と color.Color は image/color パッケージで定義されたインターフェース型である。これらの実装型としては color.RGBAModel, color.RGBA がある。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"image"
+)
+
+func main() {
+	m := image.NewRGBA(image.Rect(0, 0, 100, 100))
+	fmt.Println(m.Bounds())
+	fmt.Println(m.At(0, 0).RGBA())
+}
+#+end_src
+
+メイン関数の一行目は、長さ100の正方形のRGBA画像をつくっている。初期化時点ではすべての色が 0 (黒)である。
+二行目ではBounds()メソッドにより画像mを囲う点を出力する。[[https://golang.org/pkg/image/#RGBA.Bounds][Bounds]]の戻り値は[[https://golang.org/pkg/image/#Rectangle][Rectangle]]である。
+三行目では画像の点(0,0)の位置における色を出力している。
+
+* Exercise: Images
+
+Image インターフェースを満たすような型を実装して遊んでみよう。
+
+#+begin_src go
+package main
+
+import "image"
+import "image/color"
+import "golang.org/x/tour/pic"
+
+type Image struct{}
+
+func (img Image) ColorModel() color.Model {
+	return color.RGBAModel
+}
+
+func (img Image) Bounds() image.Rectangle {
+	return image.Rect(0, 0, 100, 100)
+}
+
+func (img Image) At(x, y int) color.Color {
+	return color.RGBA{uint8(x*y), uint8(x*y), uint8(x*y), 255}
+}
+
+func main() {
+	m := Image{}
+	pic.ShowImage(m)
+}
+
+#+end_src
+
+At で取り出せる画像の色を変化させることで、色々な模様を作ることができる。
