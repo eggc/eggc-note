@@ -10,6 +10,10 @@ html, body, div#__next {
     height: 100%;
 }
 
+div#__next {
+    margin-top: 3rem;
+}
+
 main {
     min-height: 80%;
 }
@@ -29,4 +33,10 @@ nav.navbar {
 
 aside {
     position: fixed;
+}
+
+.eggc-post-container {
+    .section:first-child {
+        padding-top: 0;
+    }
 }
