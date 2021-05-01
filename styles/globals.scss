@@ -6,10 +6,6 @@ code > span.number {
     all: unset;
 }
 
-html, body, div#__next {
-    height: 100%;
-}
-
 div#__next {
     margin-top: 3rem;
 }
@@ -27,7 +23,7 @@ span.tag {
 }
 
 // 無いほうが見栄え良い気がするので
-nav.navbar {
+footer, nav.navbar {
     display: none;
 }
 
