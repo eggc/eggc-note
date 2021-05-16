@@ -2457,3 +2457,507 @@ func main() {
 #+end_src
 
 At で取り出せる画像の色を変化させることで、色々な模様を作ることができる。
+* Goroutine
+
+*goroutine* は軽量なスレッド。キーワード go の後に関数を続けて書くだけでゴルーチンを実行できる。
+ゴルーチンの引数はスレッドで評価されず、関数だけがスレッドで評価される。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func say(s string) {
+	for i := 0; i < 5; i++ {
+		time.Sleep(100 * time.Millisecond)
+		fmt.Println(s)
+	}
+}
+
+func main() {
+	go say("world")
+	say("hello")
+}
+#+end_src
+
+このプログラムは0.1秒ごとに与えた文字列を5回出力する say 関数を定義している。
+そしてゴルーチンを使って "world" を出力させながら "hello" を出力している。
+スレッド実行されている間もプログラムは進むのでおおよそ "hello world" が出力される。
+スレッドが早く起動した場合は "world hello" になることもあり、安定しない。
+
+* Channel
+
+チャネルを用いてゴルーチンとメインプログラムの間で、値の送受信ができる。
+チャネルは make 関数を使って生成する。
+チャネルにはそのチャネルが受け取ることのできる型を宣言する必要がある。
+チャネルに値を渡したり、受け取ったりするにはチャネルオペレータ <- を使う。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func sum(s []int, c chan int) {
+	sum := 0
+	for _, v := range s {
+		sum += v
+	}
+	c <- sum // send sum to c
+}
+
+func main() {
+	s := []int{7, 2, 8, -9, 4, 0}
+
+	c := make(chan int)
+	go sum(s[:len(s)/2], c)
+	go sum(s[len(s)/2:], c)
+	x, y := <-c, <-c // receive from c
+
+	fmt.Println(x, y, x+y)
+}
+#+end_src
+
+関数sumは与えられた配列の総和をチャネルに送信する。
+メイン関数では適当な配列とチャネルを用意した後、
+配列を二つに分割してそれぞれの総和をチャネルに送信している。
+それらの計算はゴルーチンにより並列実行される。
+メイン関数はゴルーチンから計算結果が与えられるまで待機したあと、
+最後にそれぞれの結果と、和を出力して終了する。
+
+* Buffered Channels
+
+チャネルはバッファとして使うこともできる。
+make 関数でチャネルを生成するとき、第二引数に長さを与えるとそれはバッファとなる。
+バッファは長さのぶんだけ値を受け取り、貯めておくことができる。
+バッファの長さ以上に値を送信した場合、そのスレッドはバッファが空くまで待ち状態になる。
+バッファは first in first out で動作する。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	ch := make(chan int, 2)
+	ch <- 1
+	ch <- 2
+	ch <- 3
+	fmt.Println(<-ch)
+	fmt.Println(<-ch)
+}
+#+end_src
+
+上のプログラムは長さ2のバッファに3つの値を送信している。
+その結果、3つ目の値は受け取ることができないので待ち状態となる。
+プログラムは下記のエラーを出して終了する。
+
+> fatal error: all goroutines are asleep - deadlock!
+
+* Range and Close
+
+チャネルにそれ以上の値を送ることができない場合にはチャネルをクローズする。
+チャネルがクローズされたかどうかを判断するには値を受け取るときに第二引数をとればよい。
+受信する値がなく、チャネルが閉じているときは false が与えられる。
+また、for i := range c の形式でチャネルに対するループを書くこともできる。
+この場合もチャネルがクローズされるまでループは継続する。
+
+チャネルがクローズされているのに値が送信され場合はpanicになるので実行してはいけない。
+また、チャネルは必ずしもクローズしなければならないわけではないということに注意する。
+必要があるときにだけクローズするべきである。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+)
+
+func fibonacci(n int, c chan int) {
+	x, y := 0, 1
+	for i := 0; i < n; i++ {
+		c <- x
+		x, y = y, x+y
+	}
+	close(c)
+}
+
+func main() {
+	c := make(chan int, 10)
+	go fibonacci(cap(c), c)
+	for i := range c {
+		fmt.Println(i)
+	}
+}
+#+end_src
+
+n番目のフィボナッチ数を計算してチャネルcにその結果を送信し続ける関数fibonacciを持つ。
+メイン関数では10個のフィボナッチ数をゴルーチンに計算させている。
+チャネルに値が送られるたびにメインスレッドはその値を出力する。
+
+* Select
+
+select 文はゴルーチンを待ち状態にする。
+そして select 文に続く case 文のいずれかの条件を満たすとプログラムが動き始める。
+複数の case 文が同時に条件を満たした場合、そのうちのいずれかが実行される。
+実行順序は保証されない。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func fibonacci(c, quit chan int) {
+	x, y := 0, 1
+	for {
+		select {
+		case c <- x:
+			x, y = y, x+y
+		case <-quit:
+			fmt.Println("quit")
+			return
+		}
+	}
+}
+
+func main() {
+	c := make(chan int)
+	quit := make(chan int)
+	go func() {
+		for i := 0; i < 10; i++ {
+			fmt.Println(<-c)
+		}
+		quit <- 0
+	}()
+	fibonacci(c, quit)
+}
+#+end_src
+
+このプログラムは関数fibonacciを持つ。これは、チャネルcに値を送信可能なら次のフィボナッチ数を計算する。
+またチャネルquitから値を受信可能なら"quit"を出力してプログラムを停止する。
+メイン関数では、その場で名前のない関数を作りゴルーチンを起動している。
+内容は10回チャネルcから値を受信して標準出力に送ったのちに、quit に 0 を送信するというものである。
+その後fibonacci を呼び出している。実際にこのプログラムを実行すると
+
+1. まずゴルーチンが起動しチャネルcから値を取り出そうとして待ち状態に入る
+2. メイン関数がfibonacciを実行し最初のcase文に条件一致してc <- 0 が実行される
+3. ゴルーチンはcを受け取りx,yを更新する。再び待ち状態に入る
+4. メイン関数はfibonacciの続きを実行するチャネルcは受信可能なので c <- 1 が実行される
+5. 以下10回繰り返される。
+7. メイン関数はfibonacciの中でcを送信しようとするがcはバッファを持たないので2度目のselectで待ち状態に入る
+6. ゴルーチンはfor文を終了してquit <- 0を実行する。
+8. メイン関数はfibonacciの中でquitが受信可能になったことを察知して終了する
+
+* Default Selection
+
+select文にはdefaultを定義することもできる。
+どのcaseにもマッチしなかった場合は待ち状態に入らずdefaultの中を実行する。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	tick := time.Tick(100 * time.Millisecond)
+	boom := time.After(500 * time.Millisecond)
+	for {
+		select {
+		case <-tick:
+			fmt.Println("tick.")
+		case <-boom:
+			fmt.Println("BOOM!")
+			return
+		default:
+			fmt.Println("    .")
+			time.Sleep(50 * time.Millisecond)
+		}
+	}
+}
+#+end_src
+
+このプログラムはチャネルtickとboomを初期化している。
+tickは100ミリ秒ごとに値を送信するチャネルで、
+boomは500ミリ秒あとに値を送信するチャネルである。
+select文の中でtick,boom が値を返すときにはそれぞれに対応した文字を出力する。
+どちらも値を返さないときはdefaultの中に入り、"    ."を出力したあと少しプログラムを停止させる。
+このプログラムを実行すると"    ."が2回のあと"tick."を5回繰り返し、最後に"BOOM!"を出力して終了する。
+
+* Exercise: Equivalent Binary Trees
+
+ある数列を二分木の深さ優先で探索で表現することにしよう。
+このとき、１つの数列を表現する二分木は複数存在する。（→[[https://go-tour-jp.appspot.com/concurrency/7][例]]）
+ゴルーチンを使って、これを計算してみよう。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"golang.org/x/tour/tree"
+)
+
+
+func walk2(t *tree.Tree, ch chan int) {
+	if t.Left != nil {
+		walk2(t.Left, ch)
+	}
+
+	ch <- t.Value
+
+	if t.Right != nil {
+		walk2(t.Right, ch)
+	}
+}
+
+// Walk walks the tree t sending all values
+// from the tree to the channel ch.
+func Walk(t *tree.Tree, ch chan int) {
+	walk2(t, ch)
+	close(ch)
+}
+
+// Same determines whether the trees
+// t1 and t2 contain the same values.
+func Same(t1, t2 *tree.Tree) bool {
+	ch1 := make(chan int)
+	ch2 := make(chan int)
+
+	go Walk(t1, ch1)
+	go Walk(t2, ch2)
+
+      // t1, t2の長さが違う場合、下記のループは正しく動作しない
+	for x := range ch1 {
+		if x != <-ch2 {
+			return false
+		}
+	}
+
+	return true
+}
+
+func testWalk() {
+	k := 10
+	ch := make(chan int)
+	go Walk(tree.New(k), ch)
+	for i := range ch {
+		fmt.Println(i)
+	}
+}
+
+func testSame() {
+	result := Same(tree.New(1), tree.New(1))
+	fmt.Println("Same(tree.New(1), tree.New(1)) => ", result)
+
+	result = Same(tree.New(1), tree.New(2))
+	fmt.Println("Same(tree.New(1), tree.New(2)) => ", result)
+}
+
+func main() {
+	testWalk()
+	testSame()
+}
+#+end_src
+
+* sync.Mutex
+
+ゴルーチンで排他制御が必要な場合は、syncパッケージを使うとよい。
+syncパッケージは型sync.Mutexを提供する。MutexはLock,Unlockメソッドを持つ。
+Lockはそのミューテックスをロックする。
+すでにロックされているミューテックスに対してLockを呼び出すとアンロックされるまで、ゴルーチンは停止する。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+// SafeCounter is safe to use concurrently.
+type SafeCounter struct {
+	mu sync.Mutex
+	v  map[string]int
+}
+
+// Inc increments the counter for the given key.
+func (c *SafeCounter) Inc(key string) {
+	c.mu.Lock()
+	// Lock so only one goroutine at a time can access the map c.v.
+	c.v[key]++
+	c.mu.Unlock()
+}
+
+// Value returns the current value of the counter for the given key.
+func (c *SafeCounter) Value(key string) int {
+	c.mu.Lock()
+	// Lock so only one goroutine at a time can access the map c.v.
+	defer c.mu.Unlock()
+	return c.v[key]
+}
+
+func main() {
+	c := SafeCounter{v: make(map[string]int)}
+	for i := 0; i < 1000; i++ {
+		go c.Inc("somekey")
+	}
+
+	time.Sleep(time.Second)
+	fmt.Println(c.Value("somekey"))
+}
+#+end_src
+
+SafeCounterはメソッドIncを持つ。Incはカウンタを1加算するが、その計算の間はロックする。
+Valueメソッドは値を取り出す間はロックする。
+メイン関数では、そのような機能を備えたSafeCounterを初期化してキー"somekey"を1000個のゴルーチンでカウンタをすすめる。
+1秒後にカウンタの値を出力する。
+このプログラムを実際に動かすと1000個のゴルーチンが一斉にカウントアップしようとするが、
+それらは正しく排他制御されているので最後の出力結果は1000となる。
+
+試しにメソッドIncの排他制御をコメントアウトしてプログラムを実行すると下記のエラーが発生してプログラムは停止した。
+
+> fatal error: concurrent map writes
+
+* Exercise: Web Crawler
+
+Web Clawler を作ってみよう。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+type Fetcher interface {
+	// Fetch returns the body of URL and
+	// a slice of URLs found on that page.
+	Fetch(url string) (body string, urls []string, err error)
+}
+
+type urlHistory struct {
+	mu sync.Mutex
+	urls map[string]bool
+	channel chan string
+}
+
+func (u *urlHistory) isVisit(url string) bool {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
+	visit, ok := u.urls[url]
+	return ok && visit
+}
+
+func (u *urlHistory) visit(url string) {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
+	u.urls[url] = true
+}
+
+// Crawl uses fetcher to recursively crawl
+// pages starting with url, to a maximum of depth.
+func Crawl(url string, depth int, fetcher Fetcher, urlHistory *urlHistory) {
+	// TODO: Fetch URLs in parallel.
+	// TODO: Don't fetch the same URL twice.
+	// This implementation doesn't do either:
+	if depth <= 0 {
+		return
+	}
+
+	body, urls, err := fetcher.Fetch(url)
+	urlHistory.visit(url)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	str := fmt.Sprint("found: %s %q\n", url, body)
+	urlHistory.channel <- str
+
+	for _, u := range urls {
+		if urlHistory.isVisit(u) {
+			// fmt.Printf("already visited! %s\n", u)
+		} else {
+			go Crawl(u, depth-1, fetcher, urlHistory)
+		}
+	}
+	return
+}
+
+func main() {
+	urlHistory := urlHistory{
+		urls: make(map[string]bool),
+		channel: make(chan string),
+	}
+
+	go Crawl("https://golang.org/", 4, fetcher, &urlHistory)
+
+	for str := range urlHistory.channel {
+		fmt.Printf(str)
+	}
+}
+
+// fakeFetcher is Fetcher that returns canned results.
+type fakeFetcher map[string]*fakeResult
+
+type fakeResult struct {
+	body string
+	urls []string
+}
+
+func (f fakeFetcher) Fetch(url string) (string, []string, error) {
+	if res, ok := f[url]; ok {
+		return res.body, res.urls, nil
+	}
+	return "", nil, fmt.Errorf("not found: %s", url)
+}
+
+// fetcher is a populated fakeFetcher.
+var fetcher = fakeFetcher{
+	"https://golang.org/": &fakeResult{
+		"The Go Programming Language",
+		[]string{
+			"https://golang.org/pkg/",
+			"https://golang.org/cmd/",
+		},
+	},
+	"https://golang.org/pkg/": &fakeResult{
+		"Packages",
+		[]string{
+			"https://golang.org/",
+			"https://golang.org/cmd/",
+			"https://golang.org/pkg/fmt/",
+			"https://golang.org/pkg/os/",
+		},
+	},
+	"https://golang.org/pkg/fmt/": &fakeResult{
+		"Package fmt",
+		[]string{
+			"https://golang.org/",
+			"https://golang.org/pkg/",
+		},
+	},
+	"https://golang.org/pkg/os/": &fakeResult{
+		"Package os",
+		[]string{
+			"https://golang.org/",
+			"https://golang.org/pkg/",
+		},
+	},
+}
+#+end_src
+
+すべてのゴルーチンが終了したときに、チャネルを閉じられればよいのだが、木の探索がいつ終わるかわからない。
+プログラムは最後にエラーを出して停止する。
+
+> osfatal error: all goroutines are asleep - deadlock!

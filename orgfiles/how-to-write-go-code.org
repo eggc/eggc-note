@@ -1,0 +1,218 @@
+[[https://golang.org/doc/code][How to write go code]] を見ていく。
+
+* Introduction
+
+モジュールを含むようなパッケージを作ってみよう。
+
+* Code organization
+
+Go のプログラムはパッケージの中に配置される。パッケージは同じディレクトリの中にあるソースコードのファイルで、一緒にコンパイルされる。同じパッケージの中にある関数や変数や型などはお互いアクセスできる。
+
+パッケージの集まりをモジュールという。
+1個以上のモジュールの集まりをリポジトリという。
+ファイルgo.modはモジュールのインポートパスを定義したファイル。
+
+モジュールのディレクトリにgo.modが配置されてることもあるし、
+サブディレクトリに追加のgo.modが配置されていることもある。
+
+リポジトリに公開する前にビルドする必要はない。
+リポジトリに所属してないモジュールを作ることもできる。
+
+モジュールパスは、goのコマンドでダウンロードするときにも使われる。
+たとえばgolang.org/x/toolsというモジュールがあるとき
+goのコマンドはリポジトリが https://golang.org/x/tools にあると予想する。
+
+インポートパスは、パッケージをインポートするときに使う文字列。モジュール名とサブディレクトリをつないだものを使う。
+
+たとえばモジュールgithub.com/google/go-cmpはサブディレクトリcmp/にパッケージを格納している。このパッケージのインポートパスはgithub.com/google/go-cmp/cmpである。標準ライブラリのパッケージにはパスプレフィックスがない。
+
+* Your first program
+
+example.com/user/hello にモジュールを作ってみよう。
+
+#+begin_src
+mkdir hello
+cd hello
+
+go mod init example.com/user/hello
+# go: creating new go.mod: module example.com/user/hello
+#+end_src
+
+作られたファイルは下記の通り。
+
+#+begin_src
+module example.com/user/hello
+
+go 1.16
+#+end_src
+
+1行目がパッケージ名。
+次に hello.go ファイルを作る。
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello, world.")
+}
+#+end_src
+
+これで、最も簡単なパッケージが完成した。
+
+#+begin_src sh
+go install example.com/user/hello
+#+end_src
+
+上記のコマンドを実行すると hello.go がビルドされ ~/go/bin/hello が配置される。
+このパスは GOPATH, GOBIN によって決まる。
+GOBIN が定義されているならそのディレクトリに入る。
+そうでないなら GOPATH/bin に入る。
+goenv を使っているとき ~/go/<VERSION>/bin/hello に入る。
+go env コマンドで関係している環境変数を見たり、設定したりすることができる。
+
+go install のようなコマンドはワーキングディレクトリもモジュールパスに含める。
+ワーキングディレクトリにない場合 go install example.com/user/hello は失敗する。
+実際試してみると下のようなエラーが出た。
+
+> go install: version is required when current directory is not in a module
+>	Try 'go install example.com/user/hello@latest' to install the latest version
+
+go install の引数を省略すると、カレントディレクトリを引数にする。
+
+go install に成功したあとは hello コマンドが実行できるようになっているはず。
+このタイミングで git init して github などに push するとよい。
+このときに URL とパスを一致させておくとインポートパスにそのまま書くことができるらしい。
+* Importing packages from your module
+
+パッケージをインポートしてみよう。
+hello の下にディレクトリ morestrings を作り reverse.go を作成する。
+
+#+begin_src go
+// Package morestrings implements additional functions to manipulate UTF-8
+// encoded strings, beyond what is provided in the standard "strings" package.
+package morestrings
+
+// ReverseRunes returns its argument string reversed rune-wise left to right.
+func ReverseRunes(s string) string {
+	r := []rune(s)
+	for i, j := 0, len(r)-1; i < len(r)/2; i, j = i+1, j-1 {
+		r[i], r[j] = r[j], r[i]
+	}
+	return string(r)
+}
+#+end_src
+
+ReverseRunes 関数は大文字から始まるので外部アクセスが可能である。
+これをビルドしてみよう。
+
+#+begin_src go
+go build
+#+end_src
+
+何も出力されないが、パッケージのローカルビルドは保存されている。
+その後このパッケージ morestring を hello パッケージから利用してみよう。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+	"example.com/user/hello/morestrings"
+)
+
+func main() {
+	fmt.Println(morestrings.ReverseRunes("!oG ,olleH"))
+}
+#+end_src
+
+go run によりこのプログラムを実行できるし、go install によりバイナリインストールすることもできる。
+
+* Importing packages from remote modules
+
+インポートパスは、Github からソースコードを取得することもできる。
+github.com/google/go-cmp/cmp を使ってみよう。
+
+#+begin_src go
+package main
+
+import (
+	"fmt"
+
+	"example.com/user/hello/morestrings"
+	"github.com/google/go-cmp/cmp"
+)
+
+func main() {
+	fmt.Println(morestrings.ReverseRunes("!oG ,olleH"))
+	fmt.Println(cmp.Diff("Hello World", "Hello Go"))
+}
+#+end_src
+
+このファイルを実行しようとすると下記のエラーが発生する
+
+> hello.go:6:2: no required module provides package github.com/google/go-cmp/cmp; to add it:
+>    go get github.com/google/go-cmp/cmp
+
+外部パッケージをインストールするには下記のコマンドを実行する。
+
+#+begin_src sh
+go mod tidy
+#+end_src
+
+これを実行すると go.mod に下記の行が追加されている。
+
+#+begin_src
+require github.com/google/go-cmp v0.5.5
+#+end_src
+
+外部パッケージの名前と、バージョン名がついているのがわかる。
+ダウンロードしたパッケージは $GOPATH/pkg/mod に保存されている。
+この後は go run で最初のプログラムを実行できるようになった。
+ちなみに go clean --modcache でダウンロードしたパッケージを削除できる。
+
+* Testing
+go はシンプルなテストフレームワークを持っている。
+morestrings/reverse_test.go をファイルを作ろう。
+
+#+begin_src go
+package morestrings
+
+import "testing"
+
+func TestReverseRunes(t *testing.T) {
+	cases := []struct {
+		in, want string
+	}{
+		{"Hello, world", "dlrow ,olleH"},
+		{"Hello, 世界", "界世 ,olleH"},
+		{"", ""},
+	}
+	for _, c := range cases {
+		got := ReverseRunes(c.in)
+		if got != c.want {
+			t.Errorf("ReverseRunes(%q) == %q, want %q", c.in, got, c.want)
+		}
+	}
+}
+#+end_src
+
+このファイルは testing パッケージをインポートしている。
+そして関数の形式は func TestXxx(*testing.T) となっている。
+go test コマンドはこのように Test ではじまり、*testing.T を引数に取るような関数を実行する。
+引数はテストを失敗させるシンプルなメソッドを備えているので、これを使ったテストを実装する。
+ファイル作成後に morestring ディレクトリで go test を実行すると下記の内容が出力される。
+
+#+begin_src log
+PASS
+ok  	example.com/user/hello/morestrings	0.256s
+#+end_src
+
+* What's next
+
+https://groups.google.com/g/golang-announce?pli=1 ここでニュースが見れる。
+https://groups.google.com/g/golang-nuts ここで質問とかできる。
+slack もある。日本人向けのチャンネルもあるらしいけどあまり活発には見えなかったのですぐやめた。
+
+https://golang.org/doc/effective_go が次の読み物。
