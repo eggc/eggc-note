@@ -24,7 +24,7 @@ export async function getStaticProps({params}) {
 export async function getStaticPaths() {
   const postNames = getPosts().map((post) => post.name)
   const paths = postNames.map((postName) => {
-    return { params: {keys: postName.split('/')} }
+    return { params: { keys: postName.split('/')} }
   })
 
   return { paths, fallback: false }
