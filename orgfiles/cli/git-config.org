@@ -1,0 +1,36 @@
+
+* git config --list
+#+begin_src bash
+git config --list
+#+end_src
+
+下のような感じで有効な設定が色々出る。
+
+#+begin_src config
+core.repositoryformatversion=0
+core.filemode=true
+core.bare=false
+core.logallrefupdates=true
+core.ignorecase=true
+core.precomposeunicode=true
+#+end_src
+
+* git config --edit
+#+begin_src bash
+git config --edit
+#+end_src
+
+エディタを起動して .git/config を編集する。
+
+* git config --add
+
+#+begin_src
+git config --add grep.lineNumber true
+#+end_src
+
+.git/config に下記のセクションが追加された。
+
+#+begin_src config
+[grep]
+	lineNumber = true
+#+end_src
