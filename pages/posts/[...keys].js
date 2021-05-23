@@ -12,8 +12,6 @@ export default function Index({post, posts, id}) {
 }
 
 export async function getStaticProps({params}) {
-  console.log(params)
-
   return {
     props: {
       keys: params.keys,
