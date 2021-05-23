@@ -173,7 +173,8 @@ There is NO WARRANTY, to the extent permitted by law.
 Written by Mike Haertel and others, see <http://git.sv.gnu.org/cgit/grep.git/tree/AUTHORS>.
 #+end_src
 
-最近は gnu grep 3 が出ているようだ。
+GNU grep 3 がすでに出ているので上の grep も古い。
+本格的なドキュメントは https://www.gnu.org/software/grep/manual/grep.html にある。
 
 #+begin_src
 grep --help
