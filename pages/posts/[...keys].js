@@ -12,11 +12,13 @@ export default function Index({post, posts, id}) {
 }
 
 export async function getStaticProps({params}) {
+  console.log(params)
+
   return {
     props: {
-      id: params.id,
+      keys: params.keys,
       posts: getPosts(),
-      post: await getPost(params.id)
+      post: await getPost(params.keys.join("/"))
     }
   }
 }
@@ -24,7 +26,7 @@ export async function getStaticProps({params}) {
 export async function getStaticPaths() {
   const postNames = getPosts().map((post) => post.name)
   const paths = postNames.map((postName) => {
-    return { params: {id: postName} }
+    return { params: {keys: postName.split('/')} }
   })
 
   return { paths, fallback: false }
