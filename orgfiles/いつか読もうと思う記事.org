@@ -1,3 +1,4 @@
+- https://developer.mozilla.org/ja/docs/Web/Guide/HTML/Using_HTML_sections_and_outlines#section_elements_in_html5
 - https://note.com/cyberz_cto/n/n26f535d6c575
 - https://bliki-ja.github.io/
 - https://engineering.mercari.com/ladder/
@@ -9,3 +10,4 @@
 - https://github.com/jlevy/the-art-of-command-line/blob/master/README-ja.md
 - https://github.com/trekhleb/javascript-algorithms/blob/master/README.ja-JP.md
 - https://qiita.com/kazuo_reve/items/d1a3f0ee48e24bba38f1
+- https://web.dev/learn/css/

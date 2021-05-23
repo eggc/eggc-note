@@ -1,0 +1,22 @@
+* インストール
+
+手作業で入れるなら https://iterm2.com/ からダウンロードしていれる。
+brew cask が有効なら簡単なコマンドですぐインストールできる。
+
+#+begin_src bash
+brew cask "iterm2"
+#+end_src
+
+* command + click で必ず emacs を起動する
+
+何も設定してないと xcode が起動したり emacs が2個起動したりしてとても困るので必ず設定する。
+
+Profiles > Advanced > Semantic History を Run Command にして下記のコマンドを書き込む。
+
+#+begin_src bash
+/usr/local/bin/emacsclient +\2 \1
+#+end_src
+
+#+begin_export html
+<img src="/img/iterm2-semantic-history.png">
+#+end_export
