@@ -17,7 +17,7 @@ export default function Sidebar(props) {
 
   return (
     <aside className="menu is-hidden-mobile">
-      <p className="menu-label">Eggc note</p>
+      <p className="menu-label"><Link href="/">EGGC NOTE</Link></p>
       <ul className="menu-list">
         {props.posts.map(renderPostLinks)}
       </ul>
