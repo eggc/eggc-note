@@ -27,9 +27,7 @@ export async function getStaticProps({params}) {
 
 export async function getStaticPaths() {
   const orgReader = new OrgReader()
-  const posts = orgReader.getPosts()
-  const directories = orgReader.getDirectories()
-  const names = posts.concat(directories).map((post) => post.name)
+  const names = orgReader.getPosts('', true).map((post) => post.name)
   const paths = names.map((name) => {
     return { params: { keys: name.split('/')} }
   })

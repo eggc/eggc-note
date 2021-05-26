@@ -13,8 +13,6 @@ export async function getStaticProps() {
   const posts = new OrgReader().getPosts()
 
   return {
-    props: {
-      posts: posts
-    }
+    props: { posts }
   }
 }
