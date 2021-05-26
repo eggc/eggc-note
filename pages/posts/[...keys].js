@@ -14,7 +14,7 @@ export default function Index({post, posts, id}) {
 
 export async function getStaticProps({params}) {
   const id = params.keys.join("/")
-  const posts = await getSidebarItems(id)
+  const posts = await getSidebarItems(params.keys)
   const post = await getPost(id)
 
   return {
