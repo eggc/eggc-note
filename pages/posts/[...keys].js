@@ -12,20 +12,26 @@ export default function Index({post, posts, id}) {
 }
 
 export async function getStaticProps({params}) {
-  const posts = new OrgReader().getPosts()
+  const path = params.keys.join("/")
+  const posts = new OrgReader().getPosts(path)
+  const post = await getPost(path)
+
   return {
     props: {
       keys: params.keys,
       posts: posts,
-      post: await getPost(params.keys.join("/"))
+      post: post
     }
   }
 }
 
 export async function getStaticPaths() {
-  const postNames = new OrgReader().getPosts().map((post) => post.name)
-  const paths = postNames.map((postName) => {
-    return { params: { keys: postName.split('/')} }
+  const orgReader = new OrgReader()
+  const posts = orgReader.getPosts()
+  const directories = orgReader.getDirectories()
+  const names = posts.concat(directories).map((post) => post.name)
+  const paths = names.map((name) => {
+    return { params: { keys: name.split('/')} }
   })
 
   return { paths, fallback: false }
