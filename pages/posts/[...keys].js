@@ -6,7 +6,7 @@ import OrgReader from '../../lib/OrgReader'
 
 export default function Index({post, posts, id}) {
   return (
-    <Page posts={posts} currentPost={id}>
+    <Page posts={posts} currentPostId={id}>
       <Post post={post} />
     </Page>
   )
