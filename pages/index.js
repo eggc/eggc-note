@@ -1,5 +1,5 @@
 import Page from '../components/page'
-import getPosts from '../lib/getPosts'
+import OrgReader from '../lib/OrgReader'
 
 export default function Index({posts}) {
   return (
@@ -10,9 +10,11 @@ export default function Index({posts}) {
 }
 
 export async function getStaticProps() {
+  const posts = new OrgReader().getPosts()
+
   return {
     props: {
-      posts: getPosts()
+      posts: posts
     }
   }
 }

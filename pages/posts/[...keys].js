@@ -1,7 +1,7 @@
 import Page from '../../components/page'
 import Post from '../../components/post'
 import getPost from '../../lib/getPost'
-import getPosts from '../../lib/getPosts'
+import OrgReader from '../../lib/OrgReader'
 
 export default function Index({post, posts, id}) {
   return (
@@ -12,17 +12,18 @@ export default function Index({post, posts, id}) {
 }
 
 export async function getStaticProps({params}) {
+  const posts = new OrgReader().getPosts()
   return {
     props: {
       keys: params.keys,
-      posts: getPosts(),
+      posts: posts,
       post: await getPost(params.keys.join("/"))
     }
   }
 }
 
 export async function getStaticPaths() {
-  const postNames = getPosts().map((post) => post.name)
+  const postNames = new OrgReader().getPosts().map((post) => post.name)
   const paths = postNames.map((postName) => {
     return { params: { keys: postName.split('/')} }
   })
