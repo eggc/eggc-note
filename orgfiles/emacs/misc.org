@@ -1,5 +1,55 @@
 #+TAGS: tech
 
+** ローカル変数(let)
+特殊形式 (let VARLIST BODY...) で表現する。
+
+- VARLIST は1つ以上の (変数名 値) からなるリスト
+- BODY は1つ以上の式
+
+もっともかんたんな使い方は下のようになる。
+
+#+begin_src lisp
+(let ((a "hello")) (message a))
+#+end_src
+
+変数名のリストをあたえてもよい。
+その場合は nil がセットされるので、あとから値をセットする。
+
+#+begin_src lisp
+(let (a b)
+  (setq a "hello")
+  (setq b "goodbye")
+  (message (concat a b)))
+#+end_src
+
+let は BODY で最後に評価した式の値を返す。
+
+アスタリスク付きの let* も存在する。
+let* は変数の初期化を VARLIST で列挙された順に一つずつ行う。
+下のプログラムは let* だけが実行でき let は実行できない。
+
+#+begin_src lisp
+(let* ((a "hello") (z a)) (message z))
+#+end_src
+
+** プロパタイズ(propertize)
+
+(propertize STRING &rest PROPERTIES)
+
+- STRING はコピー対象の文字列
+- PROPERTIES は PROPERTY VALUE のペア列
+
+評価結果はプロパティを持つオブジェクトになる。
+関数 get-text-property を使ってオブジェクトのプロパティを取り出すことができる。
+
+#+begin_src lisp
+(let ((x (propertize "john" :age 20 :height 170)))
+  (print (get-text-property 0 :age x))
+  (print (get-text-property 0 :height x)))
+#+end_src
+
+プロパティにラムダをセットすることもできるようだ。
+
 ** フォントフェイス
 
 フェイスは文字を装飾するためのオブジェクト。代表的な属性としては下記のものがある。
@@ -91,3 +141,27 @@ https://misaki-blog.com/191026-emacs-advice-add/ ここに例がある。
   (apply old-func args))
 
 (advice-add #'find-file :around #'my-find-file)
+* grep について
+
+ripgrep.el をインストールして ripgrep-regex を使う。
+
+emacs では ripgrep などで検索した結果をファイルに保存することができる。
+保存したファイルは特に拡張子などは必要なく、emacs で開き直せばハイライトやリンクを再現できる。
+おそらく、検索結果にgrepモードや、検索のルートディレクトリ、検索コマンドなどのメタ情報が含まれているため。
+
+保存した検索結果を開くと g で再検索したり、wgrep の機能を利用したりすることもできる。
+M-x read-only-mode を実行して読み込み専用モードを解除すれば編集して必要な結果だけ切り取って保存したり、複数の検索結果をマージすることもできる。
+（ただその場合は再検索すると壊れるが）
+
+OR検索したい場合は正規表現で検索する。たとえば (BookStore|book_store) のようにすると BookStore と book_store の両方を検索できる。
+検索コマンドによっては --fixed-strings または -F オプションが自動的に付与されてしまって、正規表現で検索できないこともある。
+拡張した検索コマンドを用意しておくと楽かもしれない。
+
+#+begin_src lisp
+(defun ripgrep-regexp-with-arguments (regexp directory args)
+  (interactive
+    (list (read-from-minibuffer "Ripgrep search for: ")
+          (read-directory-name "Directory: ")
+          (read-from-minibuffer "optional arguments: ")))
+    (ripgrep-regexp regexp directory (list args)))
+#+end_src

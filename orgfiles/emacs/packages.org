@@ -1,0 +1,73 @@
+* built-in package
+** xref
+
+https://github.com/emacs-mirror/emacs/blob/master/lisp/progmodes/xref.el
+
+定義ジャンプなどの機能を提供する。
+
+** vc-git
+
+https://github.com/emacs-mirror/emacs/blob/master/lisp/vc/vc-git.el
+
+バージョン管理に関係した機能を提供する。
+git grep による検索 M-x vc-git-grep が定義されている。
+
+** list-packages
+
+M-x list-packages でパッケージ一覧を表示する。
+
+| キー | 効果                   |
+|------+------------------------|
+| /n   | パッケージ名でフィルタ |
+| //   | フィルタを解除         |
+
+* use-package
+
+https://github.com/jwiegley/use-package
+
+マクロにより設定を短く書ける。
+
+* dumb-jump
+
+https://github.com/jacktasia/dumb-jump
+
+* ivy, counsel
+
+https://github.com/abo-abo/swiper
+
+補完インターフェース
+
+M-x の呼び出し時に ^ が自動でつくのだがこれがいらない。
+
+#+begin_src lisp
+(ivy-configure 'counsel-M-x
+  :initial-input "^"
+  :display-transformer-fn #'counsel-M-x-transformer)
+#+end_src
+
+自分で使いたい場合は次のようにする。
+
+#+begin_src lisp
+(ivy-read "選んでください：" '(みかん りんご なすび))
+#+end_src
+
+** ivy-xref
+
+https://github.com/alexmurray/ivy-xref
+
+xref の検索結果を ivy インターフェースで選択するプラグイン。
+
+* projectile
+
+git grep を有効にしておかないと mac の BSD grep が使用されて検索が遅い。
+git grep にしておけば十分早い。
+
+#+begin_src lisp
+(setq projectile-use-git-grep t)
+#+end_src
+
+s-p を projectile-command-map にアサインした前提。
+
+| キー    | 効果     |
+|---------+----------|
+| s-p s g | 全文検索 |
