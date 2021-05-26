@@ -1,5 +1,13 @@
+import Link from 'next/link'
+
 export default function Post({post}) {
   return (
-    <div className="eggc-post-container" dangerouslySetInnerHTML={{ __html: post.body || "no body" }} />
+    <div>
+      <div>
+        <Link href="/">戻る</Link>
+      </div>
+      <hr />
+      <div className="eggc-post-container" dangerouslySetInnerHTML={{ __html: post.body }} />
+    </div>
   )
 }
