@@ -1,5 +1,5 @@
 import Page from '../components/page'
-import OrgReader from '../lib/OrgReader'
+import getSidebarItems from '../lib/getSidebarItems'
 
 export default function Index({posts}) {
   return (
@@ -10,7 +10,7 @@ export default function Index({posts}) {
 }
 
 export async function getStaticProps() {
-  const posts = new OrgReader().getPosts()
+  const posts = await getSidebarItems()
 
   return {
     props: { posts }

@@ -1,6 +1,7 @@
 import Page from '../../components/page'
 import Post from '../../components/post'
 import getPost from '../../lib/getPost'
+import getSidebarItems from '../../lib/getSidebarItems'
 import OrgReader from '../../lib/OrgReader'
 
 export default function Index({post, posts, id}) {
@@ -12,16 +13,12 @@ export default function Index({post, posts, id}) {
 }
 
 export async function getStaticProps({params}) {
-  const path = params.keys.join("/")
-  const posts = new OrgReader().getPosts(path)
-  const post = await getPost(path)
+  const id = params.keys.join("/")
+  const posts = await getSidebarItems(id)
+  const post = await getPost(id)
 
   return {
-    props: {
-      keys: params.keys,
-      posts: posts,
-      post: post
-    }
+    props: { id, posts, post }
   }
 }
 
