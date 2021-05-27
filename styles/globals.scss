@@ -37,3 +37,21 @@ aside {
         padding-top: 0;
     }
 }
+
+.eggc-diary {
+    .section {
+        padding: 2rem;
+    }
+
+    h1 {
+        font-weight: normal;
+        font-size: 1rem;
+        float: left;
+    }
+    p, pre, blockquote {
+        margin-left: 10rem;
+    }
+    ul {
+        margin-left: 12rem;
+    }
+}
