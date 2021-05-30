@@ -1,15 +1,33 @@
 import Link from 'next/link'
 
-export default function Post({post}) {
-  const extraClass = (post.title == '日記') ? 'eggc-diary' : ''
+function renderFile(post) {
+  return post.files.map(file => {
+    return (
+      <li key={file}>
+        <Link href={`/posts/${post.title}/${file}`}>{file}</Link>
+      </li>
+    )
+  })
+}
 
-  return (
-    <div>
+export default function Post({post}) {
+  if(post.files) {
+    return (
       <div>
         <Link href="/">戻る</Link>
+        <hr />
+        <ul> {renderFile(post)} </ul>
       </div>
-      <hr />
-      <div className={`eggc-post-container ${extraClass}`} dangerouslySetInnerHTML={{ __html: post.body }} />
-    </div>
-  )
+    )
+  } else {
+    const extraClass = (post.title == '日記') ? 'eggc-diary' : ''
+
+    return (
+      <div>
+        <Link href="/">戻る</Link>
+        <hr />
+        <div className={`eggc-post-container ${extraClass}`} dangerouslySetInnerHTML={{ __html: post.body }} />
+      </div>
+    )
+  }
 }
