@@ -3,13 +3,15 @@ import Link from 'next/link'
 export default function Sidebar(props) {
 
   const renderPostLinks = (post, i) => {
-    const name = (post.name.slice(-1) == '/') ? post.name.slice(0, -1) : post.name
-    const linkStyle = (props.currentPostId == name) ? "is-active" : ""
+    let klass = [
+      (props.currentPostId == post.title) ? "is-active" : "",
+      (post.format == 'directory') ? 'is-directory' : ""
+    ].join(' ')
 
     return (
       <li key={i}>
-        <Link href={`/posts/${post.name}`}>
-          <a className={linkStyle}>{post.name}</a>
+        <Link href={`/posts/${post.path}`}>
+          <a className={klass}>{post.title}</a>
         </Link>
       </li>
     )

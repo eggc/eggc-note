@@ -26,16 +26,19 @@ export default class OrgReader {
     }
   }
 
-  getPosts(directory: string = '', recursive?: boolean) {
+  getPosts(directory: string = '', recursive?: boolean): Array<Post> {
     const files = this._getFiles(directory, recursive).map((file) => {
       const name = file.name.slice(0, -4) // 拡張子を消す
       const tags = this._getTags(file.path)
-      return { name, tags }
+
+      const post = new Post(name, '', join(directory, file.name), 'orgfile')
+      post.setTags(tags)
+      return post
     })
 
     const directories = this._getDirectories(directory, recursive).map((dir) => {
-      const name = `${dir.name}/`
-      return { name }
+      const post = new Post(dir.name, '', join(directory, dir.name), 'directory')
+      return post
     })
 
     return files.concat(directories)
