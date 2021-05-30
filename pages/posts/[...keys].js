@@ -1,6 +1,7 @@
 import Page from '../../components/page'
 import Post from '../../components/post'
 import getSidebarItems from '../../lib/getSidebarItems'
+import getPostPaths from '../../lib/getPostPaths'
 import OrgReader from '../../lib/OrgReader'
 
 export default function Index({post, posts, id}) {
@@ -23,9 +24,8 @@ export async function getStaticProps({params}) {
 }
 
 export async function getStaticPaths() {
-  const orgReader = new OrgReader()
-  const paths = orgReader.getPosts('', true).map((post) => {
-    return { params: { keys: post.path.split('/')} }
+  const paths = getPostPaths().map((path) => {
+    return { params: { keys: path.split('/') } }
   })
 
   return { paths, fallback: false }
