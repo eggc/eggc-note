@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "jest"
   },
   "dependencies": {
     "autolinker": "^3.14.2",
@@ -26,8 +27,11 @@
     "unified": "^9.2.0"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.23",
     "@types/n-readlines": "^1.0.1",
     "@types/react": "^17.0.8",
+    "jest": "^27.0.3",
+    "ts-jest": "^27.0.1",
     "typescript": "^4.3.2"
   }
 }
