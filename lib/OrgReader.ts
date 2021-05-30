@@ -2,27 +2,31 @@ import fs from 'fs'
 import { join } from 'path'
 import lineByLine from 'n-readlines'
 import OrgParser from './OrgParser'
+import Post from './Post'
 
 export default class OrgReader {
-  constructor(_basePath) {
-    this.basePath = _basePath || join(process.cwd(), 'orgfiles')
+  basePath: string
+
+  constructor(basePath: string | undefined) {
+    this.basePath = basePath || join(process.cwd(), 'orgfiles')
   }
 
-  async getPost(postName) {
+  async getPost(postName: string) {
     const orgParser = new OrgParser()
+
     try {
       const filePath = join(this.basePath, `${postName}.org`)
       const fileContent = fs.readFileSync(filePath, 'utf8')
       const body = await orgParser.parse(fileContent)
 
-      return { title: postName, body: body}
-    } catch(e) {
-      const files = this._getFiles(postName).map((file) => file.name.slice(postName.length+1, -4))
+      return { title: postName, body: body }
+    } catch (e) {
+      const files = this._getFiles(postName).map((file) => file.name.slice(postName.length + 1, -4))
       return { title: postName, files: files }
     }
   }
 
-  getPosts(directory = '', recursive = false) {
+  getPosts(directory: string = '', recursive?: boolean) {
     const files = this._getFiles(directory, recursive).map((file) => {
       const name = file.name.slice(0, -4) // 拡張子を消す
       const tags = this._getTags(file.path)
@@ -37,11 +41,11 @@ export default class OrgReader {
     return files.concat(directories)
   }
 
-  _getTags(filePath) {
+  _getTags(filePath: string) {
     const liner = new lineByLine(filePath.toString())
 
     // とりあえず 20 行探索して見つからなければ諦める
-    for(let i = 0; i<20; i++) {
+    for (let i = 0; i < 20; i++) {
       let line = liner.next().toString()
 
       if (line.startsWith("#+TAGS:")) {
@@ -54,11 +58,11 @@ export default class OrgReader {
     return []
   }
 
-  _getFiles(directory, recursive) {
+  _getFiles(directory: string, recursive?: boolean) {
     const result = []
 
     this._readDirectory(directory).forEach((file) => {
-      if(file.isFile()) {
+      if (file.isFile()) {
         result.push({
           name: join(directory, file.name),
           path: join(this.basePath, directory, file.name)
@@ -71,11 +75,11 @@ export default class OrgReader {
     return result
   }
 
-  _getDirectories(directory, recursive) {
+  _getDirectories(directory: string, recursive?: boolean) {
     const result = []
 
     this._readDirectory(directory).forEach((file) => {
-      if(file.isDirectory()) {
+      if (file.isDirectory()) {
         result.push({
           name: join(directory, file.name),
           path: join(this.basePath, directory, file.name)
@@ -90,12 +94,12 @@ export default class OrgReader {
     return result
   }
 
-  _readDirectory(directory) {
+  _readDirectory(directory: string) {
     const path = join(this.basePath, directory)
 
     try {
       return fs.readdirSync(path, { withFileTypes: true })
-    } catch(e) {
+    } catch (e) {
       return []
     }
   }
