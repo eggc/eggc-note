@@ -24,9 +24,8 @@ export async function getStaticProps({params}) {
 
 export async function getStaticPaths() {
   const orgReader = new OrgReader()
-  const names = orgReader.getPosts('', true).map((post) => post.name)
-  const paths = names.map((name) => {
-    return { params: { keys: name.split('/')} }
+  const paths = orgReader.getPosts('', true).map((post) => {
+    return { params: { keys: post.path.split('/')} }
   })
 
   return { paths, fallback: false }
