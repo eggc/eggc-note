@@ -32,6 +32,10 @@ export default class File {
 
   path(): string {
     const match = this.fullPath.match(/\/orgfiles\/(.*)/)
-    return match ? match[1] : ''
+    if (match) {
+      return this.isFile() ? match[1].slice(0, -4) : match[1]
+    } else {
+      throw new Error();
+    }
   }
 }
