@@ -71,3 +71,41 @@ s-p を projectile-command-map にアサインした前提。
 | キー    | 効果     |
 |---------+----------|
 | s-p s g | 全文検索 |
+* typescript-mode
+
+https://github.com/emacs-typescript/typescript.el
+
+https://github.com/ananthakumaran/tide/#typescript に書いてあるとおりやる
+* magit
+
+git merge release がコンフリクトしたとする。
+ここで ediff によるコンフリクト解消を試みる。
+
+magit-ediff-resolve
+Resolve file: <FILE_NAME>
+
+たとえば <FILE_NAME> が core.rb だとすると下記の 4 つのウィンドウが表示される
+
+- [A] core.rb UPPER=HEAD... 略
+- [B] core.rb LOWER=release ... 略
+- [diff(A+B)] ediff-merge
+- ミニバッファ
+
+ミニバッファをアクティブにした状態で下記の操作ができる。
+逆に言うとミニバッファにカーソルがあたってないと操作できない。
+
+| キー | 操作                  |
+|------+-----------------------|
+| n/p  | 次/前のhunkに移動する |
+| v/V  | 下に/上にスクロール   |
+| a    | [A] を採用            |
+| b    | [B] を採用            |
+| r    | [diff(A+B)] に戻す    |
+| q    | 終了                  |
+
+ediff-merge を直接編集したりすると面倒になるので注意。
+* flycheck
+
+| 操作    | 意味                 |
+|---------+----------------------|
+| C-c ! l | エラーのリストを表示 |

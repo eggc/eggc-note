@@ -1,0 +1,28 @@
+BOM とは UTF のファイルの冒頭にエンコーディングを明示するためのバイト列のこと。
+
+https://ja.wikipedia.org/wiki/%E3%83%90%E3%82%A4%E3%83%88%E9%A0%86%E3%83%9E%E3%83%BC%E3%82%AF
+
+
+| 符号化形式 | BOM            |
+|------------+----------------|
+| UTF-8      | 0xEF 0xBB 0xBF |
+
+となっているので、最初のバイトを見ればわかる。
+BOM付きのファイルに対しては、下記のコマンドを実行してバイトを見ればいい。
+
+#+begin_src bash
+hexdump -n 3 utf8_with_bom.csv
+#+end_src
+
+結果は
+
+#+begin_src
+0000000 ef bb bf
+0000003
+#+end_src
+
+emacs では下記のコマンドで BOM 付き UTF8 で保存することを指示できる。
+
+#+begin_src
+C-x RET f utf-8-with-signiture
+#+end_src

@@ -1,4 +1,67 @@
 #+TAGS: tech
+** 設定ファイルを分割する方法
+
+最も簡単な方法は load 関数を使って下のように読み込む。拡張子は省略しても良い。
+ちょっと作ってみた関数とかは適当な名前をつけて隔離しておき下のようにして読み込めばいい。
+
+#+begin_src lisp
+(load "~/my-lisp/hogehoge.el")
+#+end_src
+
+より高機能な方法として require を使う方法がある。
+
+#+begin_src
+(require hoge-feature)
+#+end_src
+
+require の引数には feature と呼ばれるものを与える。
+feature とは読み込もうとしているパッケージの名前で、パスではない。
+feature に与えられる名前を持つには (provide) によりパッケージ名を定めなければならない。
+自分で feature を作るには次のようなファイルを作る。
+
+#+begin_src lisp
+(provide 'hoge-feature)
+(message "hoge-feature is loaded")
+#+end_src
+
+この feature はメッセージを出力するだけの feature である。
+このファイルを ~/my-lisp/hoge-feature.el として保存してみよう。
+最後に下記のプログラムを実行すれば ~/my-lisp/hoge-feature.el が読み込まれる。
+
+#+begin_src lisp
+(add-to-list 'load-path "~/my-lisp/")
+(require hoge-feature)
+#+end_src
+
+変数 load-path は feature の探索範囲を示すリストで、このリストに ~/my-lisp/ を加えることでそこにあるファイルを見つけることができる。
+
+require を使えば2重に読み込んでしまうことを避けられるので、
+いろいろなパッケージから参照されているようなパッケージは require を使って読み込むべきである。
+ただし、自分だけの設定ファイルなどはよそから参照されることはないので、普段遣いは load で十分だろう。
+
+** ラムダ（匿名関数）
+
+フックを使って emacs をカスタマイズするとき、引数に関数あたえなければならない。
+しかしわざわざ関数に名前をつけるのが面倒なときには、ラムダを使って名前のない関数を作ることができる。
+
+#+begin_src lisp
+(lambda () (message "hello"))
+#+end_src
+
+ラムダ関数の第一引数は引数のリストで、それ以降が本体である。
+ラムダを評価するには関数 funcall を使う。
+
+#+begin_src lisp
+(setq my-lambda (lambda () (message "hello")))
+(funcall my-lambda)
+#+end_src
+
+引数がある場合は下のようにする。
+
+#+begin_src
+(setq my-lambda (lambda (a b) (message (concat a b))))
+(funcall my-lambda "hoge" "fuga")
+#+end_src
 
 ** ローカル変数(let)
 特殊形式 (let VARLIST BODY...) で表現する。
