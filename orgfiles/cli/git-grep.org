@@ -106,15 +106,6 @@ git grep -p office config/**/*.yml
 git grep -p office app/models/**/*.rb
 #+end_src
 
-** git grep --no-index
-
-バージョン管理していないファイル(.gitignore で無視されているファイル)を含めて検索する。
-ライブラリの中身まで探索してしまうので、実行は望ましくない。
-
-#+begin_src bash
-git grep --no-index function
-#+end_src
-
 ** git grep --untracked
 
 バージョン管理していないファイル(git add されていないファイル)を含めて検索する。

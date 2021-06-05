@@ -1,0 +1,13 @@
+* git ls-files
+
+バージョン管理しているファイルをすべて出力
+
+#+begin_src bash
+git ls-files
+#+end_src
+
+ファイル名またはパス名に modal を含むファイルを出力
+
+#+begin_src bash
+git ls-files | grep --color modal
+#+end_src
