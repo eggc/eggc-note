@@ -18,6 +18,7 @@
     "orga-unified": "^2.3.15",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-select": "^4.3.1",
     "rehype-autolink-headings": "^5.0.1",
     "rehype-mathjax": "^3.1.0",
     "rehype-slug": "^4.0.1",
