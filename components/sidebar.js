@@ -1,6 +1,10 @@
 import Link from 'next/link'
+import PageSelect from './page_select'
 
 export default function Sidebar(props) {
+  const buildOptions = (post) => {
+    return { value: post.title, label: post.title }
+  }
 
   const renderPostLinks = (post, i) => {
     let klass = [
@@ -20,6 +24,8 @@ export default function Sidebar(props) {
   return (
     <aside className="menu is-hidden-mobile">
       <p className="menu-label"><Link href="/">EGGC NOTE</Link></p>
+      <PageSelect posts={props.posts} />
+      <hr />
       <ul className="menu-list">
         {props.posts.map(renderPostLinks)}
       </ul>
