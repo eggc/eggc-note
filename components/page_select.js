@@ -1,11 +1,23 @@
 import Select from 'react-select'
 import { useRouter } from 'next/router'
 
-export default function PageSelect({posts}) {
+export default function PageSelect({tree}) {
   const router = useRouter()
 
-  const buildOptions = (post) => {
-    return { value: post.path, label: post.title }
+  const buildOptions = (node) => {
+    let result = []
+
+    if (node.path != '/') {
+      result.push({ value: node.path, label: node.title })
+    }
+
+    if (node.children) {
+      node.children.forEach((child) => {
+        result = result.concat(buildOptions(child))
+      })
+    }
+
+    return result
   }
 
   const onChange = (item) => {
@@ -15,7 +27,7 @@ export default function PageSelect({posts}) {
   }
 
   return (
-    <Select options={posts.map(buildOptions)}
+    <Select options={buildOptions(tree)}
             onChange={onChange}
             isSearchable="true"
             isClearable="true"

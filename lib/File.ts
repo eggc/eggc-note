@@ -1,4 +1,4 @@
-import { extname, basename } from 'path'
+import {extname, basename} from 'path'
 
 export default class File {
   static ROOT_NAME: string = 'orgfiles'
@@ -37,5 +37,20 @@ export default class File {
     } else {
       throw new Error();
     }
+  }
+
+  // props に渡せる形式に変換する
+  serialize(): Object {
+    const object = {
+      title: this.name(),
+      path: this.path(),
+      format: this.extname()
+    }
+
+    if (this.children) {
+      object.children = this.children.map((c) => c.serialize())
+    }
+
+    return object
   }
 }

@@ -2,9 +2,9 @@ import Image from 'next/image'
 import Page from '../components/page'
 import getSidebarItems from '../lib/getSidebarItems'
 
-export default function Index({posts}) {
+export default function Index(props) {
   return (
-    <Page posts={posts}>
+    <Page {...props}>
       <p>EGGC NOTE</p>
       <Image src="/img/top-image.jpg" width={1000} height={668} />
       <small>
@@ -15,9 +15,9 @@ export default function Index({posts}) {
 }
 
 export async function getStaticProps() {
-  const posts = await getSidebarItems()
+  const tree = await getSidebarItems()
 
   return {
-    props: { posts }
+    props: { tree }
   }
 }
