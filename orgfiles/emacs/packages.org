@@ -76,6 +76,30 @@ s-p を projectile-command-map にアサインした前提。
 https://github.com/emacs-typescript/typescript.el
 
 https://github.com/ananthakumaran/tide/#typescript に書いてあるとおりやる
+
+自動的にフォーマットするやつは変形させれる
+
+#+begin_src lisp
+(setq tide-format-options
+  '(
+  :insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis nil
+  :insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets nil
+  :insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces nil
+  ))
+#+end_src
+
+これは eslint とは別の機能らしい。
+
+#+begin_src lisp
+{
+  "indentSize": 4,
+  "tabSize": 4,
+  "insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": false,
+  "placeOpenBraceOnNewLineForFunctions": false,
+  "placeOpenBraceOnNewLineForControlBlocks": false
+}
+#+end_src
+
 * magit
 
 git merge release がコンフリクトしたとする。
@@ -109,3 +133,8 @@ ediff-merge を直接編集したりすると面倒になるので注意。
 | 操作    | 意味                 |
 |---------+----------------------|
 | C-c ! l | エラーのリストを表示 |
+* tree-sitter
+
+tsx をパースできない問題を解決してくれるかもしれないんで入れてみる。
+(global-tree-sitter-mode)
+お、よさそう。

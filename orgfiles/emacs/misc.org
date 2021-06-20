@@ -204,27 +204,48 @@ https://misaki-blog.com/191026-emacs-advice-add/ ここに例がある。
   (apply old-func args))
 
 (advice-add #'find-file :around #'my-find-file)
-* grep について
+** 連想リスト(association-list)
 
-ripgrep.el をインストールして ripgrep-regex を使う。
-
-emacs では ripgrep などで検索した結果をファイルに保存することができる。
-保存したファイルは特に拡張子などは必要なく、emacs で開き直せばハイライトやリンクを再現できる。
-おそらく、検索結果にgrepモードや、検索のルートディレクトリ、検索コマンドなどのメタ情報が含まれているため。
-
-保存した検索結果を開くと g で再検索したり、wgrep の機能を利用したりすることもできる。
-M-x read-only-mode を実行して読み込み専用モードを解除すれば編集して必要な結果だけ切り取って保存したり、複数の検索結果をマージすることもできる。
-（ただその場合は再検索すると壊れるが）
-
-OR検索したい場合は正規表現で検索する。たとえば (BookStore|book_store) のようにすると BookStore と book_store の両方を検索できる。
-検索コマンドによっては --fixed-strings または -F オプションが自動的に付与されてしまって、正規表現で検索できないこともある。
-拡張した検索コマンドを用意しておくと楽かもしれない。
+連想リストはコンスセルで作られた値のペアを要素として持つリスト。
+一番よく見かけるのは auto-mode-alist という変数。例えば下のようになっている。
 
 #+begin_src lisp
-(defun ripgrep-regexp-with-arguments (regexp directory args)
-  (interactive
-    (list (read-from-minibuffer "Ripgrep search for: ")
-          (read-directory-name "Directory: ")
-          (read-from-minibuffer "optional arguments: ")))
-    (ripgrep-regexp regexp directory (list args)))
+((".ruby" . ruby-mode) (".ts" . typescript-mode))
 #+end_src
+
+** ディレクトリローカル変数
+
+ディレクトリローカル変数は、emacs がそのディレクトリ、
+またはその配下にあるディレクトリを訪問するときだけ有効になる変数。
+
+ディレクトリに .dir-locals.el というファイルを配置して、
+対象メジャーモードと、そのモードで有効となるディレクトリローカル変数の連想リストを書く。
+すると、ディレクトリローカル変数を定義できる。
+下の例はメジャーモードが nil なので全てのメジャーモードを対象にして 2 つの変数を定義している。
+
+#+begin_src
+((nil . ((indent-tabs-mode . t) (fill-column . 80))))
+#+end_src
+
+次の例は c-mode のときに変数を定義する。ただし (subdir . nil) は実際には変数ではない。
+ディレクトリローカル変数がサブディレクトリで無効になるようにする特別なフラグである。
+
+#+begin_src lisp
+((c-mode . ((c-file-style . "BSD") (subdirs . nil))))
+#+end_src
+
+特定のサブディレクトリに対してディレクトリローカル変数を定義する機能もあるらしい。
+（よくわからない）
+
+#+begin_src
+(("src/imported" . ((nil . ((change-log-default-name . "ChangeLog.local"))))))
+#+end_src
+
+.dir-locals.elファイルを手で編集するかわりに、コマンド M-x add-dir-local-variable を使ってディレクトリローカル変数を作るのも良い。
+これはモード名またはサブディレクトリー名、および変数名と値の入力を求め、ディレクトリーローカル変数を定義するエントリーを追加します。
+M-x delete-dir-local-variableは、エントリーを削除します。
+M-x copy-file-locals-to-dir-localsは、カレントファイル内のファイルローカル変数を、.dir-locals.elにコピーします。
+
+他にもディレクトリローカル変数を与える方法が有るらしいけどいったんこれくらいで。
+
+https://ayatakesi.github.io/emacs/25.1/Directory-Variables.html
