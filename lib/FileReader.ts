@@ -1,6 +1,7 @@
 import fs from 'fs'
 import {join} from 'path'
 import File from './File'
+import OrgParser from './OrgParser'
 
 export default class FileReader {
   rootPath: string
@@ -29,5 +30,15 @@ export default class FileReader {
     })
 
     return new File(path, children)
+  }
+
+  async readFile(...decendants: string[]) {
+    const path = join(this.rootPath, ...decendants)
+    const fileContent = fs.readFileSync(`${path}.org`, 'utf8')
+    const orgParser = new OrgParser()
+    const body = await orgParser.parse(fileContent)
+    const file = new File(path, undefined, body)
+
+    return file
   }
 }

@@ -4,10 +4,12 @@ export default class File {
   static ROOT_NAME: string = 'orgfiles'
   fullPath: string
   children?: File[]
+  body?: string
 
-  constructor(fullPath: string, children?: File[]) {
+  constructor(fullPath: string, children?: File[], body?: string) {
     this.fullPath = fullPath
     this.children = children
+    this.body = body
   }
 
   extname(): string {
@@ -49,6 +51,10 @@ export default class File {
 
     if (this.children) {
       object.children = this.children.map((c) => c.serialize())
+    }
+
+    if (this.body) {
+      object.body = this.body
     }
 
     return object

@@ -23,16 +23,7 @@ function findNode(tree, post) {
 }
 
 export default function Post({post, tree}) {
-  const node = findNode(tree, post)
-  if(node && node.children) {
-    return (
-      <div>
-        <Link href="/">戻る</Link>
-        <hr />
-        <ul> {node.children.map(renderLink)} </ul>
-      </div>
-    )
-  } else {
+  if(post.body) {
     const extraClass = (post.title == '日記') ? 'eggc-diary' : ''
 
     return (
@@ -40,6 +31,16 @@ export default function Post({post, tree}) {
         <Link href="/">戻る</Link>
         <hr />
         <div className={`eggc-post-container ${extraClass}`} dangerouslySetInnerHTML={{ __html: post.body }} />
+      </div>
+    )
+  } else {
+    const node = findNode(tree, post)
+
+    return (
+      <div>
+        <Link href="/">戻る</Link>
+        <hr />
+        <ul> {node.children.map(renderLink)} </ul>
       </div>
     )
   }

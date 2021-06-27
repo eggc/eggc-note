@@ -2,7 +2,7 @@ import Page from '../../components/page'
 import Post from '../../components/post'
 import getSidebarItems from '../../lib/getSidebarItems'
 import getPostPaths from '../../lib/getPostPaths'
-import OrgReader from '../../lib/OrgReader'
+import FileReader from '../../lib/FileReader'
 
 export default function Index({post, tree, id}) {
   return (
@@ -13,10 +13,17 @@ export default function Index({post, tree, id}) {
 }
 
 export async function getStaticProps({params}) {
-  const orgReader = new OrgReader()
   const id = params.keys.join("/")
   const tree = await getSidebarItems()
-  const post = await orgReader.getPost(id)
+  let post
+
+  try {
+    const fileReader = new FileReader()
+    const file = await fileReader.readFile(...params.keys)
+    post = file.serialize()
+  } catch {
+    post = { path: id }
+  }
 
   return {
     props: { id, tree, post }
