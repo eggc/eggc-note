@@ -24,21 +24,4 @@ export default class OrgReader {
       return {title: postName, path: postName}
     }
   }
-
-  _getTags(filePath: string) {
-    const liner = new lineByLine(filePath.toString())
-
-    // とりあえず 20 行探索して見つからなければ諦める
-    for (let i = 0; i < 20; i++) {
-      let line = liner.next().toString()
-
-      if (line.startsWith("#+TAGS:")) {
-        const tags = line.split(' ')
-        tags.shift()
-        return tags
-      }
-    }
-
-    return []
-  }
 }
