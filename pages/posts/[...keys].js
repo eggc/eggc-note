@@ -4,10 +4,10 @@ import getSidebarItems from '../../lib/getSidebarItems'
 import getPostPaths from '../../lib/getPostPaths'
 import OrgReader from '../../lib/OrgReader'
 
-export default function Index({post, posts, id}) {
+export default function Index({post, tree, id}) {
   return (
-    <Page posts={posts} currentPostId={id}>
-      <Post post={post} />
+    <Page tree={tree} currentPostId={id}>
+      <Post tree={tree} post={post} />
     </Page>
   )
 }
@@ -15,11 +15,11 @@ export default function Index({post, posts, id}) {
 export async function getStaticProps({params}) {
   const orgReader = new OrgReader()
   const id = params.keys.join("/")
-  const posts = await getSidebarItems(params.keys)
+  const tree = await getSidebarItems()
   const post = await orgReader.getPost(id)
 
   return {
-    props: { id, posts, post }
+    props: { id, tree, post }
   }
 }
 

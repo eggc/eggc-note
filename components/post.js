@@ -1,22 +1,35 @@
 import Link from 'next/link'
 
-function renderFile(post) {
-  return post.files.map(file => {
-    return (
-      <li key={file}>
-        <Link href={`/posts/${post.title}/${file}`}>{file}</Link>
-      </li>
-    )
-  })
+function renderLink(node) {
+  return (
+    <li key={node.path}>
+      <Link href={`/posts/${node.path}`}>{node.title}</Link>
+    </li>
+  )
 }
 
-export default function Post({post}) {
-  if(post.files) {
+function findNode(tree, post) {
+  const queue = [tree]
+  let node
+
+  while(node = queue.pop()) {
+    if(node.path == post.path) {
+      return node
+    } else {
+      node.children && node.children.forEach((child) => queue.push(child))
+    }
+  }
+  return undefined
+}
+
+export default function Post({post, tree}) {
+  const node = findNode(tree, post)
+  if(node.children) {
     return (
       <div>
         <Link href="/">戻る</Link>
         <hr />
-        <ul> {renderFile(post)} </ul>
+        <ul> {node.children.map(renderLink)} </ul>
       </div>
     )
   } else {

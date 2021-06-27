@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { join } from 'path'
+import {join} from 'path'
 import lineByLine from 'n-readlines'
 import OrgParser from './OrgParser'
 import Post from './Post'
@@ -19,10 +19,9 @@ export default class OrgReader {
       const fileContent = fs.readFileSync(filePath, 'utf8')
       const body = await orgParser.parse(fileContent)
 
-      return { title: postName, body: body }
+      return {title: postName, body: body}
     } catch (e) {
-      const files = this._getFiles(postName).map((file) => file.name.slice(postName.length + 1, -4))
-      return { title: postName, files: files }
+      return {title: postName, path: postName}
     }
   }
 
@@ -101,7 +100,7 @@ export default class OrgReader {
     const path = join(this.basePath, directory)
 
     try {
-      return fs.readdirSync(path, { withFileTypes: true })
+      return fs.readdirSync(path, {withFileTypes: true})
     } catch (e) {
       return []
     }
