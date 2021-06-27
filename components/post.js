@@ -24,7 +24,7 @@ function findNode(tree, post) {
 
 export default function Post({post, tree}) {
   const node = findNode(tree, post)
-  if(node.children) {
+  if(node && node.children) {
     return (
       <div>
         <Link href="/">戻る</Link>
