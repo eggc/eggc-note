@@ -46,15 +46,16 @@ export default class File {
     const object = {
       title: this.name(),
       path: this.path(),
-      format: this.extname()
+      format: this.extname(),
+      children: this.children && this.children.map((c) => c.serialize()),
+      body: this.body
     }
 
-    if (this.children) {
-      object.children = this.children.map((c) => c.serialize())
+    if (!this.children) {
+      delete object.children
     }
-
-    if (this.body) {
-      object.body = this.body
+    if (!this.body) {
+      delete object.body
     }
 
     return object
