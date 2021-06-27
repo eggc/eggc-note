@@ -25,24 +25,6 @@ export default class OrgReader {
     }
   }
 
-  getPosts(directory: string = '', recursive?: boolean): Array<Post> {
-    const files = this._getFiles(directory, recursive).map((file) => {
-      const name = file.name.slice(0, -4) // 拡張子を消す
-      const tags = this._getTags(file.path)
-
-      const post = new Post(name, '', join(directory, file.name), 'orgfile')
-      post.setTags(tags)
-      return post
-    })
-
-    const directories = this._getDirectories(directory, recursive).map((dir) => {
-      const post = new Post(dir.name, '', join(directory, dir.name), 'directory')
-      return post
-    })
-
-    return files.concat(directories)
-  }
-
   _getTags(filePath: string) {
     const liner = new lineByLine(filePath.toString())
 
@@ -58,51 +40,5 @@ export default class OrgReader {
     }
 
     return []
-  }
-
-  _getFiles(directory: string, recursive?: boolean) {
-    const result = []
-
-    this._readDirectory(directory).forEach((file) => {
-      if (file.isFile()) {
-        result.push({
-          name: join(directory, file.name),
-          path: join(this.basePath, directory, file.name)
-        })
-      } else if (recursive) {
-        this._getFiles(join(directory, file.name), true).forEach((file) => result.push(file))
-      }
-    })
-
-    return result
-  }
-
-  _getDirectories(directory: string, recursive?: boolean) {
-    const result = []
-
-    this._readDirectory(directory).forEach((file) => {
-      if (file.isDirectory()) {
-        result.push({
-          name: join(directory, file.name),
-          path: join(this.basePath, directory, file.name)
-        })
-
-        if (recursive) {
-          this._getDirectories(join(directory, file.name), true).forEach((file) => result.push(file))
-        }
-      }
-    })
-
-    return result
-  }
-
-  _readDirectory(directory: string) {
-    const path = join(this.basePath, directory)
-
-    try {
-      return fs.readdirSync(path, {withFileTypes: true})
-    } catch (e) {
-      return []
-    }
   }
 }
