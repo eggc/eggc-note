@@ -11,3 +11,4 @@
 - https://github.com/trekhleb/javascript-algorithms/blob/master/README.ja-JP.md
 - https://qiita.com/kazuo_reve/items/d1a3f0ee48e24bba38f1
 - https://web.dev/learn/css/
+- https://www.ai-shift.co.jp/techblog/1980

@@ -106,6 +106,7 @@ git merge release がコンフリクトしたとする。
 ここで ediff によるコンフリクト解消を試みる。
 
 magit-ediff-resolve
+
 Resolve file: <FILE_NAME>
 
 たとえば <FILE_NAME> が core.rb だとすると下記の 4 つのウィンドウが表示される
@@ -125,9 +126,17 @@ Resolve file: <FILE_NAME>
 | a    | [A] を採用            |
 | b    | [B] を採用            |
 | r    | [diff(A+B)] に戻す    |
+| *    | 手で直す              |
 | q    | 終了                  |
+| h    | ハイライト消す/つける |
+|      |                       |
 
 ediff-merge を直接編集したりすると面倒になるので注意。
+
+
+
+
+
 * flycheck
 
 | 操作    | 意味                 |

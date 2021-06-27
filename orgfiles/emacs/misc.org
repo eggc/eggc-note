@@ -249,3 +249,4 @@ M-x copy-file-locals-to-dir-localsは、カレントファイル内のファイ�
 他にもディレクトリローカル変数を与える方法が有るらしいけどいったんこれくらいで。
 
 https://ayatakesi.github.io/emacs/25.1/Directory-Variables.html
+** 現在カーソルの単語を得る(things-at-point)
