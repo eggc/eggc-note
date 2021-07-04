@@ -26,7 +26,7 @@ export default function Sidebar({tree, currentPostId}) {
       <PageSelect tree={tree} />
       <hr />
       <ul className="menu-list">
-        {renderTree(tree)}
+        {tree.children.map((node) => renderTree(node))}
       </ul>
     </aside>
   )
