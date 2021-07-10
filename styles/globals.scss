@@ -1,6 +1,9 @@
 @charset "utf-8";
 
+$font-family-base: "x12y16pxMaruMonica";
+$font-size-base: 16;
 
+@import 'bootstrap';
 
 div#__next {
     margin-top: 3rem;
