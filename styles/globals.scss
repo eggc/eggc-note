@@ -1,10 +1,4 @@
 @charset "utf-8";
-@import "~bulma/bulma";
-
-/* コードブロックの中で bulma のスタイルは効かせない */
-code > span.number {
-    all: unset;
-}
 
 div#__next {
     margin-top: 3rem;
