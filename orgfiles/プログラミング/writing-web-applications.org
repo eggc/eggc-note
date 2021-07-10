@@ -1,0 +1,6 @@
+[[https://golang.org/doc/articles/wiki/][Writing Web Applications]] を読んでみる。
+
+* Getting Started
+
+mkdir gowiki
+cd gowiki

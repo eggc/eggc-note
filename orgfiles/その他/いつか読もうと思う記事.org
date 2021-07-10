@@ -12,3 +12,6 @@
 - https://qiita.com/kazuo_reve/items/d1a3f0ee48e24bba38f1
 - https://web.dev/learn/css/
 - https://www.ai-shift.co.jp/techblog/1980
+- https://confengine.com/conferences/scrum-fest-osaka-2021/proposal/15448
+- https://t-wada.hatenablog.jp/entry/clean-code-that-works
+- https://tsujimotter.hatenablog.com/

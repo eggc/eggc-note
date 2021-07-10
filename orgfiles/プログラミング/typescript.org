@@ -1,0 +1,9 @@
+* Declaration
+
+https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html
+
+~declare function xxx = ()~ みたいな感じのやつ。
+型定義しかもってない。本体を持たない関数。
+これはヒント情報みたいなやつで実装は別のところにあっていいっぽい。
+
+*

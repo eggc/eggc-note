@@ -13,9 +13,11 @@ brew cask "iterm2"
 
 Profiles > Advanced > Semantic History を Run Command にして下記のコマンドを書き込む。
 
-#+begin_src bash
-/usr/local/bin/emacsclient +\2 \1
+#+begin_src sh
+[ \2 ] && /usr/local/bin/emacsclient +\2 \1 || /usr/local/bin/emacsclient \1
 #+end_src
+
+/bin/sh で起動するので if; then; fi のようなワンライナーは文法エラーとなる。
 
 #+begin_export html
 <img src="/img/iterm2-semantic-history.png">

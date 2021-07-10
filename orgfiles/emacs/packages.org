@@ -102,10 +102,16 @@ https://github.com/ananthakumaran/tide/#typescript に書いてあるとおり�
 
 * magit
 
+** 他のブランチのファイルを見る
+
+M-x magit-find-file
+
+** ediff
+
 git merge release がコンフリクトしたとする。
 ここで ediff によるコンフリクト解消を試みる。
 
-magit-ediff-resolve
+M-x magit-ediff-resolve
 
 Resolve file: <FILE_NAME>
 
@@ -132,7 +138,6 @@ Resolve file: <FILE_NAME>
 |      |                       |
 
 ediff-merge を直接編集したりすると面倒になるので注意。
-
 
 
 
