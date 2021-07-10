@@ -28,9 +28,8 @@ export default function Post({post, tree}) {
 
     return (
       <div>
-        <Link href="/">戻る</Link>
-        <hr />
         <div className={`eggc-post-container ${extraClass}`} dangerouslySetInnerHTML={{ __html: post.body }} />
+        <Link href="/">戻る</Link>
       </div>
     )
   } else {
@@ -38,8 +37,6 @@ export default function Post({post, tree}) {
 
     return (
       <div>
-        <Link href="/">戻る</Link>
-        <hr />
         <ul> {node.children.map(renderLink)} </ul>
       </div>
     )

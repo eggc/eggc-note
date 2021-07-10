@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import PageSelect from './page_select'
 
 export default function Sidebar({tree, currentPostId}) {
   const renderTree = (node) => {
@@ -21,11 +20,8 @@ export default function Sidebar({tree, currentPostId}) {
   }
 
   return (
-    <aside className="menu is-hidden-mobile">
-      <p className="menu-label"><Link href="/">EGGC NOTE</Link></p>
-      <PageSelect tree={tree} />
-      <hr />
-      <ul className="menu-list">
+    <aside>
+      <ul>
         {tree.children.map((node) => renderTree(node))}
       </ul>
     </aside>
