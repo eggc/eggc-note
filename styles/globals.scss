@@ -1,8 +1,25 @@
 @charset "utf-8";
 
+
+
 div#__next {
     margin-top: 3rem;
-    font-family: 'Kiwi Maru', serif;
+}
+
+html {
+    font-family: "x12y16pxMaruMonica", serif;
+    src: url("/marumonica.woff");
+    -webkit-font-smoothing: none;
+    font-smooth: never;
+}
+
+h1 { font-size: 32px; font-weight: normal; }
+h2 { font-size: 24px; font-weight: normal; }
+h3, p, li { font-size: 16px; }
+code {
+    font-family: monospace;
+    -webkit-font-smoothing: auto;
+    font-smooth: auto;
 }
 
 main {
@@ -13,18 +30,9 @@ center {
     margin: 2rem;
 }
 
-span.tag {
-    float: right;
-}
-
 .eggc-post-container {
     .section:first-child {
         padding-top: 0;
-    }
-    .section {
-        h1, h2, h3 {
-            font-weight: normal;
-        }
     }
 }
 
@@ -33,11 +41,6 @@ span.tag {
         padding: 2rem;
     }
 
-    h1 {
-        font-weight: normal;
-        font-size: 1rem;
-        float: left;
-    }
     p, pre, blockquote {
         margin-left: 10rem;
     }
