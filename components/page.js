@@ -3,11 +3,11 @@ import Sidebar from './sidebar'
 export default function Page(props) {
   return (
     <div className="container">
-      <div className="columns">
-        <div className="column is-3">
+      <div className="row">
+        <div className="col-lg-4">
           <Sidebar {...props} />
         </div>
-        <div className="column is-9">
+        <div className="col-lg-8">
           <main className="content">
             {props.children}
           </main>
