@@ -9,10 +9,12 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/needle": "^2.5.2",
     "autolinker": "^3.14.2",
     "bootstrap": "^5.0.0-beta3",
     "highlight.js": "^10.6.0",
     "n-readlines": "^1.0.1",
+    "needle": "^2.8.0",
     "next": "^10.2.0",
     "orga": "^2.3.15",
     "orga-unified": "^2.3.15",
