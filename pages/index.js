@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Link from 'next/link'
 import Page from '../components/page'
 import getSidebarItems from '../lib/getSidebarItems'
 
@@ -6,8 +6,10 @@ export default function Index(props) {
   return (
     <Page {...props}>
       <p>EGGC NOTE</p>
-      <Image src="/img/top-image.jpg" width={1000} height={668} />
-      <div>Photo by <a href="https://unsplash.com/@ashleywedwards?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Ashley West Edwards</a> on <a href="https://unsplash.com/photos/wWZzXlDpMog?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></div>
+      <ul>
+        <li><Link href="/tweets">tweets</Link></li>
+        <li><Link href="/posts/日記">日記</Link></li>
+      </ul>
       <div>Font is マルモニカ by <a href="http://www17.plala.or.jp/xxxxxxx/00ff/">x0y0pxFreeFont</a></div>
     </Page>
   )
