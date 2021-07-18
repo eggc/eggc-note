@@ -1,6 +1,10 @@
 @charset "utf-8";
+@font-face {
+    font-family: "MaruMonica";
+    src: url("/marumonica.woff");
+}
 
-$font-family-base: "x12y16pxMaruMonica";
+$font-family-base: "MaruMonica";
 $font-size-base: 16;
 
 @import 'bootstrap';
@@ -10,8 +14,6 @@ div#__next {
 }
 
 html {
-    font-family: "x12y16pxMaruMonica", serif;
-    src: url("/marumonica.woff");
     -webkit-font-smoothing: none;
     font-smooth: never;
 }
