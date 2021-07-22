@@ -13,10 +13,10 @@ export default function Page(props) {
           <PageSelect {...props} />
         </div>
 
-        <div className="col-lg-4 d-none d-lg-block">
+        <div className="col-lg-3 d-none d-lg-block">
           <Sidebar {...props} />
         </div>
-        <div className="col-lg-8">
+        <div className="col-lg-9">
           <main>
             {props.children}
           </main>
