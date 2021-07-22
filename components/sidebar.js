@@ -8,14 +8,14 @@ export default function Sidebar({tree, currentPostId}) {
     ].join(' ')
 
     return (
-      <>
-        <li key={node.path}>
+      <div key={node.path}>
+        <li>
           <Link href={`/posts/${node.path}`}>
             <a className={klass}>{node.path}</a>
           </Link>
         </li>
         {node.children && node.children.map((node) => renderTree(node))}
-      </>
+      </div>
     )
   }
 

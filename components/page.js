@@ -6,7 +6,7 @@ export default function Page(props) {
   return (
     <div className="container">
       <div className="row gy-4">
-        <div clasName="col-12">
+        <div className="col-12">
           <p><Link href="/">EGGC NOTE</Link></p>
           <PageSelect tree={props.tree} />
         </div>
