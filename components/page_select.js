@@ -26,8 +26,6 @@ export default function PageSelect({tree, currentPostId}) {
     }
   }
 
-  console.log(currentPostId)
-
   return (
     <Select options={buildOptions(tree)}
             onChange={onChange}
