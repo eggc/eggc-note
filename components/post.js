@@ -28,6 +28,7 @@ export default function Post({post, tree}) {
 
     return (
       <div>
+        <h1 className="page-title">{post.title}</h1>
         <div className={`eggc-post-container ${extraClass}`} dangerouslySetInnerHTML={{ __html: post.body }} />
         <Link href="/">戻る</Link>
       </div>
@@ -37,6 +38,7 @@ export default function Post({post, tree}) {
 
     return (
       <div>
+        <h1 className="page-title">{node.title}</h1>
         <ul> {node.children.map(renderLink)} </ul>
       </div>
     )
