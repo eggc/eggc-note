@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import Autolinker from 'autolinker'
 import Page from '../../components/page'
 import getSidebarItems from '../../lib/getSidebarItems'
@@ -34,7 +34,7 @@ export default function Index(props) {
       <div className="btn-group" role="group">
         {years.map((y) => {
           return (
-            <>
+            <Fragment key={y}>
               <input type="radio"
                      name="year-radio"
                      className="btn-check"
@@ -43,7 +43,7 @@ export default function Index(props) {
                      defaultChecked={y==year}
                      onClick={onChangeYear} />
               <label className="btn btn-outline-primary" htmlFor={`year-${y}`}>{y}</label>
-            </>
+            </Fragment>
           )
         })}
       </div>
