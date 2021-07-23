@@ -28,7 +28,8 @@ code {
 }
 
 main {
-    min-height: 80%;
+    padding: 4px;
+    overflow-x: hidden;
 }
 
 center {
@@ -58,16 +59,25 @@ center {
     border-bottom: 2px solid;
 }
 
-// https://www.tagindex.com/color/color_wheel.html
-.month-1 { border-left: 4px solid #00ffff; }
-.month-2 { border-left: 4px solid #0080ff; }
-.month-3 { border-left: 4px solid #0000ff; }
-.month-4 { border-left: 4px solid #8000ff; }
-.month-5 { border-left: 4px solid #ff00ff; }
-.month-6 { border-left: 4px solid #ff0080; }
-.month-7 { border-left: 4px solid #ff0000; }
-.month-8 { border-left: 4px solid #ff8000; }
-.month-9 { border-left: 4px solid #ffff00; }
-.month-10 { border-left: 4px solid #80ff00; }
-.month-11 { border-left: 4px solid #00ff00; }
-.month-12 { border-left: 4px solid #00ff80; }
+.year-radio-group {
+    overflow-x: scroll;
+    padding: 4px;
+}
+
+.row-month {
+    margin-left: 4px;
+    border-left: 4px solid;
+    // https://www.tagindex.com/color/color_wheel.html
+    &.month-1 { border-color: #00ffff; }
+    &.month-2 { border-color: #0080ff; }
+    &.month-3 { border-color: #0000ff; }
+    &.month-4 { border-color: #8000ff; }
+    &.month-5 { border-color: #ff00ff; }
+    &.month-6 { border-color: #ff0080; }
+    &.month-7 { border-color: #ff0000; }
+    &.month-8 { border-color: #ff8000; }
+    &.month-9 { border-color: #ffff00; }
+    &.month-10 { border-color: #80ff00; }
+    &.month-11 { border-color: #00ff00; }
+    &.month-12 { border-color: #00ff80; }
+}

@@ -9,11 +9,11 @@ function renderTweet(tweet) {
   const date = tweet.created_at
 
   return (
-    <div className={`row month-${date.getMonth() + 1}`} key={tweet.id}>
-      <div className="col-10">
+    <div className={`row row-month month-${date.getMonth() + 1}`} key={tweet.id}>
+      <div className="col-lg-10">
       <span dangerouslySetInnerHTML={{ __html: Autolinker.link(tweet.text)}}></span>
       </div>
-      <div className="col-2">
+      <div className="col-lg-2 d-none d-lg-block">
         <span className="text-muted">{date.toLocaleDateString() + " " + date.toLocaleTimeString()}</span>
       </div>
     </div>
