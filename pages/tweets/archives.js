@@ -8,7 +8,7 @@ function renderTweet(tweet) {
   const date = tweet.created_at
 
   return (
-    <div className={`row`} key={tweet.id}>
+    <div className={`row month-${date.getMonth() + 1}`} key={tweet.id}>
       <div className="col-10">
       <span dangerouslySetInnerHTML={{ __html: Autolinker.link(tweet.text)}}></span>
       </div>
