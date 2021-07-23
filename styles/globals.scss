@@ -64,6 +64,12 @@ center {
     padding: 4px;
 }
 
+// はてなブログから移行したときに埋め込まれてしまったので消す
+.keyword {
+    text-decoration: none;
+    color: inherit;
+}
+
 .row-month {
     margin-left: 4px;
     border-left: 4px solid;

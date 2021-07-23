@@ -9,6 +9,7 @@ export default function Index(props) {
       <ul>
         <li><Link href="/tweets">tweets</Link></li>
         <li><Link href="/tweets/archives">tweets/archives</Link></li>
+        <li><Link href="/savepoint628">savepoint628</Link></li>
         <li><Link href="/posts/日記">日記</Link></li>
       </ul>
       <div>Font is マルモニカ by <a href="http://www17.plala.or.jp/xxxxxxx/00ff/">x0y0pxFreeFont</a></div>
