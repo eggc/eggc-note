@@ -31,6 +31,7 @@ export default function PageSelect({tree, currentPostId}) {
             onChange={onChange}
             isSearchable="true"
             isClearable="true"
+            instanceId="pageSelect"
             defaultValue={{ value: currentPostId, label: currentPostId }}
     />
   )
