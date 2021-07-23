@@ -35,7 +35,13 @@ export default function Index(props) {
         {years.map((y) => {
           return (
             <>
-              <input onClick={onChangeYear} type="radio" name="year-radio" className="btn-check" id={`year-${y}`} value={y} defaultChecked={y==year}/>
+              <input type="radio"
+                     name="year-radio"
+                     className="btn-check"
+                     id={`year-${y}`}
+                     value={y}
+                     defaultChecked={y==year}
+                     onClick={onChangeYear} />
               <label className="btn btn-outline-primary" htmlFor={`year-${y}`}>{y}</label>
             </>
           )
