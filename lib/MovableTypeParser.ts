@@ -20,7 +20,8 @@ export default class MovableTypeParser {
     input.split("--------\n").forEach((block) => {
       if (block.length == 0) { return }
       const [nonBodyBlock, bodyBlock] = block.split("-----\nBODY:\n")
-      const body = bodyBlock.slice(0, -5)
+      // コメントを排除する
+      const body = bodyBlock.split("-----")[0]
 
       const attributes = nonBodyBlock.split("\n")
       const title = attributes[1].slice(7)
