@@ -62,7 +62,7 @@ export async function getStaticProps() {
       text: text,
       created_at: date.getTime()
     }
-  }).sort((a, b) => a.created_at_int - b.created_at_int)
+  }).sort((a, b) => a.created_at - b.created_at)
 
   return {
     props: { tree, tweets }
