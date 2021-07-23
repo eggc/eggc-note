@@ -5,7 +5,7 @@ import getSidebarItems from '../../lib/getSidebarItems'
 import rawTweets from '../../lib/raw/tweet'
 
 function renderTweet(tweet) {
-  const date = new Date(tweet.created_at)
+  const date = tweet.created_at
 
   return (
     <div className={`row`} key={tweet.id}>
@@ -25,21 +25,24 @@ export default function Index(props) {
   const onChangeYear = (event) => { setYear(event.target.value) }
   const tweets = props.tweets
 
+  // 日付の型変換を行う
+  tweets.forEach((tweet) => tweet.created_at = new Date(tweet.created_at))
+
   return (
     <Page {...props}>
       <h1 className="page-title">Twitter Archives</h1>
-      <div class="btn-group" role="group">
+      <div className="btn-group" role="group">
         {years.map((year) => {
           return (
             <>
-              <input onClick={onChangeYear} type="radio" name="year-radio" class="btn-check" id={`year-${year}`} value={year} />
-              <label class="btn btn-outline-primary" for={`year-${year}`}>{year}</label>
+              <input onClick={onChangeYear} type="radio" name="year-radio" className="btn-check" id={`year-${year}`} value={year} />
+              <label className="btn btn-outline-primary" htmlFor={`year-${year}`}>{year}</label>
             </>
           )
         })}
       </div>
 
-      {tweets.filter((tweet) => new Date(tweet.created_at).getFullYear() == year).map(renderTweet)}
+      {tweets.filter((tweet) => tweet.created_at.getFullYear() == year).map(renderTweet)}
     </Page>
   )
 }
@@ -57,8 +60,7 @@ export async function getStaticProps() {
     return {
       id: i,
       text: text,
-      created_at: tweet.created_at,
-      created_at_int: date.getTime()
+      created_at: date.getTime()
     }
   }).sort((a, b) => a.created_at_int - b.created_at_int)
 
