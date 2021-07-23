@@ -1,6 +1,7 @@
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 import Autolinker from 'autolinker'
 import Page from '../../components/page'
+import YearRadioGroup from '../../components/year_radio_group'
 import getSidebarItems from '../../lib/getSidebarItems'
 import rawTweets from '../../lib/raw/tweet'
 
@@ -20,8 +21,7 @@ function renderTweet(tweet) {
 }
 
 export default function Index(props) {
-  const years = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 'full']
-  const [year, setYear] = useState(years[years.length - 1])
+  const [year, setYear] = useState('ALL')
   const onChangeYear = (event) => { setYear(event.target.value) }
   const tweets = props.tweets
 
@@ -31,24 +31,8 @@ export default function Index(props) {
   return (
     <Page {...props}>
       <h1 className="page-title">Twitter Archives</h1>
-      <div className="btn-group" role="group">
-        {years.map((y) => {
-          return (
-            <Fragment key={y}>
-              <input type="radio"
-                     name="year-radio"
-                     className="btn-check"
-                     id={`year-${y}`}
-                     value={y}
-                     defaultChecked={y==year}
-                     onClick={onChangeYear} />
-              <label className="btn btn-outline-primary" htmlFor={`year-${y}`}>{y}</label>
-            </Fragment>
-          )
-        })}
-      </div>
-
-      {tweets.filter((tweet) => year == 'full' || tweet.created_at.getFullYear() == year).map(renderTweet)}
+      <YearRadioGroup year={year} onChangeYear={onChangeYear} />
+      {tweets.filter((tweet) => year == 'ALL' || tweet.created_at.getFullYear() == year).map(renderTweet)}
     </Page>
   )
 }
