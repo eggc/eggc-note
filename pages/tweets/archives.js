@@ -20,7 +20,7 @@ function renderTweet(tweet) {
 }
 
 export default function Index(props) {
-  const years = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021]
+  const years = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 'full']
   const [year, setYear] = useState(years[years.length - 1])
   const onChangeYear = (event) => { setYear(event.target.value) }
   const tweets = props.tweets
@@ -32,17 +32,17 @@ export default function Index(props) {
     <Page {...props}>
       <h1 className="page-title">Twitter Archives</h1>
       <div className="btn-group" role="group">
-        {years.map((year) => {
+        {years.map((y) => {
           return (
             <>
-              <input onClick={onChangeYear} type="radio" name="year-radio" className="btn-check" id={`year-${year}`} value={year} />
-              <label className="btn btn-outline-primary" htmlFor={`year-${year}`}>{year}</label>
+              <input onClick={onChangeYear} type="radio" name="year-radio" className="btn-check" id={`year-${y}`} value={y} checked={y==year}/>
+              <label className="btn btn-outline-primary" htmlFor={`year-${y}`}>{y}</label>
             </>
           )
         })}
       </div>
 
-      {tweets.filter((tweet) => tweet.created_at.getFullYear() == year).map(renderTweet)}
+      {tweets.filter((tweet) => year == 'full' || tweet.created_at.getFullYear() == year).map(renderTweet)}
     </Page>
   )
 }
