@@ -1,5 +1,5 @@
 import '../styles/globals.scss'
-import 'prismjs/themes/prism.css';
+import 'prismjs/themes/prism-tomorrow.css';
 
 import { useEffect, Fragment } from 'react'
 import Head from 'next/head'

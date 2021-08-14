@@ -21,10 +21,15 @@ html {
 h1 { font-size: 32px; font-weight: normal; }
 h2 { font-size: 24px; font-weight: normal; }
 h3, p, li { font-size: 16px; }
+
 code {
-    font-family: monospace;
-    -webkit-font-smoothing: auto;
-    font-smooth: auto;
+    font-family: "MaruMonica";
+    font-size: 16px;
+}
+
+pre {
+    background-color: #2d2d2d;
+    padding: 16px;
 }
 
 main {
