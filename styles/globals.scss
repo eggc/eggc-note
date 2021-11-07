@@ -6,6 +6,8 @@
 
 $font-family-base: "MaruMonica";
 $font-size-base: 16;
+$font-size-middle: 24;
+$font-size-large: 32;
 
 @import 'bootstrap';
 
@@ -18,18 +20,18 @@ html {
     font-smooth: never;
 }
 
-h1 { font-size: 32px; font-weight: normal; }
-h2 { font-size: 24px; font-weight: normal; }
-h3, p, li { font-size: 16px; }
+h1 { font-size: $font-size-large + px; font-weight: normal; }
+h2 { font-size: $font-size-middle + px; font-weight: normal; }
+h3, p, li { font-size: $font-size-base + px; }
 
 code {
     font-family: "MaruMonica";
-    font-size: 16px;
+    font-size: $font-size-base + px;
 }
 
 pre {
     background-color: #2d2d2d;
-    padding: 16px;
+    padding: $font-size-base + px;
 }
 
 main {
@@ -49,7 +51,7 @@ center {
 
 .eggc-diary {
     h1 {
-        font-size: 16px;
+        font-size: $font-size-base + px;
     }
 }
 
