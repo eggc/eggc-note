@@ -33,6 +33,7 @@
     "@types/jest": "^26.0.23",
     "@types/n-readlines": "^1.0.1",
     "@types/react": "^17.0.8",
+    "@typescript-eslint/eslint-plugin": "^5.5.0",
     "eslint": "^8.3.0",
     "jest": "^27.0.3",
     "ts-jest": "^27.0.1",
