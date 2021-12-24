@@ -10,9 +10,9 @@ export default function Index(props) {
         <li><Link href="/tweets">tweets</Link></li>
         <li><Link href="/tweets/archives">tweets/archives</Link></li>
         <li><Link href="/savepoint628">savepoint628</Link></li>
-        <li><Link href="/posts/日記">日記</Link></li>
+        <li><Link href="/posts/diary">diary</Link></li>
       </ul>
-      </Page>
+    </Page>
   )
 }
 

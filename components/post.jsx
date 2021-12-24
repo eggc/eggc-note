@@ -24,7 +24,7 @@ function findNode(tree, post) {
 
 export default function Post({post, tree}) {
   if(post.body) {
-    const extraClass = (post.title == '日記') ? 'eggc-diary' : ''
+    const extraClass = (post.title == 'diary') ? 'eggc-diary' : ''
 
     return (
       <div>
