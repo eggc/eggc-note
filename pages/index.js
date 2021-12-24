@@ -12,8 +12,7 @@ export default function Index(props) {
         <li><Link href="/savepoint628">savepoint628</Link></li>
         <li><Link href="/posts/日記">日記</Link></li>
       </ul>
-      <div>Font: マルモニカ by <a href="http://www17.plala.or.jp/xxxxxxx/00ff/">x0y0pxFreeFont</a></div>
-    </Page>
+      </Page>
   )
 }
 

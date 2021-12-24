@@ -1,10 +1,10 @@
 @charset "utf-8";
 @font-face {
-    font-family: "MaruMonica";
-    src: url("/marumonica.woff");
+    font-family: 'Kiwi Maru', serif;
+    src: url("/KiwiMaru-Light.ttf");
 }
 
-$font-family-base: "MaruMonica";
+$font-family-base: 'Kiwi Maru';
 $font-size-base: 16;
 $font-size-middle: 24;
 $font-size-large: 32;
@@ -15,17 +15,12 @@ div#__next {
     margin-top: 3rem;
 }
 
-html {
-    -webkit-font-smoothing: none;
-    font-smooth: never;
-}
-
 h1 { font-size: $font-size-large + px; font-weight: normal; }
 h2 { font-size: $font-size-middle + px; font-weight: normal; }
 h3, p, li { font-size: $font-size-base + px; }
 
 code {
-    font-family: "MaruMonica";
+    font-family: monospace;
     font-size: $font-size-base + px;
 }
 
