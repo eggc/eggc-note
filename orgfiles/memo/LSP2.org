@@ -1,0 +1,135 @@
+#+OPTIONS: ^:nil
+#+OPTIONS: toc:nil
+
+* 概要
+
+- [[https://github.com/joaotavora/eglot][eglot]] を試してみたところ LSP はうまく動いていて、かなり使えるレベルになっている。特に TypeScript の言語サーバはおすすめできる。何が良いのかはこの記事の本文で列挙した。
+- LSP は高度なシンタックスハイライトのための機能を持っているが、eglot はそれに対応していない。代わりに  [[https://emacs-tree-sitter.github.io/][emacs-tree-sitter]] を使えばほぼ同等の効果が得られる。動作もかなり速いのでおすすめ。
+- LSP と lint ツールを協調させるのは難しい。今は妥協して別々に動かすしかなさそう。
+
+* はじめに
+
+エディタの機能からプログラミング言語の解析に関わる機能を切り出し、エディタに依存しない「言語サーバ」を作るというアイデアがある。これを整備して、エディタと言語サーバが通信するルールを決めたものが  [[https://docs.microsoft.com/ja-jp/visualstudio/extensibility/language-server-protocol?view=vs-2022][LSP]] である。LSP を使うことで良質な開発体験ができる、という意見をしばしば耳にするようになってきた。RubyKaigi 2021 でも、[[https://rubykaigi.org/2021-takeout/presentations/mametter.html][TypeProf for IDE: Enrich Dev-Experience without Annotations]] で Ruby3 の言語サーバを使えばエディタでこんな事ができる、と説明していた。
+
+Emacs でも LSP に従ったクライアントとして振る舞うためのパッケージは存在している。しかし、私が数年前に試した頃は、いまいち使えない印象だった。パフォーマンスは良くないし、精度もよくない。仕事でよく使う Ruby の言語サーバーの性能が良くなかったせいかもしれない。しかし、VSCode の盛り上がりを見るに、近年ではそれも変化してきたような印象を受ける。そこで、あらためて Emacs に LSP を導入してみることにした。
+
+* TypeScript の LSP を試す
+
+typescript-mode に上乗せして TypeScript の言語サーバを使ってみよう。Emacs の LSP クライアントとしては [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]] と [[https://github.com/joaotavora/eglot][eglot]] がある。どうやら lsp-mode より eglot のほうが少ない設定で導入できるようなので、eglot をインストールしてみることにした。use-package を使っているので設定ファイルに下記の行を追加して実行する。
+
+#+begin_src elisp
+(use-package eglot)
+#+end_src
+
+とりあえずこれだけでも動くらしい。適当なファイルを開いて ~M-x eglot~ で eglot を有効にしてみた。言語サーバをインストールしてないので警告が出てしまった。
+
+> [eglot] I guess you want to run 'javascript-typescript-stdio', but I can't find 'javascript-typescript-stdio' in PATH! Enter program to execute (or <host>:<port>):
+
+nvm でバージョン管理しているので、プロジェクトの nodejs のバージョンに対して [[https://github.com/typescript-language-server/typescript-language-server][typescript-language-server]] をインストールした。再び ~M-x eglot~ で今度は言語サーバの実行コマンドを与えてみる。成功メッセージが表示された。
+
+> [eglot] Connected! Server `EGLOT (my-project/typescript-mode)' now managing `typescript-mode' buffers in project `my-project'.
+
+毎回 ~M-x eglot~ を実行して言語サーバを指定するのが面倒なので、設定ファイルに書くことにした。（言語サーバーのパスはもっと見直したほうが良さそうだ）
+
+#+begin_src elisp
+(use-package eglot
+  :config
+  (add-to-list 'eglot-server-programs '(typescript-mode . ("/Users/eggc/.nvm/versions/node/v12.19.0/bin/typescript-language-server" "--stdio")))
+  :hook
+  (typescript-mode . eglot-ensure))
+#+end_src
+
+eglot で紹介されている機能をいくつか試してみた。
+
+- Completion: 補完機能。 [[https://github.com/company-mode/company-mode][company-mode]] は文法を考慮しないが eglot を有効にすると補完候補がより賢いものになる。
+- Diagnostics: 構文チェック機能。 [[https://www.flycheck.org/en/latest/][flycheck]] を使えば lint したり構文エラーを発見したりできるが、LSP ではそのような設定無しに構文エラーを見つけることができる。Emacs 組み込みの ~flymake~ でマークされるので基本的に追加設定は不要。カーソルを当てるとミニバッファにエラー内容が表示される。
+- Hover on symbol: ヒント機能。関数呼び出しや変数を参照しているコードにカーソルを当てると、ミニバッファにインターフェース（関数なら引数型と戻値型、変数なら型定義）が表示される。
+- Rename: リネーム機能。 [[https://github.com/mhayashi1120/Emacs-wgrep][wgrep]] を使えばファイルを横断した検索置換をできるが、LSP では ~M-x eglot-rename~ でクラスやメソッドなどのリネームができる。これは文脈を踏まえたリネームなので偶然同じ名前が使われているシンボルがリネームに巻き込まれたりすることがない。
+- Find definition: 定義ジャンプ機能。[[https://github.com/jacktasia/dumb-jump][dumb-jump]] を使えば言語サーバなしで定義ジャンプできるが LSP は dumb-jump で対応できない外部ライブラリの定義ジャンプもできる。Emacs 組み込みの定義ジャンプコマンド ~xref-find-definitions~ に、自動でヒント情報を与えるので特別な設定は不要。
+- Code Actions: ~M-x eglot-code-actions~ で言語サーバが持っている code action を実行できるらしい。私が試したところでは、未使用変数に下線が表示され、そこをクリックすると、変数を削除するかアンダースコアをつけるといった自動修正が実行できた。
+
+言語サーバ無しで他のパッケージで何とかしていた部分を、高機能に格上げしているのがありがたい。私は試していないが eglot は他にも LSP で定められている機能のいくつかを実装しているようだ。
+
+- Snippet completion: [[http://elpa.gnu.org/packages/yasnippet.html][yasnippet]] の内容を補完できるらしい。
+- Find references: ~xref-find-references~ により関数や変数の利用箇所を検索できる。
+
+* シンタックスハイライトと LSP
+
+Emacs でのシンタックスハイライト（コードの色付け処理）は正規表現を使って行われている。たとえば ruby-mode のソースコードを見ると[[https://github.com/emacs-mirror/emacs/blob/698e044a253e9d0e4ec2c74b0b9648f139f2192b/lisp/progmodes/ruby-mode.el#L42-L135][このような大量の正規表現]]を使っている。しかし、正規表現は文脈を持たないのに対して、ソースコードは文脈を持つため細やかな色付けができない。
+
+正規表現によるシンタックスハイライトに対して、ソースコードを意味的に解釈して色付けを行う方法をセマンティックハイライトと呼ぶらしい。セマンティックハイライトは文脈を解釈するので正規表現によるハイライトよりも精密な色付けが可能である。
+
+LSP 3.6 から、セマンティックハイライトのための機能 [[https://microsoft.github.io/language-server-protocol/specification#textDocument_colorPresentation][Color Presentation Request]] が追加されたらしい。これを使うと[[https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide][この記事]]で見られるように、変数と関数の引数を区別して色分けしたりできる。
+
+Emacs でも lsp-mode を使えばセマンティックハイライトを利用できるらしい。ただし、もうひとつの LSP クライアントである eglot は[[https://github.com/joaotavora/eglot/issues/615][セマンティックハイライトに対応しない方針のようだ]]。理由として、LSPを通じたセマンティックハイライトは、Emacs 組み込みのハイライトよりも低速であると添えている。
+
+LSP を使わずにセマンティックハイライトを利用したい場合は [[https://tree-sitter.github.io/tree-sitter/][tree-sitter]] を使う方法もある。tree-sitter はソースコードを解析して高速に構文木を作成するライブラリ。一度作成した構文木は保持していて、ソースコードの変更に追従して内部的な構文木を変化させることができるらしい。
+
+ソースコードを解析するという点においては tree-sitter と LSP は似ているが、tree-sitter はあくまでライブラリとして最小限の機能しか定めていないのに対して LSP はコード補完やドキュメント参照など幅広い機能を定めている。
+
+tree-sitter は、実行ファイルなどは提供してなくて純粋なC言語のライブラリとして提供されている。そこで dynamic module という機能を使って tree-sitter を呼び出さなければならない。dynamic module については[[https://qiita.com/trueroad/items/b87f0dffb658b328831c][この記事]]が詳しい。dynamic module を使った tree-sitter の呼び出し実装が [[https://emacs-tree-sitter.github.io/][emacs-tree-sitter]] である。
+
+emacs-tree-sitter の使い方はごく簡単で、インストールガイドに書いてあるとおりにすれば良い。実際に動かしてみると、たしかにコードの色付けが見やすくなっていると感じる。動作もかなり速いのでおすすめできる。
+
+ただデフォルトでは tsx を色付けできないので、設定が必要。[[https://zenn.dev/hyakt/articles/6ff892c2edbabb#tsx%E3%81%AE%E5%AF%BE%E5%BF%9C][この記事が参考になる。]]
+
+* lint と LSP
+
+プロジェクトでコードスタイルに一貫性をもたせるために [[https://typescript-eslint.io/][eslint]] を使っているが言語サーバーは lint 機能は持っていない。そのため普段は flycheck を使って eslint を実行するようにしていたが、LSP の構文チェックと lint が別々に動いているのは気持ちが悪い。どうにか設定をまとめられないかと考えた。調べたところではいくつか選択肢があるようだ。
+
+- [[https://github.com/mattn/efm-langserver][efm-langserver]]
+- [[https://github.com/iamcco/diagnostic-languageserver][diagnostic-languageserver]]
+
+言語サーバが存在しない markdown などに対して、lint を言語サーバ代わりに使うというアイデアに基づいている。どちらも lint のアダプタになり、外向きには言語サーバとして働く。LSP のファイル変更通知にだけ対応していて、ファイル変更されたあとに lint を実行し、その実行結果を言語サーバの様式に従ってレスポンスするのだと思う。
+
+試しに efm-langserver をインストールして下のような設定を追加してみた。
+
+#+begin_src yaml
+tools:
+  typescript-eslint: &javascript-eslint
+    lint-command: 'yarn eslint -f visualstudio --stdin --stdin-filename ${INPUT}'
+    lint-ignore-exit-code: true
+    lint-stdin: true
+    lint-formats:
+      - "%f(%l,%c): %tarning %m"
+      - "%f(%l,%c): %rror %m"
+languages:
+  typescript:
+    - <<: *typescript-eslint
+#+end_src
+
+さらに emacs に下記の設定を追記する。
+
+#+begin_src elisp
+(add-to-list 'eglot-server-programs '(typescript-mode . ("efm-langserver")))
+#+end_src
+
+とりあえず動作させることはできたが typescript-language-server と共存できていない。ひとつのプログラミング言語に対して2つの言語サーバを動かすということはできないようだ。冷静に考えると、2つの言語サーバと json で会話するとしたら、ほとんど無駄だから、できなくてあたりまえだ。加えて、efm-langserver は code action にも対応していないので lint の自動修正はできない。flycheck を外すのは諦めることにした。
+
+* さいごに
+
+「なんとなく LSP を導入して何が良いのかもわからずに使う」という状況にはなりたくなかったので、そこを明瞭にできたので良かったと思う。これまでいろいろなパッケージを組み合わせてやってきたことを LSP だけで済むのはすごく良いと感じた。LSP がサポートしてそうだけどしてない・できないも切り分けできたので、今後はパッケージ追加する判断も素早くできそう。
+
+* memo
+
+- [[https://qiita.com/blue0513/items/acc962738c7f4da26656][Emacs で LSP を活用してみる]]という記事では eglot を ruby で動かす例がある。
+- エディタから言語サーバーへの送信
+  - Notification
+    - textdocument/didOpen ファイルを開いた
+    - textdocument/didChange ファイルを変更した（言語サーバーは変更されたファイルを解析してエラーや警告があれば渡す）
+    - textdocument/didClose ファイルを閉じた
+  - Request
+    - textdocument/Definition 定義ジャンプ要求
+      - リクエストパラメータとしてファイルURIと、カーソル位置座標を送る（プログラムの構文レベル情報でなく、エディタレベル情報をおくる）
+      - 言語サーバーは定義箇所のファイルのURIと、カーソル位置情報を返す（これもエディタレベル情報を送る）
+- クライアント・サーバーがお互いLSPの全機能をサポートしているわけではない
+  - それぞれ capabilities でわかる
+
+- 逆
+  - Notification
+  - Response
+- できること
+  - 定義ジャンプ
+
+
+https://solist.work/blog/posts/language-server-protocol/

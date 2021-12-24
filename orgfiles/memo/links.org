@@ -1,0 +1,40 @@
+- https://developer.mozilla.org/ja/docs/Web/Guide/HTML/Using_HTML_sections_and_outlines#section_elements_in_html5
+- https://note.com/cyberz_cto/n/n26f535d6c575
+- https://bliki-ja.github.io/
+- https://engineering.mercari.com/ladder/
+- https://shuuji3.xyz/eng-practices/
+- https://github.com/hatena/Hatena-Textbook
+- https://honsuki.jp/
+- https://github.com/EbookFoundation/free-programming-books/blob/master/books/free-programming-books-ja.md
+- https://github.com/danistefanovic/build-your-own-x
+- https://github.com/jlevy/the-art-of-command-line/blob/master/README-ja.md
+- https://github.com/trekhleb/javascript-algorithms/blob/master/README.ja-JP.md
+- https://qiita.com/kazuo_reve/items/d1a3f0ee48e24bba38f1
+- https://web.dev/learn/css/
+- https://www.ai-shift.co.jp/techblog/1980
+- https://confengine.com/conferences/scrum-fest-osaka-2021/proposal/15448
+- https://t-wada.hatenablog.jp/entry/clean-code-that-works
+- https://tsujimotter.hatenablog.com/
+- https://www.newtonpress.co.jp/newton.html
+  - https://www.newtonpress.co.jp/dcms_media/image/newton2109_038-039.jpg
+- PMBOK
+- https://moneyforward.com/engineers_blog/2021/02/22/api-ux/
+- https://moneyforward.com/engineers_blog/2021/07/29/user-modeling/
+- https://mixi-developers.mixi.co.jp/21-technical-training-a0bcdbf9bca0
+- https://sachachua.com/dotemacs/#orgf12806a
+- https://techblog.sega.jp/
+- https://twitter.com/Freija_N/status/1429653614578913284?s=20
+- https://recruit-tech.co.jp/blog/2021/08/20/recruit-bootcamp-2021/
+- https://dropbox.github.io/dbx-career-framework/overview.html
+- https://dev.mysql.com/doc/refman/5.6/ja/select-optimization.html
+- https://note.com/tck/n/na0f87af89407
+- http://y-anz-m.blogspot.com/2017/03/droidkaigi-2017_9.html
+- https://browser.engineering/#introduction
+- https://cses.fi/problemset/list/
+- https://algo-logic.info/segment-tree/
+
+
+- オッドタクシー https://oddtaxi.jp/
+- 粘菌生活のススメ https://www.seibundo-shinkosha.net/book/science/20086/
+- ボブという名の猫 http://bobthecat.jp/
+- 天文の世界史 https://www.shueisha-int.co.jp/publish/%E5%A4%A9%E6%96%87%E3%81%AE%E4%B8%96%E7%95%8C%E5%8F%B2

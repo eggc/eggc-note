@@ -1,0 +1,9 @@
+いろいろある
+
+- raspberry-pi A はコンパクトで良い感じだけど ethernet がついてないので出力しにくい。
+- raspberry-pi zero よさそうだがまったく売ってない。
+- raspberry-pi pico だがこれはマイコンであって OS 入らない。
+- raspberry-pi compute module は組み込み用なのでそれ単体では使えない。けどよさそう。
+  - compute module に対応している
+
+- 集積回路の GPIO (General-purpose input/output) とは汎用入出力のこと。回路を繋ぎ変えて入力にも出力にも役割を変えられるピン。

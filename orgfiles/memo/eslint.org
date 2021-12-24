@@ -1,0 +1,31 @@
+eslint ちゃんと使ったことないのでインストールしてみる。
+
+https://typescript-eslint.io/
+
+.eslintrc.js を書く必要あり。内容は下のような感じ。
+
+#+begin_src js
+module.exports = {
+  root: true,
+  parser: '@typescript-eslint/parser',
+  plugins: [
+    '@typescript-eslint',
+  ],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+  ],
+};
+#+end_src
+
+.eslintignore も書いておく。
+
+#+begin_src
+node_modules
+#+end_src
+
+eslint を実行してみよう。
+
+#+begin_src bash
+yarn eslint . --ext .js,.jsx,.ts,.tsx
+#+end_src

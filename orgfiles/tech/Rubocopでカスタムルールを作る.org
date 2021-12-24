@@ -1,0 +1,325 @@
+#+OPTIONS: ^:nil
+#+OPTIONS: toc:nil
+
+本記事は Rubocop に自分だけのルールを追加する方法を紹介します。Rubocop を全く知らない方でも読み物になるように、大まかな概要をおさらいしてから本題に入ります。
+
+* Rubocop とは
+
+プログラマは誰しも、わかりやすさのため、あるいは効率化のために、自分なりのルールを守ってプログラムを書いています。わざわざ明示的に定めていないかもしれませんが、下記のようなルールはどのようなプログラムであっても満たすべきでしょう。
+
+- インデントを揃える
+- 未使用変数を使わない
+- if 文で2回以上同じ分岐をしない
+
+Rubocop は、Ruby プログラムがこのようなルールを満たしているかチェックするツールです。変更を加えるときに Rubocop のチェックを通すことで、プログラムが劣化するのをある程度回避できます。特に、チームで開発している場合には、レビュアーの負担が軽くなることでしょう。一部のルールについては自動修正にも対応しているため、手作業で直す手間を省くこともできます。
+
+* Rubocop の使い方
+
+試しに、未使用変数を含む、簡単なプログラムを書いてみましょう。
+
+#+begin_src ruby
+hoge = 10
+fuga = 20
+
+puts(fuga)
+#+end_src
+
+これを rubocop コマンドに与えます。
+
+#+begin_src bash
+rubocop test.rb
+#+end_src
+
+このコマンドは、ファイルの中身を解析し、問題のあった行を出力します。実際に試してみた結果は下記のとおりです。未使用変数を正しく検出できていることがわかります。
+
+#+begin_src
+Inspecting 1 file
+W
+
+Offenses:
+
+test.rb:1:1: W: Lint/UselessAssignment: Useless assignment to variable - hoge.
+hoge = 1
+^^^^
+
+1 file inspected, 1 offense detected
+#+end_src
+
+* Custom Cop の雛形
+
+Rubocop でカスタムルール(Custom Cop)を作るには一定のインターフェースを満たすクラスを作る必要があります。
+
+- RuboCop::Cop::Base を継承したクラスを作る
+- エラーメッセージの定数 MSG を定義する
+- そのクラスに on_xxx フックを実装する(構文解析時に実行されるメソッド)
+  - 違反しているときは add_offense メソッドを実行する
+
+具体例は下のとおりです。
+
+#+begin_src ruby
+class RuboCop::Cop::Style::Dame < RuboCop::Cop::Base
+  MSG = 'ダメです！'
+
+  def check_custom_rule(node)
+    false # あとで実装する
+  end
+
+  def on_send(node)
+    return unless check_custom_rule(node)
+
+    add_offense(node)
+  end
+end
+#+end_src
+
+このクラスはあるルールに違反すると、「ダメです！」というメッセージを返します。ルールを実装するには rubocop の構文解析とパターンマッチについて理解する必要があります。
+
+なお、この雛形を作成するときには [[https://github.com/rubocop/rubocop-extension-generator][rubocop-extension-generator]] という gem に組み込まれている rake コマンドを使えば Custom Cop の雛形を作ることができます。しかし、これは独立したリポジトリで動かす前提となっているため、ここでは利用しないことにします。
+
+* Rubocop の構文解析
+
+RuboCop は parser という gem を使っています。これは ruby スクリプトを読み取りその抽象構文木(abstract syntax tree = AST) を作るライブラリです。parser には実行可能形式のコマンド ruby-parse が用意されていて下のようにして試すことができます。
+
+#+begin_src bash
+ruby-parse -e "1" # => (int 1)
+#+end_src
+
+これは 1 だけからなる ruby スクリプトが AST ではただ一つのノード (int 1) で表現されることを表しています。parser は AST の一つのノードをカッコで表現します。そしてカッコの最初にそのノードの種類を出力します。その後は1つ以上の値が続きます。
+
+#+begin_src
+(ノードの種類 値1 ...)
+#+end_src
+
+いくつか例をみてみましょう。
+
+| ruby のコード   | parser の出力した AST                        |
+|-----------------+----------------------------------------------|
+| 100             | (int 100)                                    |
+| "john"          | (str "john")                                 |
+| "john".length   | (send (str "john") :length)                  |
+| [1,2,3]         | (array (int 1) (int 2) (int 3))              |
+| size = 10       | (lvasgn :size (int 10))                      |
+| size = 10; size | (begin (lvasgn :size (int 10)) (lvar :size)) |
+| Math::PI        | (const (const nil :Math) :PI)                |
+| size * 2        | (send (lvar :size) :* (int 2))               |
+| def nop; 1; end | (def :nop (args) (int 1))                    |
+
+ノードの種類は整数、文字列、メソッド呼び出し、変数への代入、変数参照、定数、関数定義などがあります。ちなみに ruby-parse はワンライナーで書く必要はなく、ファイルを受け取る事もできます。手元にある適当な ruby のファイルを ruby-parser に与えてみてください。どんなに複雑なプログラムであっても正しく AST が構築されることを確認できます。
+
+* Rubocop のパターンマッチ
+
+Rubocop では NodePattern という表現方法を使って AST にパターンマッチさせます。これは、AST に対する正規表現のようなものです。正規表現は文字列にマッチする文字列ですが、NodePattern は AST にマッチする文字列です。
+
+たとえば "send" は最もかんたんな NodePattern の一つです。このパターンは、メソッド呼び出しのノードとマッチします。適当なプログラムを与えて "send" とマッチするかどうかを調べてみます。
+
+#+begin_src ruby
+require "rubocop"
+
+# @param [String] patern 判定する NodePattern
+# @param [String] source_code 判定するコード
+# 与えられたパターンがコードのAST とマッチするかどうか判定する
+def match?(pattern, source_code)
+  # 実装は Custom Cop の利用とはさほど関係がないので読み飛ばしてください
+  node_pattern = RuboCop::AST::NodePattern.new(pattern)
+  node = RuboCop::ProcessedSource.new(source_code, RUBY_VERSION.to_f).ast
+  node_pattern.match(node)
+end
+
+match?("send", "100")             #=> nil
+match?("send", "Math::PI")        #=> nil
+match?("send", "'john'.length")   #=> true
+match?("send", "1 + 1")           #=> true
+#+end_src
+
+パターン "send" は、整数リテラルや定数とマッチしません。なぜなら、メソッド呼び出しではないからです。一方、"send" と文字列リテラルに対する length メソッドの呼び出しはマッチします。同じように 1 + 1 もマッチします。なぜなら、このプログラムは + というメソッドを呼び出すからです。
+
+"send" と同じように "int" や "const" も最も短い NodePattern のひとつです。
+
+#+begin_src ruby
+match?("int", "100")              #=> true
+match?("const", "Math::PI")       #=> true
+#+end_src
+
+より複雑なパターンを見ていきましょう。カッコで囲われたパターンは AST の文字列表現に一致するとき true を返します。
+
+#+begin_src ruby
+match?("(int 100)", "100")        #=> true
+match?("(int 10)", "100")         #=> nil
+#+end_src
+
+ノードのうち、関心のない部分には ... を使うことで任意要素とマッチすることができます。
+
+#+begin_src ruby
+match?("(int ...)", "100")        #=> true
+match?("(int ...)", "10")         #=> true
+
+match?("(send ... :length) ", "array.length")    #=> true
+match?("(send ... :length) ", "'john'.length")   #=> true
+match?("(send ... :length) ", "length * weight") #=> nil
+#+end_src
+
+1つ目のパターン "(int ...)" はすべての整数リテラルとマッチします。2つ目のパターン "(send ... :length)" はメソッド length の呼び出しとマッチします。いかなるレシーバであってもマッチします。最後の例は lenght メソッドを呼び出していないため nil を返しています。
+
+$... を使うことでマッチしたコードの一部を取り出す事ができます。
+
+#+begin_src ruby
+match?("(send $...)", "Array.new")       #=> [s(:const, nil, :Array), :new]
+match?("(send (...) $...)", "Array.new") #=> [:new]
+match?("(send $... :new)", "Array.new")  #=> [s(:const, nil, :Array)]
+#+end_src
+
+1つ目の例は、メソッド呼び出しのレシーバ、メソッド名を取得します。2つ目の例はメソッド名だけ取得します。最後の例はレシーバだけを取得します。なお、ここで出力された小文字の ~s~ は内部表現で AST ノードを表しています。
+
+* Custom Cop の実装
+
+これまでに勉強したパターンマッチを使って試しに ~!array.empty?~ を禁止するというルールを作成してみます。禁止する理由は、より短いコード ~array.any?~ で表現できるからです。 ~!array.empty?~ にマッチする NodePattern はどうなるでしょうか。このコードが ~empty?~ メソッドと ~!~ メソッドの呼び出しであること。そして、レシーバに関心がないことに着目すると ~(send (send (...) :empty?) :!)~ と表現できることがわかります。
+
+このパターンを使って判定を行う Custom Cop は下記のようになります。
+
+#+begin_src ruby
+class RuboCop::Cop::Style::SimplifyNotEmptyWithAny < RuboCop::Cop::Base
+  def_node_matcher :not_empty_call?, "(send (send (...) :empty?) :!)"
+
+  MSG = 'ダメです！'
+  RESTRICT_ON_SEND = [:!]
+
+  # rubocop-ast で定義されたフック send ノードに対して実行する
+  def on_send(node)
+    return unless not_empty_call?(node)
+
+    add_offense(node)
+  end
+end
+#+end_src
+
+def_node_matcher は第一引数をメソッド名、第二引数を NodePattern にとります。そして、そのパターンに一致するかどうか判定するメソッドを定義します。定義したメソッドを使って on_send の内部で判定しています。
+
+定数 RESTRICT_ON_SEND は最適化のための特別な配列です。この中に含まれるメソッドが呼び出されたときだけ on_send を実行するように制限します。この制限がない場合、すべてのメソッドに対して on_send を呼び出し、パターンマッチの計算を行うために実行時間が増えてしまいます。今回のケースでは、最も外側にあるメソッド ! を発見したときだけ on_send を行うようにして実行時間を減らします。
+
+定義した Custom Cop はとりあえず ./lib/rubocop/cop/style/simplify_not_empty_with_any.rb に保存しましょう。これで準備ができました。確認のため、わざと Custom Cop に違反しているテストファイル test.rb を作成します。
+
+#+begin_src ruby
+hoge = (1..10).to_a
+
+if hoge.is_a?(Array) && !hoge.empty?
+  puts hoge.length
+  puts hoge
+end
+#+end_src
+
+そして、下記のコマンドを実行します。
+
+#+begin_src bash
+rubocop test.rb --require ./lib/rubocop/cop/style/simplify_not_empty_with_any.rb
+#+end_src
+
+下記の結果になりました。カスタムルール Style/SimplifyNotEmptyWithAny による検査が行われ、違反箇所が見つかっていることがわかります。
+
+#+begin_src
+Inspecting 1 file
+C
+
+Offenses:
+
+test.rb:3:12: C: Style/SimplifyNotEmptyWithAny: ダメです！
+if hoge.is_a?(Array) && !hoge.empty?
+                        ^^^^^^^^^^^^
+
+1 file inspected, 1 offense detected
+#+end_src
+
+毎回 --require を書くのは面倒なので設定ファイル .rubocop.yml に下記の内容を追記します。
+
+#+begin_src .rubocop.yml
+require:
+  - ./lib/rubocop/cop/style/simplify_not_empty_with_any
+
+Style/SimplifyNotEmptyWithAny:
+  Enabled: true
+#+end_src
+
+オプションなしで rubocop コマンドを実行するだけで Custom Cop を毎回実行するようになります。
+
+* Custom Cop を auto-correct に対応させる
+
+ビルドイン Cop のいくつかは auto-correct 機能を備えています。rubocop 実行時に引数を与えることで、違反箇所を自動的に修正します。
+
+#+begin_src bash
+rubocop --auto-correct
+#+end_src
+
+先程定義した Style/SimplifyNotEmptyWithAny を auto-correct に対応させましょう。Custom Cop に2つの修正を加えます。
+
+- ~RuboCop::Cop::AutoCorrector~ モジュールを extend する
+- メソッド ~add_offence~ にブロックを与えて違反箇所のソースコードを修正する
+
+#+begin_src ruby
+class RuboCop::Cop::Style::SimplifyNotEmptyWithAny < RuboCop::Cop::Base
+  extend RuboCop::Cop::AutoCorrector
+
+  def_node_matcher :match?, '(send (send $(...) :empty?) :!)'
+
+  MSG = 'ダメです！'
+  RESTRICT_ON_SEND = [:!]
+
+  def on_send(node)
+    matched = match?(node)
+
+    return unless matched
+
+    add_offense(node) do |rewriter|
+      rewriter.replace(node, "#{matched.source}.any?")
+    end
+  end
+end
+#+end_src
+
+NodePattern で ~$(...)~ を利用してレシーバーを取り出し、変数 ~matched~ に代入しています。そうして得たレシーバーを使って ~add_offence~ のブロックの中で、ソースコードを ~!array.empty?~ から ~array.any?~ に置き換えています。ソースコードの置き換えは構文木の状態で行う必要があるため ~Parser::Source::TreeRewriter~ を使います。主に下記のメソッドを使用します。
+
+| メソッド                                                 | 意味                                           |
+|----------------------------------------------------------+------------------------------------------------|
+| #replace(node, content)                                  | node を content で置き換えます                 |
+| #insert_after(node, content)                             | node の末尾に content を付け足します           |
+| #insert_before(node, content)                            | node の先頭に content を付け足します           |
+| #wrap(node, insert_before_content, insert_after_content) | insert_after と intert_before を同時に行います |
+
+node は AST ノードで、content は ruby プログラムの文字列であることに注意してください。使用例は下記のとおりです。
+
+
+前節と同様に rubocop コマンドを実行してみましょう。
+
+#+begin_src
+Inspecting 1 file
+C
+
+Offenses:
+
+test.rb:3:12: C: [Correctable] Style/SimplifyNotEmptyWithAny: ダメです！
+if hoge.is_a?(Array) && !hoge.empty?
+                        ^^^^^^^^^^^^
+
+1 file inspected, 1 offense detected, 1 offense auto-correctable
+#+end_src
+
+エラーが変化し ~[Correctable]~ のラベルが追加され、メッセージの最後に auto-correctable と追記されました。続いて ~rubocop --auto-correct~ コマンドを実行します。
+
+#+begin_src
+Inspecting 1 file
+C
+
+Offenses:
+
+test.rb:3:25: C: [Corrected] Style/SimplifyNotEmptyWithAny: ダメです！
+if hoge.is_a?(Array) && !hoge.empty?
+                        ^^^^^^^^^^^^
+
+1 file inspected, 1 offense detected, 1 offense corrected
+#+end_src
+
+自動修正が正しく機能しました。ファイルの中身もきちんと置き換えられています。
+
+* さいごに
+
+Rubocop を使って、Custom Cop を作り、適用した上で、自動修正機能をつける方法までを紹介しました。
+ここまでくれば、本家 Rubocop に Custom Cop を取り込んでもらうプルリクエストも作れるかもしれません。
+Custom Cop のテストの書き方や、gem を使った開発など、より詳しい内容は[[https://docs.rubocop.org/rubocop/development.html][Rubocop ドキュメント]]の記事をご確認ください。

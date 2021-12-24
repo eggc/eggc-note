@@ -1,0 +1,96 @@
+https://animejs.com/
+
+インストール
+
+#+begin_src bash
+yarn add --dev animejs
+#+end_src
+
+アニメーションさせるページの js に下記のコードを書くといいらしい。
+
+#+begin_src js
+import anime from 'animejs/lib/anime.es.js';
+
+anime({
+  targets: 'div',
+  translateX: 250,
+  rotate: '1turn',
+  backgroundColor: '#FFF',
+  duration: 800
+});
+#+end_src
+
+react のコンポーネントに対してこれがうまく動くかというと怪しい。
+
+- https://ja.reactjs.org/docs/refs-and-the-dom.html
+- https://reactjs.org/docs/refs-and-the-dom.html
+
+react のコンポーネントをアニメーション対象にしたいときはセレクタを使うよりも ref というものを使う（でないと、react 描画時にDOMオブジェクトが変化してしまって、意図したコンポーネントが取れないとかがありそう）react と連携させたいサードパーティーのライブラリが react 対応してないなら ref を使うのは良い選択。
+
+ref は react のコンポーネントや dom オブジェクトへのアクセスを提供するもの。
+
+コンポーネントの内部で React.createRef() を呼び出すと、ref が新規作成されるので、適当な名前をつけて割り当てるとよい。たとえば下のような感じ。
+
+#+begin_src js
+class MyComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.myRef = React.createRef();
+  }
+  render() {
+    return <div ref={this.myRef} />;
+  }
+}
+#+end_src
+
+ref は current という属性をもっていて、そこから DOM ノードが取れる。current を初期化したり null クリアするのはコンポーネントのマウントとアンマウントのときに行われるらしい。
+
+上の例で何が起こるかと言うと、render によって生成された div タグの DOM ノードを this.myRef.current で取り出せるようになっている。言い換えると親コンポーネント(MyComponent)から子どもの要素 <div> を触れる。これは殆どの場合は不要だけど、前述したとおり、どうしても DOM 要素に触りたい時には使えるかもしれない。
+
+もう少し複雑な例
+
+#+begin_src js
+  class MyComponent2 extends React.Component {
+    constructor(props) {
+      super(props);
+      this.myRef = React.createRef();
+    }
+
+    message() {
+      alert(this.myRef.current.innerText)
+      this.myRef.current.innerText = Math.random().toString(32)
+    }
+
+    render() {
+      return (
+        <div>
+          <div ref={this.myRef}>anchor</div>
+          <button onClick={this.message.bind(this)}>what is ref.current?</button>
+        </div>
+      )
+    }
+  }
+#+end_src
+
+この例ではボタンを押したタイミングで DOM 要素の中身を適当なやつに書き換えている。（普通にprops を使って置き換えられるので望ましくない例になってる）
+
+animejs で作った dom オブジェクトを ref にすり替えると下のような感じ。
+
+#+begin_src js
+  class MyComponent extends React.Component {
+    // アニメーションを開始して作成した dom オブジェクトを返却
+    startAnimeJs(ref) {
+      return anime({
+        targets: ref,
+        translateX: 250,
+      })
+    }
+
+    // ref をアニメーション dom に置き換え
+    render() {
+      return <div ref={startAnimeJs(ref)} />
+    }
+  }
+#+end_src
+
+div は ref を受け取って何をしてるかは不明。

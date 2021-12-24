@@ -1,0 +1,36 @@
+- profile
+  - 今は使えない
+  - 元標準添付ライブラリ
+  - メンテナンスされてなかったため ruby 2.7 あたりで消えたらしい
+- [[https://github.com/tmm1/rblineprof][rblineprof]]
+  - ドキュメントが少ない
+  - 最小の機能だけ持っている感じ
+  - [[https://moneyforward.com/engineers_blog/2020/11/26/performance-improvement/][moneyforward の記事]] で紹介されている
+- [[https://github.com/tmm1/stackprof][stackprof]]
+  - rblineprof の機能プラスアルファな感じ
+  - [[https://blog.agile.esm.co.jp/entry/2021/01/05/202153][永和システムマネジメントの記事]] で紹介されている
+  - グラフ表示とかできて楽しそう
+- [[https://ruby-prof.github.io/][ruby-prof]]
+  - ドキュメントが充実している
+- [[https://rbspy.github.io/][rbspy]]
+  - 今回調べた中では Github Star が 2.2k で 1位
+  - Rubymine に入ってるらしい
+  - pid を教えるだけでプロファイルしてくれる
+  - 試してみる
+    - rails server を監視してページの表示をプロファイルした
+    - フレームグラフが見える
+      - フレームグラフとは [[https://deeeet.com/writing/2016/05/29/go-flame-graph/][この記事]] とかは参考になる [[https://www.brendangregg.com/flamegraphs.html][この記事]] が大本かな？
+        - 色はランダムなので気にしなくていい
+        - 横軸は時間ではない
+        - 呼び出し回数はわからない
+        - どれくらいの時間を消費したかだけがわかる
+        - 再帰処理をしているとうまく動かないこともあるらしい
+    - controller で検索
+    - sample とはなんだ
+
+    - brew install rbspy
+    - rbspy record ruby tmp/test.rb
+      - うまく動かない
+
+
+trdsql というのがあって、json のレコードをテーブルインポートしたりできるらしい。すげえ。

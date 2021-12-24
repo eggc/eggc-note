@@ -1,0 +1,221 @@
+- arduino はマイクロコンピュータ
+  - arduino uno ← スタンダードタイプ
+  - arduino mega
+  - arduino micro
+- arduino はオープンソースなので互換ボード作れる
+- Elegoo も arduino 互換ボードを作って販売している
+  - スターターキットという学習用のやつがある
+  - https://www.elegoo.com/products/elegoo-uno-project-super-starter-kit
+  - amazon で3500円くらい（たまにタイムセールしてて15%OFFとかになるようだ）
+  - これを買った
+- 届いて開けてみた
+  - CDドライブを持ってないので公式サイトから PDF の Zip をダウンロードする
+  - https://www.elegoo.com/pages/arduino-kits-support-files
+- 章に分かれているのでこれを読んでいく
+
+
+* part1 preparation
+** 1.1 packing list
+スターターキットにはいってるパーツの一覧がのってる
+** 1.2 first look arduino
+
+- arduino ボードに乗っかってる部品の説明
+- 電源は USB かもしくはバレルジャックから取る
+- いろいろなピン
+  - 5V, 3.3V, GND ... 電源とアースに使うピン。
+  - Analog ... アナログ入力・出力のためのピン。
+  - Digital ... デジタル入力・出力のためのピン。
+  - PWM ... Pulse With Modulation. デジタルピンのうちチルダがついてるやつ。あとで説明する。
+  - AREF ... Analog Reference. 今は使わない。
+
+** 1.3 for windows setting up development environment
+** 1.4 for mac and ubuntu building a developed environment
+** 1.5 blink and add libraries
+
+サンプルプログラムをデプロイしてみる c++ で書かれているらしい。
+
+void setup() { ... }
+
+- sketch が始まるときに1回だけ呼ばれる
+  - 電源が入ったとき
+  - リセットが押されたとき
+- 用途
+  - 変数の初期化
+  - ピンモードの指定
+  - ライブラリの初期化
+
+void loop() { ... }
+
+- 定期的に呼ばれる
+
+digitalWrite(Pin num, HIGH/LOW)
+delay(ms)
+
+ライブラリをインクルードしてみる。手動で piches.zip を入れてみた。
+そしてライブラリマネージャから入れる方法も試してみた。
+どちらでもない方法もある。これはファイルを直接配置するというもの。
+しかしほぼ利用することはないらしいので、なんとなく目を通す程度にしておく。
+* part2 module learning
+** 2.1 LED
+
+- ブレッドボード
+  - いろいろ配線を試すのに使う
+- LED
+  - 長いほうが + 短いほうが - で逆にしたら光らない
+  - 抵抗なしで電源に直接つないだら大電流が流れて燃え尽きる
+- 抵抗(resistors)
+  - 電気の流れに抵抗するもの。
+  - 抵抗が高いほど流れる電流が減る。
+  - 抵抗には + - はない。
+  - 抵抗は色を見るか、デジタルマルチメーター使うと抵抗値がわかる。
+
+- いよいよ回路作ろう。
+  - 220 -> 1k -> 10k と変えてみた。
+  - 抵抗を増やすほどにLEDの輝きが弱々しくなる。
+  - LED2個直列は光るけど3個直列だと光らない。
+    - これは抵抗の大きさによらないは関係ない。
+    - 電圧がたりなくなってしまうらしい。
+** 2.2 RGB LED
+
+- RGB LED
+  - 一番長いのが - でそれ以外は + で RGB の順
+- Pulse Width Modulation(PWM)
+  - 電源を制御する技術
+  - PWM ピンは analogWrite 関数によりパルスを作る
+  - analogWrite(255) は常時100%出力
+  - analogWrite(0) は常時出力なし
+  - analogWrite(128) は0/1のパルスを等間隔に出力するので擬似的に50%の出力になる
+- PWM を使ってLEDの明るさをコントロールしてみよう。
+  - arduino の3,5,6ピンから出力をもらって、RGB LED に渡してみる。
+  - arduino の3,5,6ピンの出力を細かく変化させるとゲーミングLEDのような感じになる
+
+** 2.3 Digital Inputs
+
+- スイッチを使ってみよう
+- スイッチを押したときだけ回路がつながる
+- pinMode に INPUT_PULLUP を与えると入力ピンになるらしい。
+- INPUT_PULLUP
+  - 回路が通ってないときに HIGH を出力
+  - 回路が通っているときに LOW を出力
+- digitalRead(pin) で現在のピンの状態を取れるらしい。
+- サンプル
+  - 8,9ピンを INPUT_PULLUP にする
+  - 8,9ピンは普段はスイッチに阻まれてどこにも回路作らない HIGH を出力
+  - 8,9ピンでスイッチおしたときだけ GND とつながり回路作る LOW を出力
+
+** 2.4 Serial Monitor
+
+シリアルモニタの設定するだけ
+
+** 2.5 Active Buzzer
+
+- アクティブブザー
+- buzzer というのは DC 電源と集積回路を持っているやつ？
+- PCやプリンタとか色んなものに使われてるらしい
+- passive buzzer
+  - 緑のボードが見えてるやつ
+  - 音は出ないけど矩形波を扱えるらしい
+- active buzzer
+  - ボードが見えないようにフタされてるやつ
+  - 振動装置が組み込まれているので音が出る
+  - passive より高い
+
+- サンプル
+  - めっちゃ嫌な音がする
+  - 振動数が高すぎるのかな
+  - analogWrite で大きさを変えると、音量が上がっていく
+  - delay = 1 ピーピー
+  - delay = 2 ブブブ
+  - delay = 3 より低い音
+  - delay = 4 さらに低い音
+  - delay = 9 ぐらいになるとまた高くなる？
+
+- 音が出るのは面白いけど、音色ではないからちょっとなあ。
+
+** 2.6 Passive Buzzer
+
+- パッシブブザー
+- passive buzzer は PWM を使って空気を振動させて音を作る。
+- 周波数によって違う音になる。
+- 作曲もできるかもよ。
+- analogWrite は 500Hz 固定なので面白みがない。
+- スピーカーと何が違うんやろ。
+- https://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q14136352349
+
+** 2.7 Tilt Ball Switch
+
+- チルトスイッチ
+- 振ると音がする
+- 水銀の塊が入っている？
+- 安価で低電力で簡単に使える
+- 傾きでon/offになる？
+- 加速度センサーほどでもない
+
+** 2.8 Servo
+
+- サーボ
+- 180度まで回転するモーター
+- くるくる回るんじゃなくて行ったり来たりする
+- 足とかに使うのかなあ
+- 茶がグランド
+- 赤が電源
+- オレンジが入力
+
+** 2.9 Ultrasonic Sensor Module
+
+- 超音波センサー
+- 非接触で距離を測定するらしい
+- 2cm-400cm まで
+- これ使えば人が通ったら電気がつくとか、ドアが空いたら電源入れるとかできそう
+- trigger には 10us ごとに HIGH を与える
+- センサーの動き
+  - トリガーピンに HIGH を 10μs 受け取るまでなにもしない
+  - トリガーピンに期待した信号を受け取ったら8回？超音波測定を行う
+    - 超音波測定は8回のパルス音波を発生させて、それが帰ってくるまでの時間を測る
+    - range = high level time * velocity(340m/s) / 2
+  - 測定結果をエコーピンに出力する
+- [[/Users/eguchi.ken/Downloads/ELEGOO The Super Starter Kit for UNO  V2.0.2021.03.31/English/Part 2 Module Learning/2.9   Ultrasonic Sensor Module/HC-SR04/SR04.cpp::1][SR04.cpp]]
+  - pulseIn() で HIGH パルスの時間が取れるっぽい
+  - 超音波センサーの計算はこのクラスに閉じ込めてある
+** 2.10 DHT11 Temperature and Humidity sensor
+
+- 温度湿度センサー
+- DATA ピンへ出力する？
+- [[/Users/eguchi.ken/Downloads/ELEGOO The Super Starter Kit for UNO  V2.0.2021.03.31/English/Part 2 Module Learning/2.10 DHT11 Temperature and Humidity Sensor/DHT.zip:dht_nonblocking.cpp::1][DHT.zip:dht_nonblocking.cpp]]
+- あんまり詳しく書いてないのでちょっとわからない。
+- ただ、DATA ピンから温度と湿度が取れているというのは確か。
+
+** 2.11 Analog joystick
+
+- ジョイスティック
+- 5個のピンがある VCC, GND, X, Y, Key
+- X, Y はアナログピンにつなごう
+- analogRead() で読み取れる
+- analog ピンの精度とか数はボードによって違うらしい
+- UNO では 0 .. 1024 の 10bit
+- 100microseconds(0.0001sec)で読み取れるらしい
+
+** 2.12 IR Receiver Module
+
+- 赤外線センサー
+- TV リモコンとかに使われている
+- 光センサーとは違って可視光線でないやつを見つける
+- センサーとしては38Hz をターゲットにしてる
+  - 太陽光に含まれる赤外線は見つけられない
+  - 38Hz が一番取れる
+  - 34Hz-43Hzくらいはギリギリ出るけどほぼ取れない
+  - ここの解説はちょっとよくわからない
+  - 波長も940nm をターゲットにしてて
+  - 850-1100nm くらいの範囲しかとれないっぽい
+- ピン
+  - G = ground
+  - Y = signal
+  - R = voltage
+- デモ
+  - ああーすげえ
+  - 物理ボタン押したら反応してくれるやん
+
+** LCD Display
+
+- 液晶ディスプレイ
+- アルファベットを表示できるらしい
