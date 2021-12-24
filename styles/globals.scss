@@ -5,7 +5,7 @@
 }
 
 $font-family-base: 'Kiwi Maru';
-$font-size-base: 16;
+$font-size-small: 16;
 $font-size-middle: 24;
 $font-size-large: 32;
 
@@ -17,16 +17,16 @@ div#__next {
 
 h1 { font-size: $font-size-large + px; font-weight: normal; }
 h2 { font-size: $font-size-middle + px; font-weight: normal; }
-h3, p, li { font-size: $font-size-base + px; }
+h3, p, li { font-size: $font-size-small + px; }
 
 code {
     font-family: monospace;
-    font-size: $font-size-base + px;
+    font-size: $font-size-small + px;
 }
 
 pre {
     background-color: #2d2d2d;
-    padding: $font-size-base + px;
+    padding: $font-size-small + px;
 }
 
 main {
@@ -46,7 +46,7 @@ center {
 
 .eggc-diary {
     h1 {
-        font-size: $font-size-base + px;
+        font-size: $font-size-small + px;
     }
 }
 
