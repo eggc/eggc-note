@@ -1,7 +1,7 @@
 import Autolinker from 'autolinker'
-import Page from '../components/page'
-import MovableTypeParser from '../lib/MovableTypeParser'
-import getSidebarItems from '../lib/getSidebarItems'
+import Page from '../../components/page'
+import MovableTypeParser from '../../lib/MovableTypeParser'
+import getSidebarItems from '../../lib/getSidebarItems'
 
 function renderArticle(article) {
   const date = article.created_at
@@ -9,8 +9,8 @@ function renderArticle(article) {
   return (
     <div className={`row row-month month-${date.getMonth() + 1}`} key={article.id}>
       <div className="col-lg-10">
-      <h2>{article.title}</h2>
-      <span dangerouslySetInnerHTML={{ __html: Autolinker.link(article.body)}}></span>
+        <h2>{article.title}</h2>
+        <span dangerouslySetInnerHTML={{ __html: Autolinker.link(article.body)}}></span>
       </div>
       <div className="col-lg-2 d-none d-lg-block">
         <span className="text-muted">{date.toLocaleDateString() + " " + date.toLocaleTimeString()}</span>
