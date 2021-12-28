@@ -1,4 +1,3 @@
-import Sidebar from './sidebar'
 import PageSelect from './page_select'
 import Link from 'next/link'
 
@@ -13,10 +12,7 @@ export default function Page(props) {
           <PageSelect {...props} />
         </div>
 
-        <div className="col-lg-3 d-none d-lg-block">
-          <Sidebar {...props} />
-        </div>
-        <div className="col-lg-9">
+        <div className="col-lg-12">
           <main>
             {props.children}
           </main>
