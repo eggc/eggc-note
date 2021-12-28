@@ -12,6 +12,7 @@ export default function Index(props) {
       </ul>
       <h2>labo</h2>
       <ul>
+        <li><Link href="/labo/anime_js">anime.js</Link></li>
         <li><Link href="/labo/tweets">twitter-api</Link></li>
         <li><Link href="/labo/tweets/archives">twitter-archives</Link></li>
       </ul>
