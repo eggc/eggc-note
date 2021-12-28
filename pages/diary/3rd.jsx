@@ -43,7 +43,7 @@ export async function getStaticProps() {
       body: data.body,
       created_at: data.date.getTime()
     }
-  }).sort((a, b) => a.created_at - b.created_at)
+  })
 
   return {
     props: { tree, articles }
