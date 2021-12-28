@@ -1,3 +1,69 @@
+
+* 2021/12/25 (土)
+
+https://github.com/wandersoncferreira/code-review すごそう
+
+magit の status buffer を起動するのが遅いんだけどプロファイルとかできんのかな。
+https://magit.vc/manual/magit.html#Performance
+
+コードレビューのとき議論したくないやーつ
+
+#+begin_src ruby
+  Member = Struct.new(:name, :score, :active)
+
+  # 入力例
+  MEMBERS = [
+    Member.new("santa", 70, true),
+    Member.new("shiro", 100, true),
+    Member.new("nana", 100, false),
+    Member.new("eleven", 2000, true)
+  ]
+
+  # 期待する出力(json)
+  # - 属性 active が true のレコードのみを出力
+  # - 属性 name をキーとし、score を値とする
+  # - score が 100 を超えている場合は不正値としてメッセージを出力
+  {
+    "santa": 70,
+    "shiro": 100,
+    "eleven": "wrong score!"
+  }
+
+  # 最も素朴な実装
+  def summary0(members)
+    result = {}
+
+    members.each do |member|
+      if member.active
+        if member.score > 100
+          result[member.name] = "wrong score!"
+        else
+          result[member.name] = member.score
+        end
+      end
+    end
+  end
+
+  def summary1(members)
+    members.each_with_object({}) do |member, result|
+      next unless member.active
+
+      score = member.score
+      score = "wrong record!" if score > 100
+
+      result.merge!({ member.name => score })
+    end
+  end
+
+  def summary2(members)
+    members
+      .filter(&:active)
+      .to_h {|member| [member.name, member.score] }
+      .transform_values {|score| score > 100 ? "wrong score!" : score }
+  end
+#+end_src
+
+
 * 2021/12/25 (土)
 
 コンテンツ構造を考えなおしてみる。

@@ -9,7 +9,7 @@ interface Article {
 
 export default class MovableTypeParser {
   read() {
-    const path = join(process.cwd(), 'static/eggchicken.hatenadiary.jp.export.txt')
+    const path = join(process.cwd(), 'public/eggchicken.hatenadiary.jp.export.txt')
     const fileContent = fs.readFileSync(path, 'utf8')
     return this.parse(fileContent)
   }
