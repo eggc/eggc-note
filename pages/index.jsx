@@ -5,13 +5,16 @@ import getSidebarItems from '../lib/getSidebarItems'
 export default function Index(props) {
   return (
     <Page {...props}>
-      <ul>
-        <li><Link href="/tweets">tweets</Link></li>
-        <li><Link href="/tweets/archives">tweets/archives</Link></li>
-      </ul>
       <h2>diary</h2>
+      <ul>
         <li><Link href="/diary/4th">4th</Link></li>
         <li><Link href="/diary/3rd">3rd</Link></li>
+      </ul>
+      <h2>labo</h2>
+      <ul>
+        <li><Link href="/labo/tweets">twitter-api</Link></li>
+        <li><Link href="/labo/tweets/archives">twitter-archives</Link></li>
+      </ul>
     </Page>
   )
 }

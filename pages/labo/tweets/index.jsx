@@ -1,6 +1,6 @@
-import Page from '../../components/page'
-import getSidebarItems from '../../lib/getSidebarItems'
-import TwitterAPI from '../../lib/TwitterAPI'
+import Page from '../../../components/page'
+import getSidebarItems from '../../../lib/getSidebarItems'
+import TwitterAPI from '../../../lib/TwitterAPI'
 
 function renderTweet(tweet) {
   const date = new Date(tweet.created_at)

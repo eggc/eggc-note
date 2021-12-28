@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import Autolinker from 'autolinker'
-import Page from '../../components/page'
-import YearRadioGroup from '../../components/year_radio_group'
-import getSidebarItems from '../../lib/getSidebarItems'
-import rawTweets from '../../lib/raw/tweet'
+import Page from '../../../components/page'
+import YearRadioGroup from '../../../components/year_radio_group'
+import getSidebarItems from '../../../lib/getSidebarItems'
+import rawTweets from '../../../lib/raw/tweet'
 
 function renderTweet(tweet) {
   const date = tweet.created_at
