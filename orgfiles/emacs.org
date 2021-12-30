@@ -1,4 +1,4 @@
-#+TAGS: tech
+* tips
 ** 設定ファイルを分割する方法
 
 最も簡単な方法は load 関数を使って下のように読み込む。拡張子は省略しても良い。
@@ -249,4 +249,179 @@ M-x copy-file-locals-to-dir-localsは、カレントファイル内のファイ�
 他にもディレクトリローカル変数を与える方法が有るらしいけどいったんこれくらいで。
 
 https://ayatakesi.github.io/emacs/25.1/Directory-Variables.html
-** 現在カーソルの単語を得る(things-at-point)
+** 現在カーソルの単語を得る
+
+things-at-point
+
+** grep について
+
+ちょっとした検索をするなら vc-git-grep を使う。
+そうでないなら M-x grep で git grep コマンドを叩くのが一番シンプルで良い。
+以下は過去の情報。
+
+ripgrep.el をインストールして ripgrep-regex を使う。
+
+emacs では ripgrep などで検索した結果をファイルに保存することができる。
+保存したファイルは特に拡張子などは必要なく、emacs で開き直せばハイライトやリンクを再現できる。
+おそらく、検索結果にgrepモードや、検索のルートディレクトリ、検索コマンドなどのメタ情報が含まれているため。
+
+保存した検索結果を開くと g で再検索したり、wgrep の機能を利用したりすることもできる。
+M-x read-only-mode を実行して読み込み専用モードを解除すれば編集して必要な結果だけ切り取って保存したり、複数の検索結果をマージすることもできる。
+（ただその場合は再検索すると壊れるが）
+
+OR検索したい場合は正規表現で検索する。たとえば (BookStore|book_store) のようにすると BookStore と book_store の両方を検索できる。
+検索コマンドによっては --fixed-strings または -F オプションが自動的に付与されてしまって、正規表現で検索できないこともある。
+拡張した検索コマンドを用意しておくと楽かもしれない。
+
+#+begin_src lisp
+(defun ripgrep-regexp-with-arguments (regexp directory args)
+  (interactive
+    (list (read-from-minibuffer "Ripgrep search for: ")
+          (read-directory-name "Directory: ")
+          (read-from-minibuffer "optional arguments: ")))
+    (ripgrep-regexp regexp directory (list args)))
+#+end_src
+
+* built-in package
+** xref
+
+https://github.com/emacs-mirror/emacs/blob/master/lisp/progmodes/xref.el
+
+定義ジャンプなどの機能を提供する。
+
+** vc-git
+
+https://github.com/emacs-mirror/emacs/blob/master/lisp/vc/vc-git.el
+
+バージョン管理に関係した機能を提供する。
+git grep による検索 M-x vc-git-grep が定義されている。
+
+** list-packages
+
+M-x list-packages でパッケージ一覧を表示する。
+
+| キー | 効果                   |
+|------+------------------------|
+| /n   | パッケージ名でフィルタ |
+| //   | フィルタを解除         |
+* use-package
+
+https://github.com/jwiegley/use-package
+
+マクロにより設定を短く書ける。
+* dumb-jump
+
+https://github.com/jacktasia/dumb-jump
+
+* ivy, counsel
+
+https://github.com/abo-abo/swiper
+
+補完インターフェース
+
+M-x の呼び出し時に ^ が自動でつくのだがこれがいらない。
+
+#+begin_src lisp
+(ivy-configure 'counsel-M-x
+  :initial-input "^"
+  :display-transformer-fn #'counsel-M-x-transformer)
+#+end_src
+
+自分で使いたい場合は次のようにする。
+
+#+begin_src lisp
+(ivy-read "選んでください：" '(みかん りんご なすび))
+#+end_src
+
+* ivy-xref
+
+https://github.com/alexmurray/ivy-xref
+
+xref の検索結果を ivy インターフェースで選択するプラグイン。
+
+* projectile
+
+git grep を有効にしておかないと mac の BSD grep が使用されて検索が遅い。
+git grep にしておけば十分早い。
+
+#+begin_src lisp
+(setq projectile-use-git-grep t)
+#+end_src
+
+s-p を projectile-command-map にアサインした前提。
+
+| キー    | 効果     |
+|---------+----------|
+| s-p s g | 全文検索 |
+* typescript-mode
+
+https://github.com/emacs-typescript/typescript.el
+
+* tide
+
+https://github.com/ananthakumaran/tide/#typescript に書いてあるとおりやる
+
+自動的にフォーマットするやつは変形させれる
+
+#+begin_src lisp
+(setq tide-format-options
+  '(
+  :insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis nil
+  :insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets nil
+  :insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces nil
+  ))
+#+end_src
+
+これは eslint とは別の機能らしい。
+
+#+begin_src lisp
+{
+  "indentSize": 4,
+  "tabSize": 4,
+  "insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": false,
+  "placeOpenBraceOnNewLineForFunctions": false,
+  "placeOpenBraceOnNewLineForControlBlocks": false
+}
+#+end_src
+* magit
+
+他のブランチのファイルを見るには ~M-x magit-find-file~ を使う。
+
+git merge release がコンフリクトしたとする。
+ここで ~M-x magit-ediff-resolve~ でコンフリクト解消を試みる。
+たとえばコンフリクトしたファイルが core.rb だとすると下記の 4 つのウィンドウが表示される。
+
+- [A] core.rb UPPER=HEAD... 略
+- [B] core.rb LOWER=release ... 略
+- [diff(A+B)] ediff-merge
+- ミニバッファ
+
+ミニバッファをアクティブにした状態で下記の操作ができる。
+逆に言うとミニバッファにカーソルがあたってないと操作できない。
+
+| キー | 操作                  |
+|------+-----------------------|
+| n/p  | 次/前のhunkに移動する |
+| v/V  | 下に/上にスクロール   |
+| a    | [A] を採用            |
+| b    | [B] を採用            |
+| r    | [diff(A+B)] に戻す    |
+| *    | 手で直す              |
+| q    | 終了                  |
+| h    | ハイライト消す/つける |
+|      |                       |
+
+ediff-merge を直接編集したりすると面倒になるので注意。
+
+* flycheck
+
+動的な(on-the-fly)シンタックスチェッカー
+
+| 操作    | 意味                                                 |
+|---------+------------------------------------------------------|
+| M-n     | (flycheck-next-error) 直後のエラー箇所にジャンプ     |
+| M-p     | (flycheck-previous-error) 直前のエラー箇所にジャンプ |
+| C-c ! l | エラーのリストを表示                                 |
+* emacs-tree-sitter
+
+セマンティックハイライト
