@@ -8,8 +8,6 @@ export default class TwitterAPI {
     const response = await this.searchRecent()
     const tweets = this.buildTweet(response)
 
-    console.dir(tweets, { depth: null })
-
     return tweets;
   }
 
