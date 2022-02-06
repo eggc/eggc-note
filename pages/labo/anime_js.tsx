@@ -1,3 +1,4 @@
+import anime from "animejs";
 import React, { RefObject } from "react";
 import Page from "../../components/page";
 
@@ -25,7 +26,6 @@ export default class Index extends React.Component {
     return (
       <Page {...this.props}>
         <h1 className="page-title">anime.js</h1>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" />
         <div ref={this.myRef}></div>
         <button onClick={this.startAnimation.bind(this)}>
           アニメーション開始
