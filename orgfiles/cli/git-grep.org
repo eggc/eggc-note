@@ -1,3 +1,6 @@
+#+OPTIONS: ^:nil
+#+OPTIONS: toc:nil
+
 * 使用例
 ** git grep
 
