@@ -1,4 +1,3 @@
-import PageSelect from './page_select'
 import Link from 'next/link'
 
 export default function Page(props) {
@@ -9,7 +8,6 @@ export default function Page(props) {
           <Link href="/">EGGC NOTE</Link>
         </div>
         <div className="col-lg-3 col-7">
-          <PageSelect {...props} />
         </div>
 
         <div className="col-lg-12">

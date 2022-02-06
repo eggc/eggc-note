@@ -1,6 +1,5 @@
 import React, { RefObject } from "react";
 import Page from "../../components/page";
-import getSidebarItems from "../../lib/getSidebarItems";
 
 export default class Index extends React.Component {
   private myRef: RefObject<HTMLDivElement>;
@@ -34,9 +33,4 @@ export default class Index extends React.Component {
       </Page>
     );
   }
-}
-
-export async function getStaticProps() {
-  const tree = await getSidebarItems();
-  return { props: { tree } };
 }

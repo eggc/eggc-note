@@ -1,5 +1,4 @@
 import Page from '../../../components/page'
-import getSidebarItems from '../../../lib/getSidebarItems'
 import TwitterAPI from '../../../lib/TwitterAPI'
 
 function renderTweet(tweet) {
@@ -33,10 +32,9 @@ export default function Index(props) {
 }
 
 export async function getStaticProps() {
-  const tree = await getSidebarItems()
   const tweets = await TwitterAPI.getTweets()
 
   return {
-    props: { tree, tweets }
+    props: { tweets }
   }
 }

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import Autolinker from 'autolinker'
 import Page from '../../../components/page'
 import YearRadioGroup from '../../../components/year_radio_group'
-import getSidebarItems from '../../../lib/getSidebarItems'
 import rawTweets from '../../../lib/raw/tweet'
 
 function renderTweet(tweet) {
@@ -38,7 +37,6 @@ export default function Index(props) {
 }
 
 export async function getStaticProps() {
-  const tree = await getSidebarItems()
   const tweets = rawTweets.filter((data) => {
     // メンションとリツイートは消す
     return !data.tweet.full_text.startsWith("@") && !data.tweet.full_text.startsWith("RT @")
@@ -55,6 +53,6 @@ export async function getStaticProps() {
   }).sort((a, b) => a.created_at - b.created_at)
 
   return {
-    props: { tree, tweets }
+    props: { tweets }
   }
 }

@@ -1,20 +1,18 @@
 import Page from '../../components/page'
 import Post from '../../components/post'
-import getSidebarItems from '../../lib/getSidebarItems'
 import getPostPaths from '../../lib/getPostPaths'
 import FileReader from '../../lib/FileReader'
 
-export default function Index({post, tree, id}) {
+export default function Index({post, id}) {
   return (
-    <Page tree={tree} currentPostId={id}>
-      <Post tree={tree} post={post} />
+    <Page currentPostId={id}>
+      <Post post={post} />
     </Page>
   )
 }
 
 export async function getStaticProps({params}) {
   const id = params.keys.join("/")
-  const tree = await getSidebarItems()
   let post
 
   try {
@@ -26,7 +24,7 @@ export async function getStaticProps({params}) {
   }
 
   return {
-    props: { id, tree, post }
+    props: { id, post }
   }
 }
 

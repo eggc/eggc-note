@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import Page from '../components/page'
-import getSidebarItems from '../lib/getSidebarItems'
 
 export default function Index(props) {
   return (
@@ -18,12 +17,4 @@ export default function Index(props) {
       </ul>
     </Page>
   )
-}
-
-export async function getStaticProps() {
-  const tree = await getSidebarItems()
-
-  return {
-    props: { tree }
-  }
 }

@@ -1,7 +1,6 @@
 import Autolinker from 'autolinker'
 import Page from '../../components/page'
 import MovableTypeParser from '../../lib/MovableTypeParser'
-import getSidebarItems from '../../lib/getSidebarItems'
 
 function renderArticle(article) {
   const date = article.created_at
@@ -35,7 +34,6 @@ export default function Index(props) {
 
 export async function getStaticProps() {
   const parser = new MovableTypeParser()
-  const tree = await getSidebarItems()
   const articles = parser.read().map((data, i) => {
     return {
       id: i,
@@ -46,6 +44,6 @@ export async function getStaticProps() {
   })
 
   return {
-    props: { tree, articles }
+    props: { articles }
   }
 }
