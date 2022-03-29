@@ -6,7 +6,7 @@ describe('EntriesBuilder', () => {
     const result: Entry[] = await EntriesBuilder.build()
 
     expect(result[0].name).toEqual("README")
-    expect(result[0].path).toEqual("/eggc/memo/blob/main/README.md")
+    expect(result[0].path).toEqual("/eggc/memo/main/README.md")
     expect(result[0].raw).toEqual("これは eggc の個人的なメモを整理整頓して蓄えるリポジトリ\n")
   })
 })

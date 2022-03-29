@@ -14,14 +14,14 @@ export default class Scraper {
       if(path == null) {
         throw "パスが取得できませんでした"
       } else {
-        return path
+        return path.replace(/\/blob\//g, "/")
       }
     })
     return paths
   }
 
   static async getRawEntry(path: Path): Promise<RawEntry> {
-    const url: string = "https://raw.githubusercontent.com" + path.replace(/blob/g, "/")
+    const url: string = "https://raw.githubusercontent.com" + path
     const response: AxiosResponse = await axios.get(url)
     return response.data
   }
