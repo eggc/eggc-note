@@ -2,7 +2,14 @@ import Scraper, {Path, RawEntry} from './Scraper'
 import Entry from './Entry'
 
 export default class EntriesBuilder {
+  private static entriesCache: Entry[]
+
   static async build(): Promise<Entry[]> {
+    this.entriesCache ||= await this._build()
+    return this.entriesCache
+  }
+
+  static async _build(): Promise<Entry[]> {
     const paths: Path[] = await Scraper.getPaths()
     const rawEntries: RawEntry[] = await Promise.all(paths.map(Scraper.getRawEntry))
     const result: Entry[] = []
