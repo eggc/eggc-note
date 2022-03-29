@@ -1,4 +1,4 @@
-import Scraper, {Path, RawEntry} from '../../../lib/diary/Scraper'
+import Scraper, {Path, RawEntry} from '@lib/diary/Scraper'
 
 describe('Scraper', () => {
   test('getPaths', async () => {

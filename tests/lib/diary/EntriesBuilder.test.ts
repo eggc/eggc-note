@@ -1,5 +1,5 @@
-import Entry from '../../../lib/diary/Entry'
-import EntriesBuilder from '../../../lib/diary/EntriesBuilder'
+import Entry from '@lib/diary/Entry'
+import EntriesBuilder from '@lib/diary/EntriesBuilder'
 
 describe('EntriesBuilder', () => {
   test('build', async () => {
