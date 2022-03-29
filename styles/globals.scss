@@ -1,10 +1,5 @@
 @charset "utf-8";
-@font-face {
-    font-family: 'Kiwi Maru', serif;
-    src: url("/KiwiMaru-Light.ttf");
-}
-
-$font-family-base: 'Kiwi Maru';
+$font-family-base: 'inherit';
 $font-size-small: 16;
 $font-size-middle: 24;
 $font-size-large: 32;
