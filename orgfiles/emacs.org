@@ -1,43 +1,26 @@
 * tips
-** 設定ファイルを分割する方法
+** プロファイル
 
-最も簡単な方法は load 関数を使って下のように読み込む。拡張子は省略しても良い。
-ちょっと作ってみた関数とかは適当な名前をつけて隔離しておき下のようにして読み込めばいい。
+magit-status がやけに遅かったのでプロファイルしてみることにした。
 
-#+begin_src lisp
-(load "~/my-lisp/hogehoge.el")
-#+end_src
-
-より高機能な方法として require を使う方法がある。
+https://ayatakesi.github.io/emacs/24.5/elisp_html/Profiling.html
 
 #+begin_src
-(require hoge-feature)
+M-x profiler-start
+M-x magit-status
+M-x profiler-stop
+M-x profiler-report
 #+end_src
 
-require の引数には feature と呼ばれるものを与える。
-feature とは読み込もうとしているパッケージの名前で、パスではない。
-feature に与えられる名前を持つには (provide) によりパッケージ名を定めなければならない。
-自分で feature を作るには次のようなファイルを作る。
+この順番で関数を実行したら profile-report バッファが表示されて、
+関数でかかっているコストを調べる事ができる。
+magit を遅延ロードしている関数も測定されてしまった。
+先に magit をロードしてからもう一回試した。
 
-#+begin_src lisp
-(provide 'hoge-feature)
-(message "hoge-feature is loaded")
-#+end_src
-
-この feature はメッセージを出力するだけの feature である。
-このファイルを ~/my-lisp/hoge-feature.el として保存してみよう。
-最後に下記のプログラムを実行すれば ~/my-lisp/hoge-feature.el が読み込まれる。
-
-#+begin_src lisp
-(add-to-list 'load-path "~/my-lisp/")
-(require hoge-feature)
-#+end_src
-
-変数 load-path は feature の探索範囲を示すリストで、このリストに ~/my-lisp/ を加えることでそこにあるファイルを見つけることができる。
-
-require を使えば2重に読み込んでしまうことを避けられるので、
-いろいろなパッケージから参照されているようなパッケージは require を使って読み込むべきである。
-ただし、自分だけの設定ファイルなどはよそから参照されることはないので、普段遣いは load で十分だろう。
+vertico とかが邪魔でわかりにくかったけど、magit-status の関数呼び出しを分解していくと
+magit-status 自体は 50% くらいの CPU を使っており
+中を分解していくとヘッダの挿入とか upstream との差分を見たりするところで 20% くらいCPU消費していた。
+いらなさそうな hook を消すと良さそうだったので消してみたら実際速くなった。うれしい。
 
 ** ラムダ（匿名関数）
 
@@ -197,13 +180,21 @@ defvar, defconst はコメントを書いておくと setq と違って describe
 
 かつては defadvice という関数が使われていたが今では advice-add を使うのが推奨されているようだ。
 
-https://misaki-blog.com/191026-emacs-advice-add/ ここに例がある。
+#+begin_src elisp
+(advice-add #'新しい関数 :override #'元の関数)
 
 (defun my-find-file (old-func &rest args)
   (print args)
   (apply old-func args))
 
 (advice-add #'find-file :around #'my-find-file)
+#+end_src
+
+とすれば良いらしい。
+
+https://misaki-blog.com/191026-emacs-advice-add/ ここに例がある。
+
+
 ** 連想リスト(association-list)
 
 連想リストはコンスセルで作られた値のペアを要素として持つリスト。

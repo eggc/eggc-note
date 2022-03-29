@@ -1,3 +1,5 @@
+- https://gist.github.com/knsh14/0507b98c6b62959011ba9e4c310cd15d
+- https://github.com/knsh14/uber-style-guide-ja
 - https://developers.google.com/search/docs/beginner/seo-starter-guide?hl=ja
 - https://developer.mozilla.org/ja/docs/Learn/Getting_started_with_the_web/HTML_basics
 - https://developer.mozilla.org/ja/docs/Web/Guide/HTML/Using_HTML_sections_and_outlines#section_elements_in_html5
@@ -19,7 +21,6 @@
 - https://tsujimotter.hatenablog.com/
 - https://www.newtonpress.co.jp/newton.html
   - https://www.newtonpress.co.jp/dcms_media/image/newton2109_038-039.jpg
-- PMBOK
 - https://moneyforward.com/engineers_blog/2021/02/22/api-ux/
 - https://moneyforward.com/engineers_blog/2021/07/29/user-modeling/
 - https://mixi-developers.mixi.co.jp/21-technical-training-a0bcdbf9bca0
@@ -34,9 +35,13 @@
 - https://browser.engineering/#introduction
 - https://cses.fi/problemset/list/
 - https://algo-logic.info/segment-tree/
+- https://www.opm.gov/policy-data-oversight/assessment-and-selection/structured-interviews/guide.pdf
+- https://exercism.org/dashboard
+- https://note.com/tck/n/na0f87af89407
+- https://sre.google/books/
 
+本
 
-- オッドタクシー https://oddtaxi.jp/
-- 粘菌生活のススメ https://www.seibundo-shinkosha.net/book/science/20086/
-- ボブという名の猫 http://bobthecat.jp/
-- 天文の世界史 https://www.shueisha-int.co.jp/publish/%E5%A4%A9%E6%96%87%E3%81%AE%E4%B8%96%E7%95%8C%E5%8F%B2
+- [[https://www.amazon.co.jp/Philosophy-Software-Design-English-ebook/dp/B07N1XLQ7D/ref=tmm_kin_swatch_0?_encoding=UTF8&qid=&sr=][A Philosophy of Software Design]]
+- [[https://www.seibundo-shinkosha.net/book/science/20086/][粘菌生活のススメ]]
+- [[https://www.shueisha-int.co.jp/publish/%E5%A4%A9%E6%96%87%E3%81%AE%E4%B8%96%E7%95%8C%E5%8F%B2][天文の世界史]]
