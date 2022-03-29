@@ -21,7 +21,7 @@ export default class Scraper {
   }
 
   static async getRawEntry(path: Path): Promise<RawEntry> {
-    const url: string = "https://raw.githubusercontent.com" + path.replaceAll("/blob/", "/")
+    const url: string = "https://raw.githubusercontent.com" + path.replace(/blob/g, "/")
     const response: AxiosResponse = await axios.get(url)
     return response.data
   }
