@@ -29,7 +29,8 @@ export default class TwitterAPI {
 
   static buildTweet(response: { body: any }) {
     const tweets = response.body.data
-    const included_medias = response.body.includes.media
+    const included_medias = response.body.includes && response.body.includes.media
+
     for(let i=0; i<tweets.length; i++) {
       if(!tweets[i].attachments) {
         continue
