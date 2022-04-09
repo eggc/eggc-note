@@ -2,7 +2,8 @@ import React from "react"
 import Item, {ItemProps} from './Header/Item'
 
 export type SidebarProps = {
-  items: ItemProps[]
+  items: ItemProps[],
+  children?: any
 }
 
 function renderItem(itemProps: ItemProps) {

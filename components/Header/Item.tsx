@@ -4,6 +4,7 @@ export type ItemProps = {
   title: string
   href: string
   isActive?: boolean
+  children?: ItemProps[]
 }
 
 export default function Item({title, href, isActive}: ItemProps) {
