@@ -2,6 +2,7 @@ import Header from './Header'
 import {ItemProps} from './Header/Item'
 import Main from './Main'
 import Sidebar from './Sidebar'
+import AppSidebar from './AppSidebar'
 
 export type PageProps = {
   appTitle: string
@@ -9,15 +10,10 @@ export type PageProps = {
   children?: any
 }
 
-function SidebarColumn(sidebarItems: ItemProps[]) {
-  return <div className="col" style={{ flexBasis: "300px" } as any}>
-    <Sidebar items={sidebarItems}></Sidebar>
-  </div>
-}
-
-function MainColumn(children: any) {
-  return <div className="col">
-    <Main children={children}></Main>
+function Column(props: any) {
+  const style = props.fixed ? { flex: "0 0 200px"} : {}
+  return <div className="col" style={style}>
+    {props.children}
   </div>
 }
 
@@ -26,8 +22,12 @@ export default function Page(props: PageProps) {
     <Header title={props.appTitle}></Header>
     <div className="container-fluid">
       <div className="row">
-        {props.sidebarItems && SidebarColumn(props.sidebarItems)}
-        {props.children && MainColumn(props.children)}
+        <Column fixed>
+          {props.sidebarItems ? <Sidebar items={props.sidebarItems}></Sidebar> : <AppSidebar></AppSidebar>}
+        </Column>
+        <Column>
+          <Main>{props.children}</Main>
+        </Column>
       </div>
     </div>
   </>
