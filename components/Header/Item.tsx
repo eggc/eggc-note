@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-type ItemProps = {
+export type ItemProps = {
   title: string
   href: string
   isActive?: boolean
