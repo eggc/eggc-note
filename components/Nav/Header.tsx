@@ -15,7 +15,7 @@ export default function Header({title}: HeaderProps) {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
-            <NavItem title="memo" href="/memo" isActive></NavItem>
+            <NavItem title="memo" href="/memo"></NavItem>
             <NavItem title="labo" href="/labo"></NavItem>
             <NavItem title="archive" href="/archive"></NavItem>
           </ul>

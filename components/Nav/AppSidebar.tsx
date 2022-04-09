@@ -15,15 +15,14 @@ const SIDEBAR_ITEMS: NavItemProps[] = [
   ]}
 ]
 
-function updateItems(items: NavItemProps[], path: string): NavItemProps[] {
+function findItems(items: NavItemProps[], path: string): NavItemProps[] {
   let result: NavItemProps[] = items
 
   items.forEach((item) => {
     if (path.startsWith(item.href)) {
-      item.isActive = true
       if (item.children) {
         result = item.children
-        updateItems(item.children, path)
+        findItems(item.children, path)
       }
     }
   })
@@ -33,8 +32,7 @@ function updateItems(items: NavItemProps[], path: string): NavItemProps[] {
 export default function AppSidebar() {
   const router = useRouter();
   const currentPath = router.pathname
-  const itemsClone = JSON.parse(JSON.stringify(SIDEBAR_ITEMS))
-  const items = updateItems(itemsClone, currentPath)
+  const items = findItems(SIDEBAR_ITEMS, currentPath)
 
   return <Sidebar items={items}></Sidebar>
 }

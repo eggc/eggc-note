@@ -1,13 +1,17 @@
 import Link from 'next/link'
+import { useRouter } from "next/router"
 
 export type NavItemProps = {
   title: string
   href: string
-  isActive?: boolean
   children?: NavItemProps[]
 }
 
-export default function NavItem({title, href, isActive}: NavItemProps) {
+export default function NavItem({title, href}: NavItemProps) {
+  const router = useRouter();
+  const currentPath = router.pathname
+  const isActive = currentPath.startsWith(href)
+
   const aProps = {
     className: `nav-link ${isActive ? 'active' : ''}`,
     "aria-current": isActive ? "page" : ''
