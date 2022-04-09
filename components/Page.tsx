@@ -4,8 +4,8 @@ import Main from './Main'
 import Sidebar from './Sidebar'
 
 export type PageProps = {
-  sidebarItems: ItemProps[],
-  appTitle: string,
+  appTitle: string
+  sidebarItems?: ItemProps[]
   children?: any
 }
 

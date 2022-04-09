@@ -3,6 +3,7 @@ import {useState} from 'react'
 import HTMLEntriesBuilder, {HTMLEntry} from '@lib/diary/HTMLEntriesBuilder'
 
 type Props = {
+  appTitle: string
   entries: string
 }
 

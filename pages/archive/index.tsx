@@ -1,13 +1,13 @@
-import Link from 'next/link'
 import Page from 'components/Page'
+
+const sidebarItems = [
+  { href: "/archive/4th", title: "4th" },
+  { href: "/archive/3rd", title: "3rd" },
+]
 
 export default function Index(props: any) {
   return (
-    <Page {...props}>
-      <ul>
-        <li><Link href="/archive/4th">4th</Link></li>
-        <li><Link href="/archive/3rd">3rd</Link></li>
-      </ul>
+    <Page sidebarItems={sidebarItems} {...props}>
     </Page>
   )
 }
