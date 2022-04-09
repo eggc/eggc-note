@@ -1,3 +1,4 @@
+import React from "react"
 import Item, {ItemProps} from './Header/Item'
 
 export type SidebarProps = {
@@ -5,7 +6,9 @@ export type SidebarProps = {
 }
 
 function renderItem(itemProps: ItemProps) {
-  return <Item {...itemProps}></Item>
+  return <React.Fragment key={itemProps.title}>
+    <Item {...itemProps}></Item>
+  </React.Fragment>
 }
 
 export default function Sidebar({items}: SidebarProps) {
