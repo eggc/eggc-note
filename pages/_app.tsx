@@ -2,10 +2,17 @@ import 'styles/globals.scss'
 import 'prismjs/themes/prism-tomorrow.css';
 import { AppProps } from 'next/app'
 import Head from 'next/head'
+import { useEffect } from 'react'
 
 const AppTitle = "EGGC NOTE"
 
 export default function MyApp({ Component, pageProps }: AppProps) {
+  // bootstrap は document を参照しているので nextjs の静的ビルドでエラーを出さないようにする
+  // https://www.kindacode.com/article/how-to-correctly-use-bootstrap-5-in-next-js/
+  useEffect(() => {
+    require('bootstrap/dist/js/bootstrap.bundle.min.js')
+  }, [])
+
   return (
     <>
       <Head>
