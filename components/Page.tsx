@@ -4,8 +4,8 @@ import Main from './Main'
 export default function Page(props: any) {
   return (
     <>
-        <Header title="EGGC NOTE"></Header>
-        <Main children={props.children}></Main>
+      <Header title={props.appTitle}></Header>
+      <Main children={props.children}></Main>
     </>
   )
 }

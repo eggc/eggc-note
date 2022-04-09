@@ -3,16 +3,16 @@ import 'prismjs/themes/prism-tomorrow.css';
 import { AppProps } from 'next/app'
 import Head from 'next/head'
 
-function MyApp({ Component, pageProps }: AppProps) {
+const AppTitle = "EGGC NOTE"
+
+export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>EGGC NOTE</title>
+        <title>{AppTitle}</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <Component {...pageProps} />
+      <Component appTitle={AppTitle} {...pageProps} />
     </>
   )
 }
-
-export default MyApp
