@@ -1,8 +1,8 @@
-import Header from './Header'
-import {NavItemProps} from './Header/Item'
+import Header from './Nav/Header'
+import {NavItemProps} from './Nav/NavItem'
 import Main from './Main'
-import Sidebar from './Sidebar'
-import AppSidebar from './AppSidebar'
+import Sidebar from './Nav/Sidebar'
+import AppSidebar from './Nav/AppSidebar'
 
 export type PageProps = {
   appTitle: string

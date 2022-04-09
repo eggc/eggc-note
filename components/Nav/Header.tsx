@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import NavItem from './Header/Item'
+import NavItem from './NavItem'
 
 type HeaderProps = {
   title: string

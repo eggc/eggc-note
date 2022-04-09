@@ -1,6 +1,6 @@
 import { useRouter } from "next/router"
 import Sidebar from "./Sidebar"
-import {NavItemProps} from './Header/Item'
+import {NavItemProps} from './NavItem'
 
 const SIDEBAR_ITEMS: NavItemProps[] = [
   { href: "/memo", title: "memo" },

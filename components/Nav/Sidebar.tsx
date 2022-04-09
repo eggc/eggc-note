@@ -1,5 +1,5 @@
 import React from "react"
-import NavItem, {NavItemProps} from './Header/Item'
+import NavItem, {NavItemProps} from './NavItem'
 
 export type SidebarProps = {
   items: NavItemProps[],
