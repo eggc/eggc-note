@@ -1,4 +1,4 @@
-import Page from '../../components/page'
+import Page from 'components/Page'
 import Post from '../../components/post'
 import FileReader from '../../lib/FileReader'
 

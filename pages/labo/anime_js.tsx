@@ -1,6 +1,6 @@
 import anime from "animejs";
 import React, { RefObject } from "react";
-import Page from "../../components/page";
+import Page from "components/Page";
 
 export default class Index extends React.Component {
   private myRef: RefObject<HTMLDivElement>;

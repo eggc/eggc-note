@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Autolinker from 'autolinker'
-import Page from '../../../components/page'
+import Page from 'components/Page'
 import YearRadioGroup from '../../../components/year_radio_group'
 import rawTweets from '../../../lib/raw/tweet'
 

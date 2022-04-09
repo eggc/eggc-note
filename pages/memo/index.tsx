@@ -1,4 +1,4 @@
-import Page from 'components/page'
+import Page from 'components/Page'
 import {useState} from 'react'
 
 import HTMLEntriesBuilder, {HTMLEntry} from '@lib/diary/HTMLEntriesBuilder'

@@ -1,5 +1,5 @@
 import Autolinker from 'autolinker'
-import Page from '../../components/page'
+import Page from 'components/Page'
 import MovableTypeParser from '../../lib/MovableTypeParser'
 
 function renderArticle(article) {
