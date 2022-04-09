@@ -1,6 +1,5 @@
 import Page from 'components/Page'
 import {useState} from 'react'
-
 import HTMLEntriesBuilder, {HTMLEntry} from '@lib/diary/HTMLEntriesBuilder'
 
 type Props = {
@@ -29,8 +28,7 @@ export default function Index(props: Props) {
             {entries.map(renderEntries)}
           </ul>
         </div>
-        <div className="col-sm-9">
-          <span dangerouslySetInnerHTML={{ __html: currentEntry.html }}></span>
+        <div className="col-sm-9 eggc-note-memo" dangerouslySetInnerHTML={{ __html: currentEntry.html }}>
         </div>
       </div>
     </Page>
