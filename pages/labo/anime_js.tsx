@@ -1,6 +1,6 @@
 import anime from "animejs";
 import React, { RefObject } from "react";
-import Page from "components/Page";
+import Page, {PageProps} from "components/Page";
 
 export default class Index extends React.Component {
   private myRef: RefObject<HTMLDivElement>;
@@ -24,7 +24,7 @@ export default class Index extends React.Component {
 
   render() {
     return (
-      <Page {...this.props}>
+      <Page {...this.props as PageProps}>
         <h1 className="page-title">anime.js</h1>
         <div ref={this.myRef}></div>
         <button onClick={this.startAnimation.bind(this)}>
