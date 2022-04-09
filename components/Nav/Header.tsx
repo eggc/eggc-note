@@ -1,8 +1,15 @@
+import React from 'react'
 import Link from 'next/link'
-import NavItem from './NavItem'
+import NavItem, {NAV_ITEMS, NavItemProps} from './NavItem'
 
 type HeaderProps = {
   title: string
+}
+
+function renderNavItem(navItem: NavItemProps) {
+  return <React.Fragment key={navItem.title}>
+    <NavItem {...navItem}></NavItem>
+  </React.Fragment>
 }
 
 export default function Header({title}: HeaderProps) {
@@ -15,9 +22,7 @@ export default function Header({title}: HeaderProps) {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
-            <NavItem title="memo" href="/memo"></NavItem>
-            <NavItem title="labo" href="/labo"></NavItem>
-            <NavItem title="archive" href="/archive"></NavItem>
+            {NAV_ITEMS.map(renderNavItem)}
           </ul>
         </div>
       </div>
