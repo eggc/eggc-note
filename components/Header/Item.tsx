@@ -1,13 +1,13 @@
 import Link from 'next/link'
 
-export type ItemProps = {
+export type NavItemProps = {
   title: string
   href: string
   isActive?: boolean
-  children?: ItemProps[]
+  children?: NavItemProps[]
 }
 
-export default function Item({title, href, isActive}: ItemProps) {
+export default function NavItem({title, href, isActive}: NavItemProps) {
   const aProps = {
     className: `nav-link ${isActive ? 'active' : ''}`,
     "aria-current": isActive ? "page" : ''

@@ -1,12 +1,12 @@
 import Header from './Header'
-import {ItemProps} from './Header/Item'
+import {NavItemProps} from './Header/Item'
 import Main from './Main'
 import Sidebar from './Sidebar'
 import AppSidebar from './AppSidebar'
 
 export type PageProps = {
   appTitle: string
-  sidebarItems?: ItemProps[]
+  sidebarItems?: NavItemProps[]
   children?: any
 }
 

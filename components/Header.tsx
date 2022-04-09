@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Item from './Header/Item'
+import NavItem from './Header/Item'
 
 type HeaderProps = {
   title: string
@@ -15,9 +15,9 @@ export default function Header({title}: HeaderProps) {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
-            <Item title="memo" href="/memo" isActive></Item>
-            <Item title="labo" href="/labo"></Item>
-            <Item title="archive" href="/archive"></Item>
+            <NavItem title="memo" href="/memo" isActive></NavItem>
+            <NavItem title="labo" href="/labo"></NavItem>
+            <NavItem title="archive" href="/archive"></NavItem>
           </ul>
         </div>
       </div>

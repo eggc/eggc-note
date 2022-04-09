@@ -1,8 +1,8 @@
 import { useRouter } from "next/router"
 import Sidebar from "./Sidebar"
-import {ItemProps} from './Header/Item'
+import {NavItemProps} from './Header/Item'
 
-const SIDEBAR_ITEMS: ItemProps[] = [
+const SIDEBAR_ITEMS: NavItemProps[] = [
   { href: "/memo", title: "memo" },
   { href: "/labo", title: "labo", children: [
     { href: "/labo/anime_js", title: "anime.js" },
@@ -15,8 +15,8 @@ const SIDEBAR_ITEMS: ItemProps[] = [
   ]}
 ]
 
-function updateItems(items: ItemProps[], path: string): ItemProps[] {
-  let result: ItemProps[] = items
+function updateItems(items: NavItemProps[], path: string): NavItemProps[] {
+  let result: NavItemProps[] = items
 
   items.forEach((item) => {
     if (path.startsWith(item.href)) {

@@ -1,14 +1,14 @@
 import React from "react"
-import Item, {ItemProps} from './Header/Item'
+import NavItem, {NavItemProps} from './Header/Item'
 
 export type SidebarProps = {
-  items: ItemProps[],
+  items: NavItemProps[],
   children?: any
 }
 
-function renderItem(itemProps: ItemProps) {
+function renderItem(itemProps: NavItemProps) {
   return <React.Fragment key={itemProps.title}>
-    <Item {...itemProps}></Item>
+    <NavItem {...itemProps}></NavItem>
   </React.Fragment>
 }
 
