@@ -1,6 +1,19 @@
 import Link from 'next/link'
 import { useRouter } from "next/router"
 
+export const NAV_ITEMS: NavItemProps[] = [
+  { href: "/memo", title: "memo" },
+  { href: "/labo", title: "labo", children: [
+    { href: "/labo/anime_js", title: "anime.js" },
+    { href: "/labo/tweets", title: "twitter-api" },
+    { href: "/labo/tweets/archives", title: "twitter-archives" }
+  ]},
+  { href: "/archive", title: "archive", children: [
+    { href: "/archive/4th", title: "4th" },
+    { href: "/archive/3rd", title: "3rd" }
+  ]}
+]
+
 export type NavItemProps = {
   title: string
   href: string
