@@ -1,7 +1,11 @@
-import Page from 'components/Page'
-import TwitterAPI from '../../../lib/TwitterAPI'
+import Page, {PageProps} from 'components/Page'
+import TwitterAPI, {Tweet, Media} from 'lib/TwitterAPI'
 
-function renderTweet(tweet) {
+type Props = PageProps & {
+  tweets: Tweet[]
+}
+
+function renderTweet(tweet: Tweet) {
   const date = new Date(tweet.created_at)
   return (
     <li key={tweet.id}>
@@ -12,7 +16,7 @@ function renderTweet(tweet) {
   )
 }
 
-function renderMedia(media) {
+function renderMedia(media: Media) {
   const url = media.url || media.preview_image_url
 
   return (
@@ -22,7 +26,7 @@ function renderMedia(media) {
   )
 }
 
-export default function Index(props) {
+export default function Index(props: Props) {
   return (
     <Page {...props}>
       <p>twitter</p>

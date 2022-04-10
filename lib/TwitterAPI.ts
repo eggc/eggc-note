@@ -1,5 +1,18 @@
 import needle from 'needle'
 
+export type Media = {
+  url?: string
+  preview_image_url?: string
+  media_key: string
+}
+
+export type Tweet = {
+  id: string
+  created_at: Date
+  text: string
+  media?: Media[]
+}
+
 export default class TwitterAPI {
   static BEARER_TOKEN: string = process.env.TWITTER_API_BEARER_TOKEN as string
   static TWEETS_URL: string = "https://api.twitter.com/2/tweets/search/recent"
