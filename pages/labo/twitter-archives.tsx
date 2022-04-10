@@ -1,10 +1,15 @@
 import { useState } from 'react'
 import Autolinker from 'autolinker'
-import Page from 'components/Page'
-import YearRadioGroup from '../../../components/year_radio_group'
-import rawTweets from '../../../lib/raw/tweet'
+import Page, {PageProps} from 'components/Page'
+import YearRadioGroup from 'components/year_radio_group'
+import {Tweet} from 'lib/TwitterAPI'
+import rawTweets from 'lib/raw/tweet'
 
-function renderTweet(tweet) {
+type Props = PageProps & {
+  tweets: Tweet[]
+}
+
+function renderTweet(tweet: Tweet) {
   const date = tweet.created_at
 
   return (
@@ -19,9 +24,9 @@ function renderTweet(tweet) {
   )
 }
 
-export default function Index(props) {
+export default function Index(props: Props) {
   const [year, setYear] = useState('ALL')
-  const onChangeYear = (event) => { setYear(event.target.value) }
+  const onChangeYear = (event: any) => { setYear(event.target.value) }
   const tweets = props.tweets
 
   // 日付の型変換を行う
@@ -31,16 +36,16 @@ export default function Index(props) {
     <Page {...props}>
       <h1 className="page-title">Twitter Archives</h1>
       <YearRadioGroup year={year} onChangeYear={onChangeYear} />
-      {tweets.filter((tweet) => year == 'ALL' || tweet.created_at.getFullYear() == year).map(renderTweet)}
+      {tweets.filter((tweet) => year == 'ALL' || tweet.created_at.getFullYear().toString() == year).map(renderTweet)}
     </Page>
   )
 }
 
 export async function getStaticProps() {
-  const tweets = rawTweets.filter((data) => {
+  const tweets = rawTweets.filter((data: any) => {
     // メンションとリツイートは消す
     return !data.tweet.full_text.startsWith("@") && !data.tweet.full_text.startsWith("RT @")
-  }).map((data, i) => {
+  }).map((data: any, i: number) => {
     const tweet = data.tweet
     const text = tweet.full_text
     const date = new Date(tweet.created_at)
@@ -50,7 +55,7 @@ export async function getStaticProps() {
       text: text,
       created_at: date.getTime()
     }
-  }).sort((a, b) => a.created_at - b.created_at)
+  }).sort((a: any, b: any) => a.created_at - b.created_at)
 
   return {
     props: { tweets }
