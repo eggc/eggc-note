@@ -14,7 +14,9 @@ export default class HTMLEntriesBuilder {
   private static PATH: string = `/tmp/html-entries-builder.txt`
 
   static async build(): Promise<HTMLEntry[]> {
-    if (this.entriesCache == undefined) {
+    if (process.env.NODE_ENV == 'production') {
+      this.entriesCache = await this._build()
+    } else if (this.entriesCache == undefined) {
       try {
         const data = fs.readFileSync(this.PATH)
         this.entriesCache = JSON.parse(data.toString())
@@ -23,8 +25,6 @@ export default class HTMLEntriesBuilder {
         const fd = fs.openSync(this.PATH, "w");
         fs.writeSync(fd, JSON.stringify(this.entriesCache))
       }
-    } else {
-      console.debug("cache hit")
     }
 
     return this.entriesCache
