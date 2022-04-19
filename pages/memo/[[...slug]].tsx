@@ -1,48 +1,32 @@
 import MemoClient from 'lib/memo/MemoClient'
+import Parser from 'lib/org/Parser'
 import Page from 'components/Page'
-import { NextRouter, useRouter } from 'next/router'
-import HTMLEntriesBuilder, {HTMLEntry} from '@lib/diary/HTMLEntriesBuilder'
 
 type Slug = string[] | undefined
-
 type Props = {
   appTitle: string
-  entries: string
-}
-
-function findCurrentEntry(router: NextRouter, entries: HTMLEntry[]) {
-  const slug: Slug = router.query.slug as Slug
-  let entry: HTMLEntry = entries[0]
-
-  if (slug) {
-    const currentPath = "/eggc/memo/main/" + slug.join("/") + ".org"
-    entry = entries.find((entry) => entry.path == currentPath) || entries[0]
-  }
-
-  return entry
+  entry: string
 }
 
 export default function Index(props: Props) {
-  const router = useRouter()
-  const entries: HTMLEntry[] = JSON.parse(props.entries)
-  const currentEntry = findCurrentEntry(router, entries)
-  const memoItems = entries.map((entry: HTMLEntry) => {
-    return { href: "/memo/" + entry.name, title: entry.name }
-  })
+  const memoItems = []
 
   return (
     <Page sidebarItems={memoItems} {...props}>
-      <div className="col-sm-9 eggc-note-memo" dangerouslySetInnerHTML={{ __html: currentEntry.html }}>
+      <div className="col-sm-9 eggc-note-memo" dangerouslySetInnerHTML={{ __html: props.entry }}>
       </div>
     </Page>
   )
 }
 
-export async function getStaticProps() {
-  const entries: HTMLEntry[] = await HTMLEntriesBuilder.build()
+export async function getStaticProps({ params } ) {
+  const slug = params.slug || ['README']
+  const node = MemoClient.findNodeBySlug(slug)
+  const text = node.read().toString()
+  const entry = await Parser.parse(text)
 
   return {
-    props: { entries: JSON.stringify(entries) }
+    props: { entry }
   }
 }
 
@@ -50,5 +34,6 @@ export async function getStaticPaths() {
   const paths = MemoClient.slugs().map((slug) => {
     return { params: { slug: slug } }
   })
+
   return { paths: paths, fallback: false }
 }
