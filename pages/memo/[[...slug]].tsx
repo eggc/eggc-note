@@ -1,3 +1,4 @@
+import MemoClient from 'lib/memo/MemoClient'
 import Page from 'components/Page'
 import { NextRouter, useRouter } from 'next/router'
 import HTMLEntriesBuilder, {HTMLEntry} from '@lib/diary/HTMLEntriesBuilder'
@@ -46,9 +47,8 @@ export async function getStaticProps() {
 }
 
 export async function getStaticPaths() {
-  const entries: HTMLEntry[] = await HTMLEntriesBuilder.build()
-  const paths = entries.map((entry) => { return { params: { slug: [entry.name] } } })
-  paths.push({ params: { slug: [] }})
-
+  const paths = MemoClient.slugs().map((slug) => {
+    return { params: { slug: slug } }
+  })
   return { paths: paths, fallback: false }
 }
