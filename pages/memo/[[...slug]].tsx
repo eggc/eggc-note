@@ -1,18 +1,18 @@
 import MemoClient from 'lib/memo/MemoClient'
 import Parser from 'lib/org/Parser'
 import Page from 'components/Page'
+import {NavItemProps} from 'components/Nav/NavItem'
 
 type Slug = string[] | undefined
 type Props = {
   appTitle: string
   entry: string
+  sidebarItems: NavItemProps[]
 }
 
 export default function Index(props: Props) {
-  const memoItems = []
-
   return (
-    <Page sidebarItems={memoItems} {...props}>
+    <Page {...props}>
       <div className="col-sm-9 eggc-note-memo" dangerouslySetInnerHTML={{ __html: props.entry }}>
       </div>
     </Page>
@@ -24,9 +24,10 @@ export async function getStaticProps({ params } ) {
   const node = MemoClient.findNodeBySlug(slug)
   const text = node.read().toString()
   const entry = await Parser.parse(text)
+  const sidebarItems = MemoClient.navItems().children
 
   return {
-    props: { entry }
+    props: { entry, sidebarItems }
   }
 }
 
