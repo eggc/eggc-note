@@ -22,7 +22,7 @@ export type NavItemProps = {
 
 export default function NavItem({title, href}: NavItemProps) {
   const router = useRouter();
-  const currentPath = router.pathname
+  const currentPath = router.asPath
   const isActive = currentPath.startsWith(href)
 
   return <>
