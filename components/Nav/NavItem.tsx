@@ -25,17 +25,12 @@ export default function NavItem({title, href}: NavItemProps) {
   const currentPath = router.pathname
   const isActive = currentPath.startsWith(href)
 
-  const aProps = {
-    className: `nav-link ${isActive ? 'active' : ''}`,
-    "aria-current": isActive ? "page" : ''
-  }
-
   return <>
     <li className="nav-item">
       <Link href={href}>
-        <a {...aProps as any} >
-          {title}
-        </a>
+        {isActive ?
+         <a className="nav-link active" aria-current="page">{title}</a> :
+         <a className="nav-link">{title}</a>}
       </Link>
     </li>
   </>
