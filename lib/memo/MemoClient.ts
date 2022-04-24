@@ -6,23 +6,23 @@ type Node = {
   name: string
   key: string
   children: Node[]
+  read: Function
 }
 
 // ファイル名から拡張子を取り除く
-function removeExt(fileName) {
+function removeExt(fileName: string) {
   return fileName.replace(/\..*$/, "")
 }
 
 export default class MemoClient {
-  public static findNodeBySlug(slug: Slug, node: Node): Node | undefined {
-    node ||= memo.tree()
+  public static findNodeBySlug(slug: Slug, node: Node = memo.tree()): Node | undefined {
     const nodeKey = removeExt(node.key)
     const key = "/" + slug.join("/")
 
     if (nodeKey == key) {
       return node
     } else {
-      let find = null
+      let find = undefined
       node.children.forEach((child) => {
         find ||= this.findNodeBySlug(slug, child)
       })
@@ -35,9 +35,7 @@ export default class MemoClient {
     return this.listKeys(tree)
   }
 
-  public static navItems(node) {
-    node ||= memo.tree() as Node
-
+  public static navItems(node: Node = memo.tree()): any {
     return {
       title: removeExt(node.name),
       href: "/memo" + removeExt(node.key),
@@ -48,10 +46,11 @@ export default class MemoClient {
   private static listKeys(tree: Node): Slug[] {
     const list = tree.children.map(MemoClient.listKeys).flat()
     const slug = tree.key.split("/")
+    const last = slug.pop()
     slug.shift() // split で作られた空文字を捨てる
 
-    if (slug.length > 0) {
-      slug.push(removeExt(slug.pop()))
+    if (last) {
+      slug.push(removeExt(last))
     }
 
     return [slug, ...list]

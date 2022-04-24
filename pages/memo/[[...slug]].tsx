@@ -19,13 +19,19 @@ export default function Index(props: Props) {
   )
 }
 
-export async function getStaticProps({ params } ) {
+type StaticPropsParams = {
+  params: {
+    slug?: string[]
+  }
+}
+
+export async function getStaticProps({ params }: StaticPropsParams) {
   const slug = params.slug || ['README']
   const node = MemoClient.findNodeBySlug(slug)
   const sidebarItems = MemoClient.navItems().children
   let entry = ""
 
-  if (node.children.length == 0) {
+  if (node && node.children.length == 0) {
     const text = node.read().toString()
     entry = await Parser.parse(text)
   }
