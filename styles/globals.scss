@@ -3,6 +3,7 @@
 @import './theme.scss';
 @import 'bootstrap';
 @import './eggc-note-memo.scss';
+@import './sidebar.scss';
 
 body { color: $dark }
 
@@ -29,12 +30,6 @@ center {
 .eggc-diary {
     h1 {
         font-size: $font-size-base;
-    }
-}
-
-.is-directory {
-    &:after {
-        content: "/";
     }
 }
 

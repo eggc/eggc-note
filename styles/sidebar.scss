@@ -1,0 +1,7 @@
+.nav {
+    .is-directory {
+        &:after {
+            content: "/";
+        }
+    }
+}

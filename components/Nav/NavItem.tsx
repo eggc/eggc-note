@@ -20,17 +20,18 @@ export type NavItemProps = {
   children?: NavItemProps[]
 }
 
-export default function NavItem({title, href}: NavItemProps) {
+export default function NavItem({title, href, children}: NavItemProps) {
   const router = useRouter();
   const currentPath = router.asPath
   const isActive = currentPath.startsWith(href)
+  const fileType = (children && children.length > 0) ? 'is-directory' : 'is-file'
 
   return <>
     <li className="nav-item">
       <Link href={href}>
         {isActive ?
-         <a className="nav-link active" aria-current="page">{title}</a> :
-         <a className="nav-link">{title}</a>}
+         <a className={`nav-link active ${fileType}`} aria-current="page">{title}</a> :
+         <a className={`nav-link ${fileType}`}>{title}</a>}
       </Link>
     </li>
   </>
