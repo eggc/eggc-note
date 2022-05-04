@@ -3789,7 +3789,7 @@ md5.js@^1.3.4:
 
 "memo@https://github.com/eggc/memo":
   version "1.0.2"
-  resolved "https://github.com/eggc/memo#92c0d4b3ec9d717c18622adc5897eaabed67ef12"
+  resolved "https://github.com/eggc/memo#f8ba0d0357fc90071a31fd6010749140f636a43a"
 
 memoize-one@^5.0.0:
   version "5.2.1"
