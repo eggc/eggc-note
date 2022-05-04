@@ -17,7 +17,7 @@ function removeExt(fileName: string) {
 export default class MemoClient {
   public static findNodeBySlug(slug: Slug, node: Node = memo.tree()): Node | undefined {
     const nodeKey = removeExt(node.key)
-    const key = "/" + slug.join("/")
+    const key = slug.join("/")
 
     if (nodeKey == key) {
       return node
@@ -38,7 +38,7 @@ export default class MemoClient {
   public static navItems(node: Node = memo.tree()): any {
     return {
       title: removeExt(node.name),
-      href: "/memo" + removeExt(node.key),
+      href: "/memo/" + removeExt(node.key),
       children: node.children.map(child => this.navItems(child))
     }
   }
@@ -47,7 +47,6 @@ export default class MemoClient {
     const list = tree.children.map(MemoClient.listKeys).flat()
     const slug = tree.key.split("/")
     const last = slug.pop()
-    slug.shift() // split で作られた空文字を捨てる
 
     if (last) {
       slug.push(removeExt(last))
