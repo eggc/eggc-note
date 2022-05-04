@@ -2,7 +2,6 @@ import unified from 'unified'
 import parse from 'reorg-parse'
 import mutate from 'reorg-rehype'
 import html from 'rehype-stringify'
-import mathjax from 'rehype-mathjax'
 import Autolinker from 'autolinker'
 import slug from 'rehype-slug'
 import link from 'rehype-autolink-headings'
@@ -39,7 +38,6 @@ export default class Parser {
       .use(mutate, this.REORG_REHYPE_OPTION)
       .use(slug)
       .use(link, this.LINK_OPTION)
-      .use(mathjax)
       .use(html, { allowDangerousHtml: true })
       .process(orgString)
 
