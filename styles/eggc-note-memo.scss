@@ -1,11 +1,11 @@
 .eggc-note-memo {
     & > .section {
-        padding-left: 2em;
-        margin-bottom: 4em;
-        border-left: solid 0.5em $light;
+        padding-left: 2rem;
+        margin-bottom: 4rem;
+        border-left: solid 0.5rem $light;
 
         & > .section {
-            margin-bottom: 3em;
+            margin-bottom: 3rem;
         }
     }
 
