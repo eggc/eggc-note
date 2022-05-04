@@ -14,7 +14,7 @@ function renderItem(itemProps: NavItemProps) {
 
 export default function Sidebar({items}: SidebarProps) {
   return <>
-    <ul className="nav nav-pills flex-column h-100">
+    <ul className="nav nav-pills flex-column h-100 mt-1">
       {items.map(renderItem)}
     </ul>
   </>

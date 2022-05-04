@@ -14,7 +14,7 @@ function renderNavItem(navItem: NavItemProps) {
 
 export default function Header({title}: HeaderProps) {
   return <>
-    <nav className="sticky-top navbar navbar-expand-lg navbar-light bg-light">
+    <nav className="sticky-top navbar navbar-expand-lg navbar-dark bg-primary">
       <div className="container-fluid">
         <Link href="/"><a className="navbar-brand">{title}</a></Link>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

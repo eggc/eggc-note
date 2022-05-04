@@ -1,28 +1,14 @@
 @charset "utf-8";
-$font-family-base: 'inherit';
-$font-size-small: 16;
-$font-size-middle: 24;
-$font-size-large: 32;
 
+@import './theme.scss';
 @import 'bootstrap';
 @import './eggc-note-memo.scss';
 
-div#__next {
-
-}
-
-h1 { font-size: $font-size-large + px; font-weight: normal; }
-h2 { font-size: $font-size-middle + px; font-weight: normal; }
-h3, p, li { font-size: $font-size-small + px; }
-
-code {
-    font-family: monospace;
-    font-size: $font-size-small + px;
-}
+body { color: $dark }
 
 pre {
-    background-color: #2d2d2d;
-    padding: $font-size-small + px;
+    background-color: $dark;
+    padding: $font-size-base;
 }
 
 main {
@@ -42,7 +28,7 @@ center {
 
 .eggc-diary {
     h1 {
-        font-size: $font-size-small + px;
+        font-size: $font-size-base;
     }
 }
 
