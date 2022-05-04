@@ -39,6 +39,7 @@
 - https://exercism.org/dashboard
 - https://note.com/tck/n/na0f87af89407
 - https://sre.google/books/
+- https://zenn.dev/suzuki_hoge/books/2022-03-docker-practice-8ae36c33424b59
 
 本
 
