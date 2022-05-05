@@ -5,6 +5,7 @@ import html from 'rehype-stringify'
 import Autolinker from 'autolinker'
 import slug from 'rehype-slug'
 import link from 'rehype-autolink-headings'
+import katex from 'rehype-katex'
 
 export type OrgString = string
 export type HTMLString = string
@@ -18,6 +19,7 @@ export default class Parser {
     const body = await unified()
       .use(parse)
       .use(mutate)
+      .use(katex as any)
       .use(slug)
       .use(link, this.LINK_OPTION)
       .use(html as any, { allowDangerousHtml: true })
