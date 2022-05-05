@@ -29,7 +29,9 @@ export default class Parser {
   }
 
   private static decorateHTMLString(htmlString: HTMLString): HTMLString {
-    return Autolinker.link(htmlString)
+    return Autolinker.link(htmlString, {
+      urls: { tldMatches: false }
+    })
   }
 
   static async parse(orgString: string): Promise<HTMLString> {
