@@ -1,29 +1,36 @@
-import unified from 'unified'
+import {unified} from 'unified'
 import parse from 'uniorg-parse'
 import mutate from 'uniorg-rehype'
 import html from 'rehype-stringify'
-import Autolinker from 'autolinker'
+import highlight from 'rehype-highlight'
+import highlightLisp from 'highlight.js/lib/languages/lisp'
 import slug from 'rehype-slug'
 import link from 'rehype-autolink-headings'
 import katex from 'rehype-katex'
+import Autolinker from 'autolinker'
 
 export type OrgString = string
 export type HTMLString = string
 
 export default class Parser {
-  private static LINK_OPTION: unified.Settings = {
+  private static LINK_OPTION = {
     behavior: 'wrap'
+  }
+  private static HIGHLIGHT_OPTION = {
+    languages: { "emacs-lisp": highlightLisp },
+    ignoreMissing: true
   }
 
   private static async orgToHTMLString(orgString: OrgString): Promise<HTMLString> {
-    const body = await unified()
-      .use(parse)
-      .use(mutate)
-      .use(katex as any)
-      .use(slug)
-      .use(link, this.LINK_OPTION)
-      .use(html as any, { allowDangerousHtml: true })
-      .process(orgString)
+    const processor = unified()
+    processor.use(parse)
+    processor.use(mutate)
+    processor.use(highlight, this.HIGHLIGHT_OPTION)
+    processor.use(katex)
+    processor.use(slug)
+    processor.use(link, this.LINK_OPTION as any)
+    processor.use(html, { allowDangerousHtml: true })
+    const body = await processor.process(orgString)
 
     return body.toString()
   }
