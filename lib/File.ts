@@ -1,7 +1,15 @@
 import {extname, basename} from 'path'
 
+type Serializable = {
+  title: string
+  path: string
+  format: string
+  children?: Serializable[],
+  body?: string
+}
+
 export default class File {
-  static ROOT_NAME: string = 'orgfiles'
+  static ROOT_NAME = 'orgfiles'
   fullPath: string
   children?: File[]
   body?: string
@@ -42,7 +50,7 @@ export default class File {
   }
 
   // props に渡せる形式に変換する
-  serialize(): Object {
+  serialize(): Serializable {
     const object = {
       title: this.name(),
       path: this.path(),

@@ -10,14 +10,16 @@ function renderLink(node) {
 
 function findNode(tree, post) {
   const queue = [tree]
-  let node
+  let node = queue.pop()
 
-  while(node = queue.pop()) {
-    if(node.path == post.path) {
+  while(node) {
+    if(node.path) {
       return node
     } else {
       node.children && node.children.forEach((child) => queue.push(child))
     }
+
+    node = queue.pop()
   }
   return undefined
 }

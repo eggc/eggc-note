@@ -14,8 +14,8 @@ export type Tweet = {
 }
 
 export default class TwitterAPI {
-  static BEARER_TOKEN: string = process.env.TWITTER_API_BEARER_TOKEN as string
-  static TWEETS_URL: string = "https://api.twitter.com/2/tweets/search/recent"
+  static BEARER_TOKEN = process.env.TWITTER_API_BEARER_TOKEN as string
+  static TWEETS_URL = "https://api.twitter.com/2/tweets/search/recent"
 
   static async getTweets() {
     const response = await this.searchRecent()

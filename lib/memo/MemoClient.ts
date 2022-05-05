@@ -6,7 +6,7 @@ type Node = {
   name: string
   key: string
   children: Node[]
-  read: Function
+  read: () => string
 }
 
 // ファイル名から拡張子を取り除く
