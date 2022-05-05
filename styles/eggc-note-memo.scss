@@ -1,20 +1,16 @@
 .eggc-note-memo {
-    & > .section {
-        padding-left: 2rem;
-        margin-bottom: 4rem;
-        border-left: solid 0.5rem $light;
-
-        & > .section {
-            margin-bottom: 3rem;
-        }
-    }
-
-    pre.comment { display: none }
-
     h1, h2, h3 {
         a {
             text-decoration: none;
             color: $body-color;
         }
+    }
+
+    h1:not(:first-child) {
+        margin-top: 3rem;
+    }
+
+    h2:not(:first-child) {
+        margin-top: 2rem;
     }
 }

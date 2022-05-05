@@ -1,6 +1,6 @@
 import unified from 'unified'
-import parse from 'reorg-parse'
-import mutate from 'reorg-rehype'
+import parse from 'uniorg-parse'
+import mutate from 'uniorg-rehype'
 import html from 'rehype-stringify'
 import Autolinker from 'autolinker'
 import slug from 'rehype-slug'
@@ -11,31 +11,13 @@ export type HTMLString = string
 
 export default class Parser {
   private static LINK_OPTION: unified.Settings = {
-    behavior: 'wrap',
-    content: {
-      type: 'element',
-      tagName: 'span',
-      properties: { className: [''] },
-      children: []
-    }
-  }
-
-  private static REORG_REHYPE_OPTION: unified.Settings = {
-    h: (tagName: any, properties: any) =>
-      (...children: any[]) => {
-        return {
-          type: 'element',
-          tagName: tagName,
-          properties: properties || {}, // properties がないときは {} にするというパッチ
-          children: children,
-        }
-      }
+    behavior: 'wrap'
   }
 
   private static async orgToHTMLString(orgString: OrgString): Promise<HTMLString> {
     const body = await unified()
       .use(parse)
-      .use(mutate, this.REORG_REHYPE_OPTION)
+      .use(mutate)
       .use(slug)
       .use(link, this.LINK_OPTION)
       .use(html as any, { allowDangerousHtml: true })
