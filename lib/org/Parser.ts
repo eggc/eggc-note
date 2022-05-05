@@ -7,6 +7,7 @@ import highlightLisp from 'highlight.js/lib/languages/lisp'
 import slug from 'rehype-slug'
 import link from 'rehype-autolink-headings'
 import katex from 'rehype-katex'
+import css from 'rehype-add-classes'
 import Autolinker from 'autolinker'
 
 export type OrgString = string
@@ -28,6 +29,7 @@ export default class Parser {
     processor.use(highlight, this.HIGHLIGHT_OPTION)
     processor.use(katex)
     processor.use(slug)
+    processor.use(css, { table: 'table' })
     processor.use(link, this.LINK_OPTION as any)
     processor.use(html, { allowDangerousHtml: true })
     const body = await processor.process(orgString)
