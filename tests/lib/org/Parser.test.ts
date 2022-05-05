@@ -1,4 +1,5 @@
-import Parser from "@lib/org/Parser"
+import { describe, test, expect } from "@jest/globals"
+import Parser from "@/lib/org/Parser"
 
 describe('Parser', () => {
   test('parse', async () => {

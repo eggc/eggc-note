@@ -27,7 +27,7 @@ export default class Parser {
           type: 'element',
           tagName: tagName,
           properties: properties || {}, // properties がないときは {} にするというパッチ
-          children: children
+          children: children,
         }
       }
   }
@@ -38,7 +38,7 @@ export default class Parser {
       .use(mutate, this.REORG_REHYPE_OPTION)
       .use(slug)
       .use(link, this.LINK_OPTION)
-      .use(html, { allowDangerousHtml: true })
+      .use(html as any, { allowDangerousHtml: true })
       .process(orgString)
 
     return body.toString()
