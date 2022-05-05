@@ -1,8 +1,10 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-export default {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/$1"
-  }
-};
+import nextJest from 'next/jest.js'
+
+const createJestConfig = nextJest({
+  dir: './',
+})
+const customJestConfig = {
+  moduleDirectories: ['node_modules', '<rootDir>/'],
+}
+
+export default createJestConfig(customJestConfig)
