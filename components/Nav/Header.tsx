@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import NavItem, {NAV_ITEMS, NavItemProps} from './NavItem'
+import Navbar from 'react-bootstrap/Navbar';
 
 type HeaderProps = {
   title: string
@@ -14,9 +15,9 @@ function renderNavItem(navItem: NavItemProps) {
 
 export default function Header({title}: HeaderProps) {
   return <>
-    <nav className="sticky-top navbar navbar-expand-lg navbar-dark bg-primary">
+    <Navbar bg="primary" expand="lg" variant="dark" sticky="top" >
       <div className="container-fluid">
-        <Link href="/"><a className="navbar-brand">{title}</a></Link>
+        <Link href="/"><Navbar.Brand href="#">{title}</Navbar.Brand></Link>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -26,6 +27,6 @@ export default function Header({title}: HeaderProps) {
           </ul>
         </div>
       </div>
-    </nav>
+    </Navbar>
   </>
 }
