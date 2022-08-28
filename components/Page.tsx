@@ -3,6 +3,7 @@ import {NavItemProps} from './Nav/NavItem'
 import Main from './Main'
 import Sidebar from './Nav/Sidebar'
 import AppSidebar from './Nav/AppSidebar'
+import Container from 'react-bootstrap/Container'
 
 export type PageProps = {
   appTitle: string
@@ -20,7 +21,7 @@ function Column(props: any) {
 export default function Page(props: PageProps) {
   return <>
     <Header title={props.appTitle}></Header>
-    <div className="container-fluid">
+    <Container fluid>
       <div className="row">
         <Column fixed>
           {props.sidebarItems ? <Sidebar items={props.sidebarItems}></Sidebar> : <AppSidebar></AppSidebar>}
@@ -29,6 +30,6 @@ export default function Page(props: PageProps) {
           <Main>{props.children}</Main>
         </Column>
       </div>
-    </div>
+    </Container>
   </>
 }
