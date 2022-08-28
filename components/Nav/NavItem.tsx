@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { useRouter } from "next/router"
+import Nav from 'react-bootstrap/Nav'
 
 export const NAV_ITEMS: NavItemProps[] = [
   { href: "/memo", title: "memo" },
@@ -27,12 +28,10 @@ export default function NavItem({title, href, children}: NavItemProps) {
   const fileType = (children && children.length > 0) ? 'is-directory' : 'is-file'
 
   return <>
-    <li className="nav-item">
-      <Link href={href}>
-        {isActive ?
-         <a className={`nav-link active ${fileType}`} aria-current="page">{title}</a> :
-         <a className={`nav-link ${fileType}`}>{title}</a>}
-      </Link>
-    </li>
+    <Link href={href}>
+      <Nav.Link href={href} active={isActive} className={fileType}>
+        {title}
+      </Nav.Link>
+    </Link>
   </>
 }

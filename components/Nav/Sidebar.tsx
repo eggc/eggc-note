@@ -1,5 +1,6 @@
 import React from "react"
 import NavItem, {NavItemProps} from './NavItem'
+import Nav from 'react-bootstrap/Nav'
 
 export type SidebarProps = {
   items: NavItemProps[],
@@ -14,8 +15,8 @@ function renderItem(itemProps: NavItemProps) {
 
 export default function Sidebar({items}: SidebarProps) {
   return <>
-    <ul className="nav nav-pills flex-column h-100 mt-1">
+    <Nav variant="pills" className="flex-column h-100 mt-1">
       {items.map(renderItem)}
-    </ul>
+    </Nav>
   </>
 }
