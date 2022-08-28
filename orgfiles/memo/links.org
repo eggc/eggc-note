@@ -40,9 +40,9 @@
 - https://note.com/tck/n/na0f87af89407
 - https://sre.google/books/
 - https://zenn.dev/suzuki_hoge/books/2022-03-docker-practice-8ae36c33424b59
+- https://gihyo.jp/book/2022/978-4-297-12846-3
+- https://mml-book.github.io/book/mml-book.pdf
 
 本
 
 - [[https://www.amazon.co.jp/Philosophy-Software-Design-English-ebook/dp/B07N1XLQ7D/ref=tmm_kin_swatch_0?_encoding=UTF8&qid=&sr=][A Philosophy of Software Design]]
-- [[https://www.seibundo-shinkosha.net/book/science/20086/][粘菌生活のススメ]]
-- [[https://www.shueisha-int.co.jp/publish/%E5%A4%A9%E6%96%87%E3%81%AE%E4%B8%96%E7%95%8C%E5%8F%B2][天文の世界史]]
