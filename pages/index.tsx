@@ -1,10 +1,11 @@
-import Page from 'components/Page'
+import Header from 'components/Nav/Header'
+import TopImage from 'components/TopImage'
 
 export default function Index(props: any) {
-  const pageProps = Object.assign({}, props, { noSidebar: true })
-
   return (
-    <Page {...pageProps}>
-    </Page>
+    <>
+      <Header title={props.appTitle}></Header>
+      <TopImage></TopImage>
+    </>
   )
 }

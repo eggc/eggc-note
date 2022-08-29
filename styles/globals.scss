@@ -6,8 +6,12 @@
 @import 'highlight.js/styles/github-dark.css';
 @import './eggc-note-memo.scss';
 @import './sidebar.scss';
+@import './top.scss';
 
-body { color: $dark }
+html, body, #__next {
+    height: 100%;
+    color: $dark
+}
 
 main {
     padding: 4px;
