@@ -3,7 +3,7 @@ import { AppProps } from 'next/app'
 import Head from 'next/head'
 import React from 'react'
 
-const AppTitle = "EGGC NOTE"
+const AppTitle = "eggc.net"
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   // bootstrap は document を参照しているので nextjs の静的ビルドでエラーを出さないようにする
