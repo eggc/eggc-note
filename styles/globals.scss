@@ -8,9 +8,8 @@
 @import './sidebar.scss';
 @import './top.scss';
 
-html, body, #__next {
+html, body {
     height: 100%;
-    color: $dark
 }
 
 main {

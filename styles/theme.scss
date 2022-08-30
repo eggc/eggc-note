@@ -1,9 +1,12 @@
 // えんじ色 https://encycolorpedia.jp/b3424a
-$primary: #b3424a;
-$secondary: #c86a71;
+$body-bg: #b3424a;
+$body-color: #f7f6f5;
+
+$primary: #f7f6f5;
+$secondary: #f9c1cf;
 $info: #f9c1cf;
-$light: #f7f6f5;
-$dark: #504946;
+$light: #c86a71;
+$dark: #b3424a;
 
 $font-family-base: 'inherit';
 $font-size-base: 1rem;
@@ -14,3 +17,6 @@ $h4-font-size: $font-size-base;
 $h5-font-size: $font-size-base;
 
 $nav-pills-border-radius: 0;
+$nav-link-color: $info;
+$nav-link-hover-color: $primary;
+$nav-pills-link-active-bg: $light;

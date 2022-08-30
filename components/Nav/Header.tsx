@@ -17,7 +17,7 @@ function renderNavItem(navItem: NavItemProps) {
 
 export default function Header({title}: HeaderProps) {
   return <>
-    <Navbar bg="primary" expand="lg" variant="dark" sticky="top" >
+    <Navbar bg="dark" expand="lg" variant="dark" sticky="top" >
       <Container fluid>
         <Link href="/"><Navbar.Brand href="#">{title}</Navbar.Brand></Link>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
