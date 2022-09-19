@@ -8,6 +8,10 @@
 @import './sidebar.scss';
 @import './top.scss';
 
+:root {
+    --bs-code-color: $primary;
+}
+
 html, body {
     height: 100%;
 }
