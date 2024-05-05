@@ -35,7 +35,8 @@
     "sass": "^1.51.0",
     "unified": "^10.1.2",
     "uniorg-parse": "^0.5.2",
-    "uniorg-rehype": "^0.5.2"
+    "uniorg-rehype": "^0.5.2",
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@types/jest": "^27.5.0",
