@@ -2801,7 +2801,7 @@ makeerror@1.0.12:
 
 "memo@https://github.com/eggc/memo":
   version "1.0.2"
-  resolved "https://github.com/eggc/memo#6359e0277167c7cbde5d4db5115fbf1f71a4cc24"
+  resolved "https://github.com/eggc/memo#a286c57872119a88b963df5e0b5c06ff302039d5"
 
 memoize-one@^5.0.0:
   version "5.2.1"
