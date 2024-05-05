@@ -3,6 +3,7 @@ import { useRouter } from "next/router"
 import Nav from 'react-bootstrap/Nav'
 
 export const NAV_ITEMS: NavItemProps[] = [
+  { href: "/about", title: "about" },
   { href: "/memo", title: "memo" },
   { href: "/labo", title: "labo", children: [
     { href: "/labo/anime_js", title: "anime.js" },
